@@ -1,11 +1,11 @@
-package main
+package resources
 
 import _ "embed"
 
 var (
 	//go:embed gui.css
-	cssData string
+	CSS string
 
 	//go:embed gui.glade
-	guiDesc string
+	Glade string
 )

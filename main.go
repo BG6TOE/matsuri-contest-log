@@ -8,6 +8,8 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
+
+	resources "matsu.dev/toe-log/resources"
 )
 
 func timer(ctx context.Context, timeLabel *gtk.Label) {
@@ -38,7 +40,7 @@ func main() {
 	// Initialize GTK without parsing any command line arguments.
 	gtk.Init(nil)
 
-	builder, err := gtk.BuilderNewFromString(guiDesc)
+	builder, err := gtk.BuilderNewFromString(resources.Glade)
 	if err != nil {
 		logrus.Fatalf("Unable to init builder: %v", err)
 	}
@@ -62,7 +64,7 @@ func main() {
 			logrus.Fatalf("Unable to init css provider: %v", err)
 		}
 
-		err = css.LoadFromData(cssData)
+		err = css.LoadFromData(resources.CSS)
 		if err != nil {
 			logrus.Fatalf("Unable to init css: %v", err)
 		}
