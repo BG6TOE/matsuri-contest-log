@@ -111,6 +111,9 @@
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">RST Sent</property>
+                <style>
+                  <class name="input-hint-label"/>
+                </style>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -123,6 +126,9 @@
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">RST Rcvd</property>
+                <style>
+                  <class name="input-hint-label"/>
+                </style>
               </object>
               <packing>
                 <property name="left-attach">3</property>
@@ -135,6 +141,9 @@
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">Exch Sent</property>
+                <style>
+                  <class name="input-hint-label"/>
+                </style>
               </object>
               <packing>
                 <property name="left-attach">4</property>
@@ -179,7 +188,6 @@
                 <property name="max-length">3</property>
                 <property name="width-chars">3</property>
                 <property name="max-width-chars">3</property>
-                <property name="input-purpose">number</property>
                 <style>
                   <class name="contest-input"/>
                 </style>
@@ -196,7 +204,6 @@
                 <property name="max-length">3</property>
                 <property name="width-chars">3</property>
                 <property name="max-width-chars">3</property>
-                <property name="input-purpose">digits</property>
                 <style>
                   <class name="contest-input"/>
                 </style>
