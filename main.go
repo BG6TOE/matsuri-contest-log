@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -10,6 +12,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
 
+	logdb "matsu.dev/toe-log/logdb"
 	resources "matsu.dev/toe-log/resources"
 )
 
@@ -98,9 +101,23 @@ func setupInputEvents(builder *gtk.Builder) {
 	inputRstRcvd.ConnectAfter("changed", numericInputHandler)
 }
 
+func initDatabase() {
+	homdDir := glib.GetHomeDir()
+	databaseDir := path.Join(homdDir, ".config", "dev.matsu.contestlog")
+	databaseName := path.Join(databaseDir, "log.sqlite3")
+	if err := os.MkdirAll(databaseDir, os.ModeDir); err != nil {
+		logrus.Fatalf("Failed to create directory: %v", err)
+	}
+	if err := logdb.Init(databaseName); err != nil {
+		logrus.Fatalf("Failed to setup main database: %v", err)
+	}
+}
+
 func main() {
 	// Initialize GTK without parsing any command line arguments.
 	gtk.Init(nil)
+
+	initDatabase()
 
 	builder, err := gtk.BuilderNewFromString(resources.Glade)
 	if err != nil {

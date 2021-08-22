@@ -8,4 +8,7 @@ var (
 
 	//go:embed gui.glade
 	Glade string
+
+	//go:embed dbinit.sql
+	DatabaseStructureSQL string
 )
