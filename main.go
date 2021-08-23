@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
@@ -93,6 +94,23 @@ func setupInputEvents(builder *gtk.Builder) {
 
 	inputExchRcvd := mustGetObj(builder, "input-exch-rcvd").(*gtk.Entry)
 	inputExchRcvd.ConnectAfter("changed", capitalizeInputHandler)
+
+	inputCallsign.Connect("key-press-event", func(entry *gtk.Entry, event *gdk.Event) {
+		key := gdk.EventKeyNewFromEvent(event)
+		if key.KeyVal() == gdk.KEY_space {
+			inputExchRcvd.ToWidget().GrabFocus()
+			textLen := int(inputExchRcvd.GetTextLength())
+			inputExchRcvd.SelectRegion(textLen, textLen+1)
+		}
+	})
+	inputExchRcvd.Connect("key-press-event", func(entry *gtk.Entry, event *gdk.Event) {
+		key := gdk.EventKeyNewFromEvent(event)
+		if key.KeyVal() == gdk.KEY_space {
+			inputCallsign.ToWidget().GrabFocus()
+			textLen := int(inputCallsign.GetTextLength())
+			inputCallsign.SelectRegion(textLen, textLen+1)
+		}
+	})
 
 	inputRstSent := mustGetObj(builder, "input-rst-sent").(*gtk.Entry)
 	inputRstSent.ConnectAfter("changed", numericInputHandler)

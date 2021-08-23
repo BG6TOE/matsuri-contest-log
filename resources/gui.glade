@@ -265,7 +265,7 @@
                   <object class="GtkButton" id="f1-button">
                     <property name="label" translatable="yes">F1</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -280,7 +280,7 @@
                   <object class="GtkButton" id="f2-button">
                     <property name="label" translatable="yes">F2</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -295,7 +295,7 @@
                   <object class="GtkButton" id="f3-button">
                     <property name="label" translatable="yes">F3</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -310,7 +310,7 @@
                   <object class="GtkButton" id="f5-button">
                     <property name="label" translatable="yes">F5</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -325,7 +325,7 @@
                   <object class="GtkButton" id="f4-button">
                     <property name="label" translatable="yes">F4</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -340,7 +340,7 @@
                   <object class="GtkButton" id="f6-button">
                     <property name="label" translatable="yes">F6</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -355,7 +355,7 @@
                   <object class="GtkButton" id="f7-button">
                     <property name="label" translatable="yes">F7</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -370,7 +370,7 @@
                   <object class="GtkButton" id="f8-button">
                     <property name="label" translatable="yes">F8</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -385,7 +385,7 @@
                   <object class="GtkButton" id="f9-button">
                     <property name="label" translatable="yes">F9</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -400,7 +400,7 @@
                   <object class="GtkButton" id="f10-button">
                     <property name="label" translatable="yes">F10</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -415,7 +415,7 @@
                   <object class="GtkButton" id="f11-button">
                     <property name="label" translatable="yes">F11</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
@@ -430,7 +430,7 @@
                   <object class="GtkButton" id="f12-button">
                     <property name="label" translatable="yes">F12</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
