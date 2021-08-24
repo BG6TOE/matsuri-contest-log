@@ -30,7 +30,7 @@ func NewQSO(c *Contest, q *QSO) error {
 	_, err := db.Exec(`
 	INSERT INTO log
 	(uid, contest_id, sta_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz)
-	VALUES ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	`, q.UID, q.ContestId, q.StationCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, q.UID, q.ContestId, q.StationCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd, q.FreqHz)
 	return err
 }

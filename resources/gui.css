@@ -1,3 +1,7 @@
 .contest-input { font-family: 'Fira Code', monospace; font-size: xx-large; }
 .input-hint-label { font-family: 'Fira Code', monospace; font-size: large; }
 .baseinfo-labels { font-family: 'Fira Code', monospace; font-size: large; font-weight: 900; }
+
+.infomation-error { color: #900; }
+.infomation-warning { color: #990; }
+.infomation-notice { color: #009; }

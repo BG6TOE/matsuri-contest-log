@@ -12,3 +12,9 @@ var (
 	//go:embed dbinit.sql
 	DatabaseStructureSQL string
 )
+
+const (
+	InfoClassNotice  = "infomation-notice"
+	InfoClassWarning = "infomation-warning"
+	InfoClassError   = "infomation-error"
+)

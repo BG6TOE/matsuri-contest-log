@@ -41,6 +41,66 @@ func mustGetObj(builder *gtk.Builder, id string) glib.IObject {
 	return obj
 }
 
+func mustGetEntryBuf(entry *gtk.Entry) *gtk.EntryBuffer {
+	buf, err := entry.GetBuffer()
+	if err != nil {
+		logrus.Panicf("cannot get buffer for entry!")
+	}
+	return buf
+}
+
+func emitInfomation(builder *gtk.Builder, info, infoClass string) {
+	glib.IdleAdd(func() {
+		infoLabel := mustGetObj(builder, "infomation").(*gtk.Label)
+		styleCtx, err := infoLabel.GetStyleContext()
+		if err != nil {
+			return
+		}
+		styleCtx.RemoveClass(resources.InfoClassNotice)
+		styleCtx.RemoveClass(resources.InfoClassWarning)
+		styleCtx.RemoveClass(resources.InfoClassError)
+		styleCtx.AddClass(infoClass)
+
+		infoLabel.SetText(info)
+	})
+}
+
+func commitQSO(builder *gtk.Builder) {
+	callsignEntry := mustGetObj(builder, "input-callsign").(*gtk.Entry)
+	rstSentEntry := mustGetObj(builder, "input-rst-sent").(*gtk.Entry)
+	rstRcvdEntry := mustGetObj(builder, "input-rst-rcvd").(*gtk.Entry)
+	inputExchSentEntry := mustGetObj(builder, "input-exch-sent").(*gtk.Entry)
+	inputExchRcvdEntry := mustGetObj(builder, "input-exch-rcvd").(*gtk.Entry)
+
+	callsign := callsignEntry.GetChars(0, -1)
+	rstSent := rstSentEntry.GetChars(0, -1)
+	rstRcvd := rstRcvdEntry.GetChars(0, -1)
+	exchSent := inputExchSentEntry.GetChars(0, -1)
+	exchRcvd := inputExchRcvdEntry.GetChars(0, -1)
+
+	if callsign == "" {
+		emitInfomation(builder, fmt.Sprintf("%s is not a valid callsign!", callsign), resources.InfoClassError)
+		return
+	}
+
+	QSO := logdb.QSO{
+		DXCallsign: callsign, //      string    `json:"dx_callsign"`
+		FreqHz:     14014000, //     uint64    `json:"freq_hz"`
+		Mode:       "CW",     //            string    `json:"mode"`
+		RSTSent:    rstSent,  //         string    `json:"rst_sent"`
+		RSTRcvd:    rstRcvd,  //         string    `json:"rst_rcvd"`
+		ExchSent:   exchSent, //        string    `json:"exch_sent"`
+		ExchRcvd:   exchRcvd, //        string    `json:"exch_rcvd"`
+	}
+
+	err := logdb.NewQSO(logdb.GetDefaultContext(), &QSO)
+	if err != nil {
+		emitInfomation(builder, fmt.Sprintf("Failed to add QSO: %v", err), resources.InfoClassError)
+		return
+	}
+	emitInfomation(builder, fmt.Sprintf("Success added QSO with %s", callsign), resources.InfoClassNotice)
+}
+
 func setupInputEvents(builder *gtk.Builder) {
 	capitalizeInputHandler := func(editable *gtk.Entry) {
 		buf := editable.GetChars(0, -1)
@@ -95,14 +155,49 @@ func setupInputEvents(builder *gtk.Builder) {
 	inputExchRcvd := mustGetObj(builder, "input-exch-rcvd").(*gtk.Entry)
 	inputExchRcvd.ConnectAfter("changed", capitalizeInputHandler)
 
+	inputRstSent := mustGetObj(builder, "input-rst-sent").(*gtk.Entry)
+	inputRstSent.ConnectAfter("changed", numericInputHandler)
+
+	inputRstRcvd := mustGetObj(builder, "input-rst-rcvd").(*gtk.Entry)
+	inputRstRcvd.ConnectAfter("changed", numericInputHandler)
+
+	setDefaultRST := func() {
+		if inputRstRcvd.GetChars(0, -1) == "" {
+			editableBuf, err := inputRstRcvd.GetBuffer()
+			if err != nil {
+				return
+			}
+			editableBuf.SetText("599")
+		}
+		if inputRstSent.GetChars(0, -1) == "" {
+			editableBuf, err := inputRstSent.GetBuffer()
+			if err != nil {
+				return
+			}
+			editableBuf.SetText("599")
+		}
+	}
+
 	inputCallsign.Connect("key-press-event", func(entry *gtk.Entry, event *gdk.Event) {
 		key := gdk.EventKeyNewFromEvent(event)
-		if key.KeyVal() == gdk.KEY_space {
+		keyVal := key.KeyVal()
+		if keyVal == gdk.KEY_space {
 			inputExchRcvd.ToWidget().GrabFocus()
 			textLen := int(inputExchRcvd.GetTextLength())
 			inputExchRcvd.SelectRegion(textLen, textLen+1)
+		} else {
+			return
 		}
+		setDefaultRST()
 	})
+
+	inputCallsign.Connect("activate", func(entry *gtk.Entry) {
+		setDefaultRST()
+		inputExchRcvd.ToWidget().GrabFocus()
+		textLen := int(inputExchRcvd.GetTextLength())
+		inputExchRcvd.SelectRegion(textLen, textLen+1)
+	})
+
 	inputExchRcvd.Connect("key-press-event", func(entry *gtk.Entry, event *gdk.Event) {
 		key := gdk.EventKeyNewFromEvent(event)
 		if key.KeyVal() == gdk.KEY_space {
@@ -110,13 +205,12 @@ func setupInputEvents(builder *gtk.Builder) {
 			textLen := int(inputCallsign.GetTextLength())
 			inputCallsign.SelectRegion(textLen, textLen+1)
 		}
+		setDefaultRST()
 	})
 
-	inputRstSent := mustGetObj(builder, "input-rst-sent").(*gtk.Entry)
-	inputRstSent.ConnectAfter("changed", numericInputHandler)
-
-	inputRstRcvd := mustGetObj(builder, "input-rst-rcvd").(*gtk.Entry)
-	inputRstRcvd.ConnectAfter("changed", numericInputHandler)
+	inputExchRcvd.Connect("activate", func(entry *gtk.Entry) {
+		commitQSO(builder)
+	})
 }
 
 func initDatabase() {

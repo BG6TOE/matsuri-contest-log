@@ -448,7 +448,20 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="infomation">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Here shows infomation of the QSO.</property>
+                <property name="single-line-mode">True</property>
+                <style>
+                  <class name="info-noinfo"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
             </child>
           </object>
           <packing>
