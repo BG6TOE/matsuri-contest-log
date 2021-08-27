@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 
 	logdb "matsu.dev/toe-log/logdb"
 	resources "matsu.dev/toe-log/resources"
+	state "matsu.dev/toe-log/state"
 )
 
 func timer(ctx context.Context, timeLabel *gtk.Label) {
@@ -84,21 +86,32 @@ func commitQSO(builder *gtk.Builder) {
 	}
 
 	QSO := logdb.QSO{
-		DXCallsign: callsign, //      string    `json:"dx_callsign"`
-		FreqHz:     14014000, //     uint64    `json:"freq_hz"`
-		Mode:       "CW",     //            string    `json:"mode"`
-		RSTSent:    rstSent,  //         string    `json:"rst_sent"`
-		RSTRcvd:    rstRcvd,  //         string    `json:"rst_rcvd"`
-		ExchSent:   exchSent, //        string    `json:"exch_sent"`
-		ExchRcvd:   exchRcvd, //        string    `json:"exch_rcvd"`
+		DXCallsign: callsign,                  //      string    `json:"dx_callsign"`
+		FreqHz:     state.GetState().Rig.VFO,  //     uint64    `json:"freq_hz"`
+		Mode:       state.GetState().Rig.Mode, //            string    `json:"mode"`
+		RSTSent:    rstSent,                   //         string    `json:"rst_sent"`
+		RSTRcvd:    rstRcvd,                   //         string    `json:"rst_rcvd"`
+		ExchSent:   exchSent,                  //        string    `json:"exch_sent"`
+		ExchRcvd:   exchRcvd,                  //        string    `json:"exch_rcvd"`
 	}
 
-	err := logdb.NewQSO(logdb.GetDefaultContext(), &QSO)
+	err := logdb.NewQSO(state.GetState().Contest, &QSO)
 	if err != nil {
 		emitInfomation(builder, fmt.Sprintf("Failed to add QSO: %v", err), resources.InfoClassError)
 		return
 	}
-	emitInfomation(builder, fmt.Sprintf("Success added QSO with %s", callsign), resources.InfoClassNotice)
+	emitInfomation(builder, fmt.Sprintf("Added QSO with %s", callsign), resources.InfoClassNotice)
+}
+
+func updateUIFromState() {
+	states := state.GetState()
+	vfo := states.Rig.VFO
+	contest := states.Contest.Name
+	mode := states.Rig.Mode
+	glib.IdleAdd(func() {
+		window := mustGetObj(states.Gui, "main_window").(*gtk.Window)
+		window.SetTitle(fmt.Sprintf("%s: %s %d.%03d kHz", contest, mode, vfo/1000, vfo%1000))
+	})
 }
 
 func setupInputEvents(builder *gtk.Builder) {
@@ -192,6 +205,19 @@ func setupInputEvents(builder *gtk.Builder) {
 	})
 
 	inputCallsign.Connect("activate", func(entry *gtk.Entry) {
+		currentText := entry.GetChars(0, -1)
+		freq := float64(0)
+		match, _ := regexp.MatchString(`^\d+(.(\d+)?)?$`, currentText)
+		if match {
+			fmt.Sscanf(currentText, "%f", &freq)
+			if freq < 100 || freq >= 440*1000 {
+				emitInfomation(builder, fmt.Sprintf("Frequency out of range: %f", freq), resources.InfoClassError)
+				return
+			}
+			SetRigActiveFreq(freq * 1000)
+			inputCallsign.SetText("")
+			return
+		}
 		setDefaultRST()
 		inputExchRcvd.ToWidget().GrabFocus()
 		textLen := int(inputExchRcvd.GetTextLength())
@@ -235,6 +261,10 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Unable to init builder: %v", err)
 	}
+	state.GetState().Gui = builder
+
+	InitConfigDialog(builder)
+	InitRigctrl()
 
 	obj, err := builder.GetObject("main_window")
 	if err != nil {
@@ -264,10 +294,18 @@ func main() {
 		gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_USER)
 	}
 
-	win.SetTitle("TOE Contest Log")
+	win.SetTitle("Matsuri Contest Log")
 	win.Connect("destroy", func() {
 		cancelFunc()
 		gtk.MainQuit()
+	})
+
+	win.Connect("key_press_event", func(win *gtk.Window, event *gdk.Event) {
+		key := gdk.EventKeyNewFromEvent(event)
+		if key.KeyVal() == gdk.KEY_F1 && ((key.State() & gdk.CONTROL_MASK) != 0) {
+			ShowConfigDialog()
+			return
+		}
 	})
 
 	win.ShowAll()
@@ -277,6 +315,8 @@ func main() {
 	current := time.Now().UTC()
 	utcClockLabel.SetLabel(fmt.Sprintf("%02d:%02d:%02dZ", current.Hour(), current.Minute(), current.Second()))
 
+	state.RegisterStateChangeCallback(updateUIFromState)
+	state.SetupStateTick()
 	go timer(appContextWithCancel, utcClockLabel)
 
 	setupInputEvents(builder)
