@@ -11,8 +11,8 @@ type Contest struct {
 	StationCallsign string    `json:"station_callsign"`
 }
 
-func GetDefaultContext() *Contest {
-	return &Contest{
+func GetDefaultContext() Contest {
+	return Contest{
 		UID:             "00000000",
 		Name:            "DX",
 		StartTime:       time.Unix(0, 0),

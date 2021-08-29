@@ -1,11 +1,14 @@
 package state
 
 import (
+	"encoding/json"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/dh1tw/goHamlib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/sirupsen/logrus"
 	"matsu.dev/toe-log/logdb"
 )
 
@@ -14,26 +17,47 @@ type rig struct {
 	Mode string `json:"mode"`
 }
 
+type RigConfig struct {
+	Manufacturer string `json:"Manufacturer"`
+	Model        string `json:"model"`
+
+	RigPortType string `json:"porttype"`
+	Portname    string `json:"portname"`
+	Baudrate    int    `json:"baudrate"`
+	Databits    int    `json:"databits"`
+	Stopbits    int    `json:"stopbits"`
+	Parity      int    `json:"parity"`
+	Flowcontrol int    `json:"flowcontrol"`
+}
+
 type operator struct {
 	Callsign string `json:"callsign"`
 }
 
 type state struct {
-	Contest  *logdb.Contest `json:"contest"`
-	Operator *operator      `json:"operator"`
-	Rig      *rig           `json:"rig"`
+	Contest   logdb.Contest `json:"contest"`
+	Operator  operator      `json:"operator"`
+	Rig       rig           `json:"rig"`
+	RigConfig []RigConfig   `json:"rigConfig"`
+}
+
+type sessionState struct {
+	state
 
 	Gui       *gtk.Builder  `json:"-"`
 	HamlibRig *goHamlib.Rig `json:"-"`
 }
 
-var globalState *state
+var globalState *sessionState
 
 func init() {
-	globalState = &state{
-		Contest:  logdb.GetDefaultContext(),
-		Operator: &operator{Callsign: "AA1AAA"},
-		Rig:      &rig{VFO: 14000000, Mode: "USB"},
+	globalState = &sessionState{
+		state: state{
+			Contest:   logdb.GetDefaultContext(),
+			Operator:  operator{Callsign: "AA1AAA"},
+			Rig:       rig{VFO: 14000000, Mode: "USB"},
+			RigConfig: make([]RigConfig, 0),
+		},
 
 		HamlibRig: &goHamlib.Rig{},
 	}
@@ -45,8 +69,35 @@ var stateChangeCallbacks []stateChangeCallback
 var stateChangeCallbackLock sync.Mutex
 var notifyChan = make(chan interface{})
 
-func GetState() *state {
+func GetState() *sessionState {
 	return globalState
+}
+
+func SaveState(file string) {
+	fp, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		logrus.Errorf("Failed to open config file for writing: %v", err)
+		return
+	}
+	defer fp.Close()
+	encoder := json.NewEncoder(fp)
+	encoder.SetIndent("  ", "  ")
+	if err := encoder.Encode(globalState.state); err != nil {
+		logrus.Errorf("Failed to save config: %v", err)
+	}
+}
+
+func LoadState(file string) {
+	fp, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		logrus.Errorf("Failed to open config file for read: %v", err)
+		return
+	}
+	defer fp.Close()
+	if err := json.NewDecoder(fp).Decode(&globalState.state); err != nil {
+		logrus.Errorf("Failed to load config: %v", err)
+	}
+	logrus.Infof("loaded state: ", globalState.state)
 }
 
 func RegisterStateChangeCallback(cb stateChangeCallback) {

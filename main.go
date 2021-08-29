@@ -95,7 +95,7 @@ func commitQSO(builder *gtk.Builder) {
 		ExchRcvd:   exchRcvd,                  //        string    `json:"exch_rcvd"`
 	}
 
-	err := logdb.NewQSO(state.GetState().Contest, &QSO)
+	err := logdb.NewQSO(&state.GetState().Contest, &QSO)
 	if err != nil {
 		emitInfomation(builder, fmt.Sprintf("Failed to add QSO: %v", err), resources.InfoClassError)
 		return
@@ -239,9 +239,10 @@ func setupInputEvents(builder *gtk.Builder) {
 	})
 }
 
-func initDatabase() {
-	homdDir := glib.GetHomeDir()
-	databaseDir := path.Join(homdDir, ".config", "dev.matsu.contestlog")
+func matsuLogInit() {
+	// Init log db
+	homeDir := glib.GetHomeDir()
+	databaseDir := path.Join(homeDir, ".config", "dev.matsu.contestlog")
 	databaseName := path.Join(databaseDir, "log.sqlite3")
 	if err := os.MkdirAll(databaseDir, os.ModeDir); err != nil {
 		logrus.Fatalf("Failed to create directory: %v", err)
@@ -249,13 +250,16 @@ func initDatabase() {
 	if err := logdb.Init(databaseName); err != nil {
 		logrus.Fatalf("Failed to setup main database: %v", err)
 	}
+
+	// Init global config
+	state.LoadState(path.Join(databaseDir, "config.json"))
 }
 
 func main() {
 	// Initialize GTK without parsing any command line arguments.
 	gtk.Init(nil)
 
-	initDatabase()
+	matsuLogInit()
 
 	builder, err := gtk.BuilderNewFromString(resources.Glade)
 	if err != nil {
@@ -322,4 +326,6 @@ func main() {
 	setupInputEvents(builder)
 
 	gtk.Main()
+
+	state.SaveState(path.Join(glib.GetHomeDir(), ".config", "dev.matsu.contestlog", "config.json"))
 }

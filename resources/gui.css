@@ -5,3 +5,9 @@
 .infomation-error { color: #900; }
 .infomation-warning { color: #990; }
 .infomation-notice { color: #009; }
+
+.statuslight-disabled { color: #ccc; }
+.statuslight-idle { color: #00c; }
+.statuslight-busy { color: #0c0; }
+.statuslight-init { color: #cc0; }
+.statuslight-error { color: #fcc; }
