@@ -1,4 +1,4 @@
-module matsu.dev/toe-log
+module matsu.dev/matsuri-contest-log
 
 go 1.16
 

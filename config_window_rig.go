@@ -8,8 +8,8 @@ import (
 	"github.com/dh1tw/goHamlib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
-	"matsu.dev/toe-log/resources"
-	"matsu.dev/toe-log/state"
+	"matsu.dev/matsuri-contest-log/resources"
+	"matsu.dev/matsuri-contest-log/state"
 )
 
 func onRigModelChange(modelSelect *gtk.ComboBoxText) {

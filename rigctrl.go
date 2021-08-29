@@ -8,8 +8,8 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
-	resources "matsu.dev/toe-log/resources"
-	"matsu.dev/toe-log/state"
+	resources "matsu.dev/matsuri-contest-log/resources"
+	"matsu.dev/matsuri-contest-log/state"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	_ "github.com/mattn/go-sqlite3"
-	"matsu.dev/toe-log/resources"
+	"matsu.dev/matsuri-contest-log/resources"
 )
 
 var ()

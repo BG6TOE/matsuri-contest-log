@@ -14,9 +14,9 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
 
-	logdb "matsu.dev/toe-log/logdb"
-	resources "matsu.dev/toe-log/resources"
-	state "matsu.dev/toe-log/state"
+	logdb "matsu.dev/matsuri-contest-log/logdb"
+	resources "matsu.dev/matsuri-contest-log/resources"
+	state "matsu.dev/matsuri-contest-log/state"
 )
 
 func timer(ctx context.Context, timeLabel *gtk.Label) {
