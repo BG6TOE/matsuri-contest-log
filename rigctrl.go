@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dh1tw/goHamlib"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/sirupsen/logrus"
 	resources "matsu.dev/toe-log/resources"
 	"matsu.dev/toe-log/state"
 )
@@ -15,6 +17,20 @@ var (
 )
 
 func InitRigctrl() {
+	goHamlib.SetDebugCallback(func(lvl goHamlib.DebugLevel, text string) {
+		switch lvl {
+		case goHamlib.DebugNone:
+		case goHamlib.DebugBug:
+		case goHamlib.DebugErr:
+			logrus.Errorf("hamlib: %v", text)
+		case goHamlib.DebugWarn:
+			logrus.Warnf("hamlib: %v", text)
+		case goHamlib.DebugVerbose:
+			logrus.Infof("hamlib: %v", text)
+		case goHamlib.DebugTrace:
+			logrus.Debugf("hamlib: %v", text)
+		}
+	})
 	go ResetRig()
 	go RefreshFreq()
 }
@@ -108,9 +124,11 @@ func ResetRig() {
 
 	if err := rig.Open(); err != nil {
 		setRadioStatusLight(resources.StatusLightError)
+		emitInfomation(state.GetState().Gui, fmt.Sprintf("Failed to open rig: %v", err), resources.InfoClassError)
 		return
 	}
 
+	emitInfomation(state.GetState().Gui, "Connected to radio", resources.InfoClassNotice)
 	setRadioStatusLight(resources.StatusLightIdle)
 
 	isRigReady = true

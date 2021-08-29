@@ -7,15 +7,15 @@ echo "Current OS is $OS"
 build_Linux() {
     output="out/linux/$(uname -m)"
     mkdir -p "$output"
-    go build -o "$output"/TOELog
+    go build -o "$output"/MatsuriLog
 }
 
 build_Mingw() {
     output="out/windows/$(uname -m)"
     mkdir -p $output
-    go build  -ldflags -H=windowsgui -o "$output"/TOELog.exe
+    go build -o "$output"/MatsuriLog.exe -ldflags -H=windowsgui
     cd $output
-    ldd TOELog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
+    ldd MatsuriLog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
 }
 
 if uname | grep -q "Linux" -; then
