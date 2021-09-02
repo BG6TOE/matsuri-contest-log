@@ -1,0 +1,52 @@
+<html>
+
+<head></head>
+
+<body>
+    <div id="qso_list">
+
+    </div>
+    <script type="module">
+        const svcFetch = window.fetch.bind(window)
+        import {MCLService} from "./rpc.gen.js"
+        let svc = new MCLService('', svcFetch)
+        export default function refresh() {
+            svc.getQSOList().then((res) => {
+                console.log(res)
+                let table = ""
+                res.qsos.forEach(element => {
+                    table += `<tr>
+                        <td>${element.dx_callsign}</td>
+                        <td>${element.freq_hz}</td>
+                        <td>${element.mode}</td>
+                        <td>${new Date(element.time * 1000)}</td>
+                        <td>${element.exch_sent}</td>
+                        <td>${element.exch_rcvd}</td>
+                        <td>${element.rst_sent}</td>
+                        <td>${element.rst_rcvd}</td>
+                        </tr>`
+                });
+                table = `
+                <pre>
+                <table>
+                    <thead>
+                        <td>Callsign</td>
+                        <td>Freq</td>
+                        <td>Mode</td>
+                        <td>Time</td>
+                        <td>Exch Sent</td>
+                        <td>Exch Rcvd</td>
+                        <td>RST Sent</td>
+                        <td>RST_RCVD</td>
+                        </thead>
+                    <tbody>${table}</tbody>
+                </table></pre>`
+                document.getElementById("qso_list").innerHTML = table
+                setTimeout(refresh, 1000);
+            })
+        }
+        refresh();
+    </script>
+</body>
+
+</html>

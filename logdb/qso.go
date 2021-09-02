@@ -1,6 +1,7 @@
 package logdb
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 )
@@ -33,4 +34,22 @@ func NewQSO(c *Contest, q *QSO) error {
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, q.UID, q.ContestId, q.StationCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd, q.FreqHz)
 	return err
+}
+
+func GetQSOs(c *Contest) (qso []*QSO, err error) {
+	var rows *sql.Rows
+	rows, err = db.Query(`
+	SELECT uid, contest_id, sta_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz
+	FROM log WHERE contest_id = ?`, c.UID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var timeunix uint64
+		q := &QSO{}
+		rows.Scan(&q.UID, &q.ContestId, &q.StationCallsign, &q.DXCallsign, &timeunix, &q.Mode, &q.RSTSent, &q.RSTRcvd, &q.ExchSent, &q.ExchRcvd, &q.FreqHz)
+		q.Time = time.Unix(int64(timeunix), 0)
+		qso = append(qso, q)
+	}
+	return
 }

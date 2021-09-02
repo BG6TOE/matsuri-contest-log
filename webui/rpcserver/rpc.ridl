@@ -1,0 +1,20 @@
+webrpc = v1
+
+name = mcl-rpc
+version = v0.0.1
+
+message QSO
+  - uid: string
+  - contest_id: string
+  - station_callsign: string   
+  - dx_callsign: string   
+  - freq_hz: uint64   
+  - time: uint64
+  - mode: string   
+  - rst_sent: string   
+  - rst_rcvd: string   
+  - exch_sent: string   
+  - exch_rcvd: string   
+
+service MCLService
+  - GetQSOList() => (qsos: []QSO)
