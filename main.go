@@ -33,6 +33,10 @@ func matsuLogInit() {
 func main() {
 	// Initialize GTK without parsing any command line arguments.
 	gtk.Init(nil)
+	app, err := gtk.ApplicationNew("dev.matsu.contestlog", glib.APPLICATION_FLAGS_NONE)
+	if err != nil {
+		logrus.Fatal("Failed to init gtk application: ", err)
+	}
 
 	matsuLogInit()
 
@@ -43,7 +47,7 @@ func main() {
 	state.GetState().Gui = builder
 
 	InitConfigDialog(builder)
-	InitMainWindow(builder)
+	InitMainWindow(builder, app)
 	InitRigctrl()
 	go webui.SetupServer()
 

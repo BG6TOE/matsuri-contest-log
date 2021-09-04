@@ -232,40 +232,47 @@ func SetupMenuItems(builder *gtk.Builder, host gtk.IWindow) {
 	{
 		item := mustGetObj(builder, "menu-operation-export-adif").(*gtk.MenuItem)
 		item.Connect("activate", func() {
-			dialog, _ := gtk.FileChooserDialogNewWith1Button("Save File", host, gtk.FILE_CHOOSER_ACTION_SAVE, "Save", gtk.RESPONSE_ACCEPT)
-			defer dialog.Destroy()
-			dialog.SetDoOverwriteConfirmation(true)
-			gtkFileFilter, err := gtk.FileFilterNew()
-			if err != nil {
-				return
+			if userContinue, fileName := saveFileChooser(builder, host, "Export ADIF file to...", []string{"*.adif", "*.adi", "*.txt"}); userContinue {
+				go func(builder *gtk.Builder, exportFileName string) {
+					defaultContest := logdb.GetDefaultContext()
+					if err := logdb.ExportADIF(&defaultContest, exportFileName); err != nil {
+						emitInfomation(builder, fmt.Sprintf("Failed to export ADIF file: %v", err), resources.InfoClassError)
+						return
+					}
+					emitInfomation(builder, fmt.Sprintf("Exported ADIF file: %v", exportFileName), resources.InfoClassNotice)
+				}(builder, fileName)
 			}
-			gtkFileFilter.AddPattern("*.adif")
-			gtkFileFilter.AddPattern("*.adi")
-			gtkFileFilter.AddPattern("*.txt")
-			dialog.SetNoShowAll(false)
-			dialog.SetFilter(gtkFileFilter)
-			resp := dialog.Run()
-			if resp != gtk.RESPONSE_ACCEPT {
-				logrus.Info("User cancelled")
-				return
-			}
-			fileName := dialog.GetFilename()
-			logrus.Infof("User selected file: %v", fileName)
-
-			go func(builder *gtk.Builder, exportFileName string) {
-				defaultContest := logdb.GetDefaultContext()
-				if err := logdb.ExportADIF(&defaultContest, exportFileName); err != nil {
-					emitInfomation(builder, fmt.Sprintf("Failed to export ADIF file: %v", err), resources.InfoClassError)
-					return
-				}
-				emitInfomation(builder, fmt.Sprintf("Exported ADIF file: %v", exportFileName), resources.InfoClassNotice)
-			}(builder, fileName)
 		})
 	}
 }
 
-func InitMainWindow(builder *gtk.Builder) {
+func saveFileChooser(builder *gtk.Builder, parent gtk.IWindow, title string, fileFilter []string) (bool, string) {
+	dialog, _ := gtk.FileChooserDialogNewWith1Button(title, parent, gtk.FILE_CHOOSER_ACTION_SAVE, "Save", gtk.RESPONSE_ACCEPT)
+	defer dialog.Destroy()
+	dialog.SetDoOverwriteConfirmation(true)
+
+	if len(fileFilter) > 0 {
+		gtkFileFilter, err := gtk.FileFilterNew()
+		if gtkFileFilter != nil {
+			for _, item := range fileFilter {
+				gtkFileFilter.AddPattern(item)
+			}
+			dialog.SetFilter(gtkFileFilter)
+		} else {
+			logrus.Warnf("Failed to init file filter: %s", err)
+		}
+	}
+	resp := dialog.Run()
+	if resp != gtk.RESPONSE_ACCEPT {
+		logrus.Info("User cancelled")
+		return false, ""
+	}
+	return true, dialog.GetFilename()
+}
+
+func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 	win := mustGetObj(builder, "main_window").(*gtk.ApplicationWindow)
+	win.SetTitlebar(mustGetObj(builder, "application-header-bar").(*gtk.HeaderBar))
 
 	{
 		css, err := gtk.CssProviderNew()
