@@ -198,8 +198,8 @@ func (rig *Rig) SetPort(p Port) error {
 
 // Open Radio / Port
 func (rig *Rig) Open() error {
-	res, err := C.open_rig(rig.handle)
-	return checkError(res, err, "open_rig")
+	res, _ := C.open_rig(rig.handle)
+	return checkError(res, nil, "open_rig")
 }
 
 // SetVfo sets the default VFO

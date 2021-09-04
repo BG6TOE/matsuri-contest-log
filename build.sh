@@ -2,18 +2,23 @@
 
 OS="$(uname)"
 
+VERSION=$(git rev-parse --short HEAD)
+BUILDTIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+GOLDFLAGS="-X main.GitCommit=$VERSION -X main.BuildTime=$BUILDTIME"
+
 echo "Current OS is $OS"
 
 build_Linux() {
     output="out/linux/$(uname -m)"
     mkdir -p "$output"
-    go build -o "$output"/MatsuriLog
+    go build -o "$output"/MatsuriLog -ldflags "$GOLDFLAGS"
 }
 
 build_Mingw() {
     output="out/windows/$(uname -m)"
     mkdir -p $output
-    go build -o "$output"/MatsuriLog.exe -ldflags -H=windowsgui
+    go build -o "$output"/MatsuriLog.exe -ldflags "$GOLDFLAGS" -ldflags -H=windowsgui
     cd $output
     ldd MatsuriLog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
 }

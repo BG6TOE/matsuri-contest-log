@@ -51,7 +51,7 @@ func GetQSOs(c *Contest) (qso []*QSO, err error) {
 	for rows.Next() {
 		var timeunix uint64
 		q := &QSO{}
-		rows.Scan(&q.UID, &q.ContestId, &q.StationCallsign, q.OpCallsign, &q.DXCallsign, &timeunix, &q.Mode, &q.RSTSent, &q.RSTRcvd, &q.ExchSent, &q.ExchRcvd, &q.FreqHz)
+		err = rows.Scan(&q.UID, &q.ContestId, &q.StationCallsign, &q.OpCallsign, &q.DXCallsign, &timeunix, &q.Mode, &q.RSTSent, &q.RSTRcvd, &q.ExchSent, &q.ExchRcvd, &q.FreqHz)
 		q.Time = time.Unix(int64(timeunix), 0)
 		qso = append(qso, q)
 	}

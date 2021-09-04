@@ -30,6 +30,7 @@ func (c *ConfigWindow) Init(builder *gtk.Builder) {
 	})
 	c.initRigConfig(builder)
 	c.initContestConfig(builder)
+	c.initSystemConfig(builder)
 	mustGetObj(builder, "config-save").(*gtk.Button).Connect("clicked", onSaveClicked)
 }
 

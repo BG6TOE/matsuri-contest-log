@@ -92,6 +92,7 @@ func SaveState() {
 }
 
 func LoadState(file string) {
+	globalState.Path = file
 	fp, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		logrus.Errorf("Failed to open config file for read: %v", err)
@@ -102,7 +103,6 @@ func LoadState(file string) {
 		logrus.Errorf("Failed to load config: %v", err)
 	}
 	logrus.Infof("loaded state: ", globalState.state)
-	globalState.Path = file
 
 	Kick()
 }
