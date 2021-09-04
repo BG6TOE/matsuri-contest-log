@@ -3,7 +3,6 @@ module matsu.dev/matsuri-contest-log
 go 1.16
 
 require (
-	github.com/dh1tw/goHamlib v0.0.0-20210309231416-3752aec70bb9
 	github.com/gorilla/mux v1.8.0
 	github.com/gotk3/gotk3 v0.6.1
 	github.com/mattn/go-sqlite3 v1.14.8

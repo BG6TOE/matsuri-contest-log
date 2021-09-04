@@ -3,7 +3,10 @@ package logdb
 import (
 	"database/sql"
 	"errors"
+	"os"
 	"time"
+
+	"matsu.dev/matsuri-contest-log/adif"
 )
 
 type QSO struct {
@@ -52,4 +55,43 @@ func GetQSOs(c *Contest) (qso []*QSO, err error) {
 		qso = append(qso, q)
 	}
 	return
+}
+
+func ExportADIF(c *Contest, file string) error {
+	qsos, err := GetQSOs(c)
+	if err != nil {
+		return err
+	}
+	fp, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer fp.Close()
+
+	adifFile := adif.ADIFFile{
+		Header: adif.ADIFItem{
+			"x-program": "MatsuriContestLog",
+		},
+		Record: make([]adif.ADIFItem, 0),
+	}
+	for _, q := range qsos {
+		adifQso := adif.CookedQSOItem{
+			BaseQSOItem: adif.BaseQSOItem{
+				DXCall: q.DXCallsign,
+				Mode:   q.Mode,
+			},
+			QSOTimestamp: q.Time,
+			FreqHz:       q.FreqHz,
+			RSTSent:      q.RSTSent,
+			RSTRcvd:      q.RSTRcvd,
+			ExtraFields: map[string]string{
+				"x-mcl-recordid":  q.UID,
+				"x-mcl-exch-sent": q.ExchSent,
+				"x-mcl-exch-rcvd": q.ExchRcvd,
+			},
+		}
+		adifFile.Record = append(adifFile.Record, adifQso.ToADIF())
+	}
+	adifFile.Write(fp)
+	return nil
 }

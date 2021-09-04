@@ -32,22 +32,6 @@ func timer(ctx context.Context, timeLabel *gtk.Label) {
 	logrus.Infof("App exit, stop timer goroutine")
 }
 
-func mustGetObj(builder *gtk.Builder, id string) glib.IObject {
-	obj, err := builder.GetObject(id)
-	if err != nil {
-		logrus.Panicf("cannot get %s: %v", id, err)
-	}
-	return obj
-}
-
-func mustGetEntryBuf(entry *gtk.Entry) *gtk.EntryBuffer {
-	buf, err := entry.GetBuffer()
-	if err != nil {
-		logrus.Panicf("cannot get buffer for entry!")
-	}
-	return buf
-}
-
 func emitInfomation(builder *gtk.Builder, info, infoClass string) {
 	glib.IdleAdd(func() {
 		infoLabel := mustGetObj(builder, "infomation").(*gtk.Label)
@@ -83,13 +67,13 @@ func commitQSO(builder *gtk.Builder) {
 	}
 
 	QSO := logdb.QSO{
-		DXCallsign: callsign,                  //      string    `json:"dx_callsign"`
-		FreqHz:     state.GetState().Rig.VFO,  //     uint64    `json:"freq_hz"`
-		Mode:       state.GetState().Rig.Mode, //            string    `json:"mode"`
-		RSTSent:    rstSent,                   //         string    `json:"rst_sent"`
-		RSTRcvd:    rstRcvd,                   //         string    `json:"rst_rcvd"`
-		ExchSent:   exchSent,                  //        string    `json:"exch_sent"`
-		ExchRcvd:   exchRcvd,                  //        string    `json:"exch_rcvd"`
+		DXCallsign: callsign,
+		FreqHz:     state.GetState().Rig.VFO,
+		Mode:       state.GetState().Rig.Mode,
+		RSTSent:    rstSent,
+		RSTRcvd:    rstRcvd,
+		ExchSent:   exchSent,
+		ExchRcvd:   exchRcvd,
 	}
 
 	err := logdb.NewQSO(&state.GetState().Contest, &QSO)
@@ -97,6 +81,8 @@ func commitQSO(builder *gtk.Builder) {
 		emitInfomation(builder, fmt.Sprintf("Failed to add QSO: %v", err), resources.InfoClassError)
 		return
 	}
+	callsignEntry.SetText("")
+	inputExchRcvdEntry.SetText("")
 	emitInfomation(builder, fmt.Sprintf("Added QSO with %s", callsign), resources.InfoClassNotice)
 }
 
@@ -106,7 +92,7 @@ func updateUIFromState() {
 	contest := states.Contest.Name
 	mode := states.Rig.Mode
 	glib.IdleAdd(func() {
-		window := mustGetObj(states.Gui, "main_window").(*gtk.Window)
+		window := mustGetObj(states.Gui, "main_window").(*gtk.ApplicationWindow)
 		window.SetTitle(fmt.Sprintf("%s: %s %d.%03d kHz", contest, mode, vfo/1000, vfo%1000))
 	})
 }
@@ -236,17 +222,50 @@ func setupInputEvents(builder *gtk.Builder) {
 	})
 }
 
+func SetupMenuItems(builder *gtk.Builder, host gtk.IWindow) {
+	{
+		item := mustGetObj(builder, "menu-operation-config").(*gtk.MenuItem)
+		item.Connect("activate", func() {
+			ShowConfigDialog()
+		})
+	}
+	{
+		item := mustGetObj(builder, "menu-operation-export-adif").(*gtk.MenuItem)
+		item.Connect("activate", func() {
+			dialog, _ := gtk.FileChooserDialogNewWith1Button("Save File", host, gtk.FILE_CHOOSER_ACTION_SAVE, "Save", gtk.RESPONSE_ACCEPT)
+			defer dialog.Destroy()
+			dialog.SetDoOverwriteConfirmation(true)
+			gtkFileFilter, err := gtk.FileFilterNew()
+			if err != nil {
+				return
+			}
+			gtkFileFilter.AddPattern("*.adif")
+			gtkFileFilter.AddPattern("*.adi")
+			gtkFileFilter.AddPattern("*.txt")
+			dialog.SetNoShowAll(false)
+			dialog.SetFilter(gtkFileFilter)
+			resp := dialog.Run()
+			if resp != gtk.RESPONSE_ACCEPT {
+				logrus.Info("User cancelled")
+				return
+			}
+			fileName := dialog.GetFilename()
+			logrus.Infof("User selected file: %v", fileName)
+
+			go func(builder *gtk.Builder, exportFileName string) {
+				defaultContest := logdb.GetDefaultContext()
+				if err := logdb.ExportADIF(&defaultContest, exportFileName); err != nil {
+					emitInfomation(builder, fmt.Sprintf("Failed to export ADIF file: %v", err), resources.InfoClassError)
+					return
+				}
+				emitInfomation(builder, fmt.Sprintf("Exported ADIF file: %v", exportFileName), resources.InfoClassNotice)
+			}(builder, fileName)
+		})
+	}
+}
+
 func InitMainWindow(builder *gtk.Builder) {
-
-	obj, err := builder.GetObject("main_window")
-	if err != nil {
-		logrus.Fatalf("Failed to get main_window")
-	}
-	win := obj.(*gtk.Window)
-
-	if err != nil {
-		logrus.Fatal("Unable to create window:", err)
-	}
+	win := mustGetObj(builder, "main_window").(*gtk.ApplicationWindow)
 
 	{
 		css, err := gtk.CssProviderNew()
@@ -271,7 +290,7 @@ func InitMainWindow(builder *gtk.Builder) {
 		gtk.MainQuit()
 	})
 
-	win.Connect("key_press_event", func(win *gtk.Window, event *gdk.Event) {
+	win.Connect("key_press_event", func(win *gtk.ApplicationWindow, event *gdk.Event) {
 		key := gdk.EventKeyNewFromEvent(event)
 		if key.KeyVal() == gdk.KEY_F1 && ((key.State() & gdk.CONTROL_MASK) != 0) {
 			ShowConfigDialog()
@@ -291,4 +310,5 @@ func InitMainWindow(builder *gtk.Builder) {
 	go timer(appContext, utcClockLabel)
 
 	setupInputEvents(builder)
+	SetupMenuItems(builder, win)
 }

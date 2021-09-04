@@ -2,21 +2,24 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
-	"github.com/dh1tw/goHamlib"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
+	goHamlib "matsu.dev/matsuri-contest-log/hamlib"
 	resources "matsu.dev/matsuri-contest-log/resources"
 	"matsu.dev/matsuri-contest-log/state"
 )
 
 var (
 	isRigReady = false
+	rigMutex   = sync.Mutex{}
 )
 
-func InitRigctrl() {
+func init() {
+	goHamlib.SetDebugLevel(goHamlib.DebugWarn)
 	goHamlib.SetDebugCallback(func(lvl goHamlib.DebugLevel, text string) {
 		switch lvl {
 		case goHamlib.DebugNone:
@@ -31,6 +34,9 @@ func InitRigctrl() {
 			logrus.Debugf("hamlib: %v", text)
 		}
 	})
+}
+
+func InitRigctrl() {
 	go ResetRig()
 	go RefreshFreq()
 }
@@ -39,19 +45,24 @@ func RefreshFreq() {
 	rig := state.GetState().HamlibRig
 	for {
 		if isRigReady {
-			freq, _ := rig.GetFreq(goHamlib.VFOCurrent)
-			newVFO := uint64(freq)
-			if newVFO != state.GetState().Rig.VFO {
-				state.GetState().Rig.VFO = uint64(freq)
-				state.Kick()
-			}
+			func() {
+				rigMutex.Lock()
+				defer rigMutex.Unlock()
 
-			ptt, _ := rig.GetPtt(goHamlib.VFOCurrent)
-			if ptt != goHamlib.RIG_PTT_OFF {
-				setRadioStatusLight(resources.StatusLightBusy)
-			} else {
-				setRadioStatusLight(resources.StatusLightIdle)
-			}
+				freq, _ := rig.GetFreq(goHamlib.VFOCurrent)
+				newVFO := uint64(freq)
+				if newVFO != state.GetState().Rig.VFO {
+					state.GetState().Rig.VFO = uint64(freq)
+					state.Kick()
+				}
+
+				ptt, _ := rig.GetPtt(goHamlib.VFOCurrent)
+				if ptt != goHamlib.RIG_PTT_OFF {
+					setRadioStatusLight(resources.StatusLightBusy)
+				} else {
+					setRadioStatusLight(resources.StatusLightIdle)
+				}
+			}()
 		} else {
 			state.GetState().Rig.VFO = 0
 		}
@@ -80,6 +91,10 @@ func setRadioStatusLight(signal string) {
 
 func ResetRig() {
 	rig := state.GetState().HamlibRig
+
+	rigMutex.Lock()
+	defer rigMutex.Unlock()
+
 	if isRigReady {
 		rig.Close()
 		rig.Cleanup()

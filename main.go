@@ -19,11 +19,11 @@ func matsuLogInit() {
 	homeDir := glib.GetHomeDir()
 	databaseDir := path.Join(homeDir, ".config", "dev.matsu.contestlog")
 	databaseName := path.Join(databaseDir, "log.sqlite3")
-	if err := os.MkdirAll(databaseDir, os.ModeDir); err != nil {
+	if err := os.MkdirAll(databaseDir, os.ModePerm); err != nil {
 		logrus.Fatalf("Failed to create directory: %v", err)
 	}
 	if err := logdb.Init(databaseName); err != nil {
-		logrus.Fatalf("Failed to setup main database: %v", err)
+		logrus.Fatalf("Failed to setup main database (%s): %v", databaseName, err)
 	}
 
 	// Init global config

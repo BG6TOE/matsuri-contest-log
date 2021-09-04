@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/dh1tw/goHamlib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
+	goHamlib "matsu.dev/matsuri-contest-log/hamlib"
 	"matsu.dev/matsuri-contest-log/resources"
 	"matsu.dev/matsuri-contest-log/state"
 )
