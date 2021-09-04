@@ -24,7 +24,12 @@ int set_port(RIG *myrig,int rig_port_type, char* portname, int baudrate, int dat
 	myrig->state.rigport.parm.serial.stop_bits = stopbits;
 	myrig->state.rigport.parm.serial.parity = parity;
 	myrig->state.rigport.parm.serial.handshake = handshake;
-	strncpy(myrig->state.rigport.pathname, portname, FILPATHLEN - 1);
+
+#ifndef HAMLIB_FILPATHLEN
+#define HAMLIB_FILPATHLEN FILPATHLEN
+#endif
+
+	strncpy(myrig->state.rigport.pathname, portname, HAMLIB_FILPATHLEN - 1);
 	// printf("path: %s\n", portname);
 	// printf("path: %s\n", myrig->state.rigport.pathname);
 	return 0;
@@ -885,8 +890,11 @@ int get_supported_modes(RIG *myrig, int *modes)
 
 int get_filter_count(RIG *myrig, int *filter_count)
 {
+#ifndef HAMLIB_FLTLSTSIZ
+#define HAMLIB_FLTLSTSIZ FLTLSTSIZ
+#endif
 	int i;
-	for (i=0; i<FLTLSTSIZ && !RIG_IS_FLT_END(myrig->caps->filters[i]); i++)
+	for (i=0; i<HAMLIB_FLTLSTSIZ && !RIG_IS_FLT_END(myrig->caps->filters[i]); i++)
 	{
 		*filter_count += 1;
 	}
