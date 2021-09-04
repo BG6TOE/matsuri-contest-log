@@ -42,6 +42,7 @@
                     <tbody>${table}</tbody>
                 </table></pre>`
                 document.getElementById("qso_list").innerHTML = table
+            }).finally(()=> {
                 setTimeout(refresh, 1000);
             })
         }
