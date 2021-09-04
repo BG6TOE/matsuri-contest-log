@@ -44,8 +44,11 @@ type state struct {
 type sessionState struct {
 	state
 
-	Gui       *gtk.Builder  `json:"-"`
-	HamlibRig *goHamlib.Rig `json:"-"`
+	Gui           *gtk.Builder  `json:"-"`
+	HamlibRig     *goHamlib.Rig `json:"-"`
+	HamlibRigMode goHamlib.Mode `json:"-"`
+
+	Path string
 }
 
 var globalState *sessionState
@@ -59,7 +62,8 @@ func init() {
 			RigConfig: make([]RigConfig, 0),
 		},
 
-		HamlibRig: &goHamlib.Rig{},
+		HamlibRig:     &goHamlib.Rig{},
+		HamlibRigMode: goHamlib.ModeNONE,
 	}
 }
 
@@ -73,8 +77,8 @@ func GetState() *sessionState {
 	return globalState
 }
 
-func SaveState(file string) {
-	fp, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+func SaveState() {
+	fp, err := os.OpenFile(globalState.Path, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		logrus.Errorf("Failed to open config file for writing: %v", err)
 		return
@@ -98,6 +102,9 @@ func LoadState(file string) {
 		logrus.Errorf("Failed to load config: %v", err)
 	}
 	logrus.Infof("loaded state: ", globalState.state)
+	globalState.Path = file
+
+	Kick()
 }
 
 func RegisterStateChangeCallback(cb stateChangeCallback) {
@@ -115,7 +122,11 @@ func tick() {
 }
 
 func Kick() {
-	notifyChan <- ' '
+	select {
+	case notifyChan <- struct{}{}:
+	default:
+		// Never block
+	}
 }
 
 func SetupStateTick() {

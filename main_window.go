@@ -68,6 +68,7 @@ func commitQSO(builder *gtk.Builder) {
 
 	QSO := logdb.QSO{
 		DXCallsign: callsign,
+		OpCallsign: state.GetState().Operator.Callsign,
 		FreqHz:     state.GetState().Rig.VFO,
 		Mode:       state.GetState().Rig.Mode,
 		RSTSent:    rstSent,
@@ -94,6 +95,9 @@ func updateUIFromState() {
 	glib.IdleAdd(func() {
 		window := mustGetObj(states.Gui, "main_window").(*gtk.ApplicationWindow)
 		window.SetTitle(fmt.Sprintf("%s: %s %d.%03d kHz", contest, mode, vfo/1000, vfo%1000))
+
+		mustGetObj(states.Gui, "station-callsign").(*gtk.Label).SetText("Call: " + state.GetState().Contest.StationCallsign)
+		mustGetObj(states.Gui, "operator-callsign").(*gtk.Label).SetText("Op: " + state.GetState().Operator.Callsign)
 	})
 }
 
@@ -226,7 +230,7 @@ func SetupMenuItems(builder *gtk.Builder, host gtk.IWindow) {
 	{
 		item := mustGetObj(builder, "menu-operation-config").(*gtk.MenuItem)
 		item.Connect("activate", func() {
-			ShowConfigDialog()
+			configWindow.Show()
 		})
 	}
 	{
@@ -300,7 +304,7 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 	win.Connect("key_press_event", func(win *gtk.ApplicationWindow, event *gdk.Event) {
 		key := gdk.EventKeyNewFromEvent(event)
 		if key.KeyVal() == gdk.KEY_F1 && ((key.State() & gdk.CONTROL_MASK) != 0) {
-			ShowConfigDialog()
+			configWindow.Show()
 			return
 		}
 	})
@@ -311,6 +315,8 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 
 	current := time.Now().UTC()
 	utcClockLabel.SetLabel(fmt.Sprintf("%02d:%02d:%02dZ", current.Hour(), current.Minute(), current.Second()))
+	mustGetObj(builder, "station-callsign").(*gtk.Label).SetText("Call: " + state.GetState().Contest.StationCallsign)
+	mustGetObj(builder, "operator-callsign").(*gtk.Label).SetText("Op: " + state.GetState().Operator.Callsign)
 
 	state.RegisterStateChangeCallback(updateUIFromState)
 	state.SetupStateTick()

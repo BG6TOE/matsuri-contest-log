@@ -13,6 +13,7 @@ type QSO struct {
 	UID             string    `json:"uid"`
 	ContestId       string    `json:"contest_id"`
 	StationCallsign string    `json:"station_callsign"`
+	OpCallsign      string    `json:"op_callsign"`
 	DXCallsign      string    `json:"dx_callsign"`
 	FreqHz          uint64    `json:"freq_hz"`
 	Time            time.Time `json:"time"`
@@ -33,16 +34,16 @@ func NewQSO(c *Contest, q *QSO) error {
 	q.ContestId = c.UID
 	_, err := db.Exec(`
 	INSERT INTO log
-	(uid, contest_id, sta_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, q.UID, q.ContestId, q.StationCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd, q.FreqHz)
+	(uid, contest_id, sta_callsign, op_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, q.UID, q.ContestId, q.StationCallsign, q.OpCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd, q.FreqHz)
 	return err
 }
 
 func GetQSOs(c *Contest) (qso []*QSO, err error) {
 	var rows *sql.Rows
 	rows, err = db.Query(`
-	SELECT uid, contest_id, sta_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz
+	SELECT uid, contest_id, sta_callsign, op_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz
 	FROM log WHERE contest_id = ?`, c.UID)
 	if err != nil {
 		return
@@ -50,7 +51,7 @@ func GetQSOs(c *Contest) (qso []*QSO, err error) {
 	for rows.Next() {
 		var timeunix uint64
 		q := &QSO{}
-		rows.Scan(&q.UID, &q.ContestId, &q.StationCallsign, &q.DXCallsign, &timeunix, &q.Mode, &q.RSTSent, &q.RSTRcvd, &q.ExchSent, &q.ExchRcvd, &q.FreqHz)
+		rows.Scan(&q.UID, &q.ContestId, &q.StationCallsign, q.OpCallsign, &q.DXCallsign, &timeunix, &q.Mode, &q.RSTSent, &q.RSTRcvd, &q.ExchSent, &q.ExchRcvd, &q.FreqHz)
 		q.Time = time.Unix(int64(timeunix), 0)
 		qso = append(qso, q)
 	}
@@ -85,9 +86,11 @@ func ExportADIF(c *Contest, file string) error {
 			RSTSent:      q.RSTSent,
 			RSTRcvd:      q.RSTRcvd,
 			ExtraFields: map[string]string{
-				"x-mcl-recordid":  q.UID,
-				"x-mcl-exch-sent": q.ExchSent,
-				"x-mcl-exch-rcvd": q.ExchRcvd,
+				"x-mcl-recordid":   q.UID,
+				"x-mcl-exch-sent":  q.ExchSent,
+				"x-mcl-exch-rcvd":  q.ExchRcvd,
+				"operator":         q.OpCallsign,
+				"station_callsign": q.StationCallsign,
 			},
 		}
 		adifFile.Record = append(adifFile.Record, adifQso.ToADIF())

@@ -49,10 +49,26 @@ func RefreshFreq() {
 				rigMutex.Lock()
 				defer rigMutex.Unlock()
 
+				needKick := false
+
 				freq, _ := rig.GetFreq(goHamlib.VFOCurrent)
 				newVFO := uint64(freq)
+				mode, _, _ := rig.GetMode(goHamlib.VFOCurrent)
+
+				if mode != goHamlib.ModeNONE {
+					if state.GetState().HamlibRigMode != mode {
+						state.GetState().Rig.Mode = goHamlib.ModeName[mode]
+						state.GetState().HamlibRigMode = mode
+						needKick = true
+					}
+				}
+
 				if newVFO != state.GetState().Rig.VFO {
 					state.GetState().Rig.VFO = uint64(freq)
+					needKick = true
+				}
+
+				if needKick {
 					state.Kick()
 				}
 

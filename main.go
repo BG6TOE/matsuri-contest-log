@@ -46,12 +46,12 @@ func main() {
 	}
 	state.GetState().Gui = builder
 
-	InitConfigDialog(builder)
+	configWindow.Init(builder)
 	InitMainWindow(builder, app)
 	InitRigctrl()
 	go webui.SetupServer()
 
 	gtk.Main()
 
-	state.SaveState(path.Join(glib.GetHomeDir(), ".config", "dev.matsu.contestlog", "config.json"))
+	state.SaveState()
 }

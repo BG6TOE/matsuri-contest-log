@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "log" (
 	"uid"	TEXT NOT NULL UNIQUE,
 	"contest_id"	TEXT NOT NULL,
 	"sta_callsign"	TEXT NOT NULL,
+	"op_callsign"   TEXT NOT NULL,
 	"dx_callsign"	TEXT NOT NULL,
 	"time"	INTEGER NOT NULL,
 	"mode"	TEXT NOT NULL,

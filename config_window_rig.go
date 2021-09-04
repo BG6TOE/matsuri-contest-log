@@ -39,7 +39,7 @@ func onRigModelChange(modelSelect *gtk.ComboBoxText) {
 	*/
 }
 
-func onSaveClicked(btn *gtk.Button) {
+func (c *ConfigWindow) onSaveClickedRig(btn *gtk.Button) {
 	currentRigConfig := state.RigConfig{}
 	builder := state.GetState().Gui
 
@@ -104,16 +104,15 @@ func onSaveClicked(btn *gtk.Button) {
 	state.GetState().RigConfig = []state.RigConfig{currentRigConfig}
 
 	go ResetRig()
-	HideConfigDialog()
+	c.Hide()
 }
 
-func InitConfigDialogRigConfig(builder *gtk.Builder) {
+func (c *ConfigWindow) initRigConfig(builder *gtk.Builder) {
 	activeRigConfigList := state.GetState().RigConfig
 	activeRigConfig := (*state.RigConfig)(nil)
 	if len(activeRigConfigList) > 0 {
 		activeRigConfig = &activeRigConfigList[0]
 	}
-	mustGetObj(builder, "config-save").(*gtk.Button).Connect("clicked", onSaveClicked)
 	rigModelSelect := mustGetObj(builder, "config-rig-type").(*gtk.ComboBoxText)
 	rigModelSelect.Connect("changed", onRigModelChange)
 	{
