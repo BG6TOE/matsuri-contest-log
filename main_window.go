@@ -318,6 +318,22 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 	mustGetObj(builder, "station-callsign").(*gtk.Label).SetText("Call: " + state.GetState().Contest.StationCallsign)
 	mustGetObj(builder, "operator-callsign").(*gtk.Label).SetText("Op: " + state.GetState().Operator.Callsign)
 
+	mustGetObj(state.GetState().Gui, "statuslight-radio").(*gtk.Button).Connect("clicked", func(btn *gtk.Button) {
+		go func() {
+			glib.IdleAdd(
+				func() {
+					btn.SetSensitive(false)
+				})
+			ShutdownRig()
+			time.Sleep(1 * time.Second)
+			ResetRig()
+			glib.IdleAdd(
+				func() {
+					btn.SetSensitive(true)
+				})
+		}()
+	})
+
 	state.RegisterStateChangeCallback(updateUIFromState)
 	state.SetupStateTick()
 	go timer(appContext, utcClockLabel)

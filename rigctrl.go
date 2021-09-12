@@ -18,6 +18,10 @@ var (
 	rigMutex   = sync.Mutex{}
 )
 
+const (
+	maxErrorsBeforeShuttingDownRig = 8
+)
+
 func init() {
 	goHamlib.SetDebugLevel(goHamlib.DebugWarn)
 	goHamlib.SetDebugCallback(func(lvl goHamlib.DebugLevel, text string) {
@@ -42,6 +46,7 @@ func InitRigctrl() {
 }
 
 func RefreshFreq() {
+	totalError := 0
 	rig := state.GetState().HamlibRig
 	for {
 		if isRigReady {
@@ -51,9 +56,19 @@ func RefreshFreq() {
 
 				needKick := false
 
-				freq, _ := rig.GetFreq(goHamlib.VFOCurrent)
+				freq, err := rig.GetFreq(goHamlib.VFOCurrent)
+				if err != nil {
+					totalError++
+				} else {
+					totalError = 0
+				}
 				newVFO := uint64(freq)
-				mode, _, _ := rig.GetMode(goHamlib.VFOCurrent)
+				mode, _, err := rig.GetMode(goHamlib.VFOCurrent)
+				if err != nil {
+					totalError++
+				} else {
+					totalError = 0
+				}
 
 				if mode != goHamlib.ModeNONE {
 					if state.GetState().HamlibRigMode != mode {
@@ -78,6 +93,10 @@ func RefreshFreq() {
 				} else {
 					setRadioStatusLight(resources.StatusLightIdle)
 				}
+
+				if totalError > maxErrorsBeforeShuttingDownRig {
+					go ResetRig()
+				}
 			}()
 		} else {
 			state.GetState().Rig.VFO = 0
@@ -93,7 +112,7 @@ func SetRigActiveFreq(freq float64) {
 
 func setRadioStatusLight(signal string) {
 	glib.IdleAdd(func() {
-		label := mustGetObj(state.GetState().Gui, "statuslight-radio").(*gtk.Label)
+		label := mustGetObj(state.GetState().Gui, "statuslight-radio").(*gtk.Button)
 		styleCtx, err := label.GetStyleContext()
 		if err != nil {
 			return
@@ -103,6 +122,21 @@ func setRadioStatusLight(signal string) {
 		}
 		styleCtx.AddClass(signal)
 	})
+}
+
+func ShutdownRig() {
+	rig := state.GetState().HamlibRig
+
+	rigMutex.Lock()
+	defer rigMutex.Unlock()
+
+	if isRigReady {
+		rig.Close()
+		rig.Cleanup()
+	}
+
+	setRadioStatusLight(resources.StatusLightDisabled)
+	isRigReady = false
 }
 
 func ResetRig() {
@@ -115,6 +149,8 @@ func ResetRig() {
 		rig.Close()
 		rig.Cleanup()
 	}
+
+	isRigReady = false
 
 	if len(state.GetState().RigConfig) == 0 {
 		return
