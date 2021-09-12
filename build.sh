@@ -2,10 +2,11 @@
 
 OS="$(uname)"
 
-VERSION=$(git rev-parse --short HEAD)
+COMMITID=$(git rev-parse HEAD)
 BUILDTIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+VERSION=$(git describe --tags)
 
-GOLDFLAGS="-X main.GitCommit=$VERSION -X main.BuildTime=$BUILDTIME"
+GOLDFLAGS="-X main.GitCommit=$COMMITID -X main.BuildTime=$BUILDTIME -X main.Version=$VERSION"
 
 echo "Current OS is $OS"
 

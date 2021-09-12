@@ -7,5 +7,5 @@ import (
 )
 
 func (c *ConfigWindow) initSystemConfig(builder *gtk.Builder) {
-	mustGetObj(builder, "config-version-label").(*gtk.Label).SetText(fmt.Sprintf("Version: %s\nBuild Time: %s", GitCommit, BuildTime))
+	mustGetObj(builder, "config-version-label").(*gtk.Label).SetText(fmt.Sprintf("Version: %s\nBuild Time: %s\nCommit ID: %s", Version, BuildTime, GitCommit))
 }
