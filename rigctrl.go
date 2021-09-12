@@ -198,5 +198,7 @@ func ResetRig() {
 	emitInfomation(state.GetState().Gui, "Connected to radio", resources.InfoClassNotice)
 	setRadioStatusLight(resources.StatusLightIdle)
 
+	cwSender.Init(rigConfig)
+
 	isRigReady = true
 }

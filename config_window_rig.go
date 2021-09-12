@@ -99,6 +99,22 @@ func (c *ConfigWindow) onSaveClickedRig(btn *gtk.Button) {
 		currentRigConfig.Flowcontrol = 0
 	}
 
+	if mustGetObj(builder, resources.RigConfigCWPinNone).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.CWPin = CWHELPER_CW_USE_NONE
+	} else if mustGetObj(builder, resources.RigConfigCWPinDTR).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.CWPin = CWHELPER_CW_USE_DTR
+	} else if mustGetObj(builder, resources.RigConfigCWPinRTS).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.CWPin = CWHELPER_CW_USE_RTS
+	}
+
+	if mustGetObj(builder, resources.RigConfigPttPinNone).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.PTTPin = CWHELPER_CW_USE_NONE
+	} else if mustGetObj(builder, resources.RigConfigPttPinDTR).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.PTTPin = CWHELPER_CW_USE_DTR
+	} else if mustGetObj(builder, resources.RigConfigPttPinRTS).(*gtk.RadioButton).GetActive() {
+		currentRigConfig.PTTPin = CWHELPER_CW_USE_RTS
+	}
+
 	logrus.Infof("Save new rig config: %v", currentRigConfig)
 
 	state.GetState().RigConfig = []state.RigConfig{currentRigConfig}
@@ -166,6 +182,24 @@ func (c *ConfigWindow) initRigConfig(builder *gtk.Builder) {
 			mustGetObj(builder, resources.RigConfigFlowControlNone).(*gtk.RadioButton).SetActive(true)
 		case 1:
 			mustGetObj(builder, resources.RigConfigFlowControlHardware).(*gtk.RadioButton).SetActive(true)
+		}
+
+		switch activeRigConfig.CWPin {
+		case CWHELPER_CW_USE_NONE:
+			mustGetObj(builder, resources.RigConfigCWPinNone).(*gtk.RadioButton).SetActive(true)
+		case CWHELPER_CW_USE_DTR:
+			mustGetObj(builder, resources.RigConfigCWPinDTR).(*gtk.RadioButton).SetActive(true)
+		case CWHELPER_CW_USE_RTS:
+			mustGetObj(builder, resources.RigConfigCWPinRTS).(*gtk.RadioButton).SetActive(true)
+		}
+
+		switch activeRigConfig.PTTPin {
+		case CWHELPER_CW_USE_NONE:
+			mustGetObj(builder, resources.RigConfigPttPinNone).(*gtk.RadioButton).SetActive(true)
+		case CWHELPER_CW_USE_DTR:
+			mustGetObj(builder, resources.RigConfigPttPinDTR).(*gtk.RadioButton).SetActive(true)
+		case CWHELPER_CW_USE_RTS:
+			mustGetObj(builder, resources.RigConfigPttPinRTS).(*gtk.RadioButton).SetActive(true)
 		}
 	}
 }

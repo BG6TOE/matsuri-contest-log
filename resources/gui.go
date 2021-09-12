@@ -47,4 +47,12 @@ const (
 
 	RigConfigFlowControlNone     = "config-rig-handshake-none"
 	RigConfigFlowControlHardware = "config-rig-handshake-enable"
+
+	RigConfigPttPinNone = "config-rig-ptt-none"
+	RigConfigPttPinRTS  = "config-rig-ptt-rts"
+	RigConfigPttPinDTR  = "config-rig-ptt-dtr"
+
+	RigConfigCWPinNone = "config-rig-key-none"
+	RigConfigCWPinRTS  = "config-rig-key-rts"
+	RigConfigCWPinDTR  = "config-rig-key-dtr"
 )

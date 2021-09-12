@@ -28,6 +28,9 @@ type RigConfig struct {
 	Stopbits    int    `json:"stopbits"`
 	Parity      int    `json:"parity"`
 	Flowcontrol int    `json:"flowcontrol"`
+
+	CWPin  int `json:"cwpin"`
+	PTTPin int `json:"pttpin"`
 }
 
 type operator struct {

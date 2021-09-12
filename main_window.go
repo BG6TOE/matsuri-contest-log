@@ -307,6 +307,53 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 			configWindow.Show()
 			return
 		}
+		if key.KeyVal() == gdk.KEY_Escape {
+			cwSender.DisableSendMorse()
+			return
+		}
+
+		templateCtx := &MacroRenderContext{
+			MyCall:  state.GetState().Contest.StationCallsign,
+			DxCall:  mustGetObj(builder, "input-callsign").(*gtk.Entry).GetChars(0, -1),
+			Exch:    mustGetObj(builder, "input-exch-sent").(*gtk.Entry).GetChars(0, -1),
+			ExchRST: mustGetObj(builder, "input-rst-sent").(*gtk.Entry).GetChars(0, -1),
+		}
+		cwToSent := ""
+		render := macroRenderer.RenderMacroKey
+		switch key.KeyVal() {
+		case gdk.KEY_F1:
+			cwToSent = render("F1", templateCtx)
+		case gdk.KEY_F2:
+			cwToSent = render("F2", templateCtx)
+		case gdk.KEY_F3:
+			cwToSent = render("F3", templateCtx)
+		case gdk.KEY_F4:
+			cwToSent = render("F4", templateCtx)
+		case gdk.KEY_F5:
+			cwToSent = render("F5", templateCtx)
+		case gdk.KEY_F6:
+			cwToSent = render("F6", templateCtx)
+		case gdk.KEY_F7:
+			cwToSent = render("F7", templateCtx)
+		case gdk.KEY_F8:
+			cwToSent = render("F8", templateCtx)
+		case gdk.KEY_F9:
+			cwToSent = render("F9", templateCtx)
+		case gdk.KEY_F10:
+			cwToSent = render("F10", templateCtx)
+		case gdk.KEY_F11:
+			cwToSent = render("F11", templateCtx)
+		case gdk.KEY_F12:
+			cwToSent = render("F12", templateCtx)
+		}
+		if cwToSent == "" {
+			return
+		}
+		emitInfomation(builder, fmt.Sprintf("Sending: %v", cwToSent), resources.InfoClassNotice)
+		go func() {
+			cwSender.EnableSendMorse()
+			cwSender.SendMorse(cwToSent)
+		}()
 	})
 
 	win.ShowAll()

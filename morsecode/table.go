@@ -81,7 +81,7 @@ func GetCode(r rune) []int {
 	case '?':
 		return []int{1, 1, 3, 3, 1, 1}
 	case ' ':
-		return []int{0, 0, 0, 0, 0, 0, 0}
+		return []int{-4}
 	}
 	return []int{}
 }
