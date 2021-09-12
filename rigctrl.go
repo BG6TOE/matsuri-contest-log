@@ -98,8 +98,6 @@ func RefreshFreq() {
 					go ResetRig()
 				}
 			}()
-		} else {
-			state.GetState().Rig.VFO = 0
 		}
 		time.Sleep(1 * time.Second)
 	}

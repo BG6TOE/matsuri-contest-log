@@ -49,7 +49,7 @@ func GetCode(r rune) []int {
 	case 'w':
 		return []int{1, 3, 3}
 	case 'x':
-		return []int{1, 3, 3, 1}
+		return []int{3, 1, 1, 3}
 	case 'y':
 		return []int{3, 1, 3, 3}
 	case 'z':

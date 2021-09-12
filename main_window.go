@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -351,8 +352,21 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 		}
 		emitInfomation(builder, fmt.Sprintf("Sending: %v", cwToSent), resources.InfoClassNotice)
 		go func() {
+			if runtime.GOOS == "windows" {
+				ShutdownRig()
+				time.Sleep(50 * time.Millisecond)
+				if len(state.GetState().RigConfig) > 0 {
+					cwSender.Init(&state.GetState().RigConfig[0])
+				}
+				setRadioStatusLight(resources.StatusLightBusy)
+			}
 			cwSender.EnableSendMorse()
 			cwSender.SendMorse(cwToSent)
+			if runtime.GOOS == "windows" {
+				cwSender.Deinit()
+				time.Sleep(50 * time.Millisecond)
+				ResetRig()
+			}
 		}()
 	})
 

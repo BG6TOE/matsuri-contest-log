@@ -22,6 +22,8 @@ type CWHelper struct {
 	lock sync.Mutex
 	port serial.Port
 
+	initialed bool
+
 	isSending     bool
 	shouldSending bool
 	wpm           int
@@ -32,14 +34,27 @@ type CWHelper struct {
 
 var cwSender CWHelper
 
+func (w *CWHelper) Deinit() {
+	w.shouldSending = false
+	w.isSending = false
+	w.lock.Lock()
+	defer w.lock.Unlock()
+
+	if w.initialed {
+		w.port.Close()
+		w.initialed = false
+	}
+}
+
 func (w *CWHelper) Init(conf *state.RigConfig) {
 	w.shouldSending = false
 	w.isSending = false
 	w.lock.Lock()
 	defer w.lock.Unlock()
 
-	if w.port != nil {
+	if w.initialed {
 		w.port.Close()
+		w.initialed = false
 	}
 
 	portMode := serial.Mode{}
@@ -71,11 +86,13 @@ func (w *CWHelper) Init(conf *state.RigConfig) {
 	w.port, err = serial.Open(conf.Portname, &portMode)
 	if err != nil {
 		logrus.Errorf("Failed to open serial port for PTT: %v", err)
+		return
 	}
 	w.port.SetRTS(false)
 	w.port.SetDTR(false)
 	w.wpm = 20
 	logrus.Infof("Opened serial port for PTT")
+	w.initialed = true
 }
 
 func (w *CWHelper) EnableSendMorse() {
@@ -90,7 +107,7 @@ func (w *CWHelper) SendMorse(sequence string) {
 	w.lock.Lock()
 	defer w.lock.Unlock()
 
-	if w.port == nil {
+	if !w.initialed {
 		return
 	}
 
@@ -155,6 +172,7 @@ func (w *CWHelper) SendMorse(sequence string) {
 			nextWake = time.Now().UnixNano() - int64(elementNano)*int64(sendSequence[curr])
 		}
 		cw(sendSequence[curr] > 0)
+		logrus.Info(nextWake)
 		curr++
 		for time.Now().UnixNano() < nextWake {
 		}

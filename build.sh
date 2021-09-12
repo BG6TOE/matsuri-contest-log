@@ -19,7 +19,7 @@ build_Linux() {
 build_Mingw() {
     output="out/windows/$(uname -m)"
     mkdir -p $output
-    go build -o "$output"/MatsuriLog.exe -ldflags "$GOLDFLAGS" -ldflags -H=windowsgui
+    go build -o "$output"/MatsuriLog.exe -ldflags "$GOLDFLAGS -H=windowsgui"
     cd $output
     ldd MatsuriLog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
 }
