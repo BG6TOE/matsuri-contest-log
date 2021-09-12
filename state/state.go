@@ -34,11 +34,17 @@ type operator struct {
 	Callsign string `json:"callsign"`
 }
 
+type MacroKeyMap struct {
+	Key   string `json:"key"`
+	Title string `json:"title"`
+	Value string `json:"value"`
+}
 type state struct {
-	Contest   logdb.Contest `json:"contest"`
-	Operator  operator      `json:"operator"`
-	Rig       rig           `json:"rig"`
-	RigConfig []RigConfig   `json:"rigConfig"`
+	Contest     logdb.Contest `json:"contest"`
+	Operator    operator      `json:"operator"`
+	Rig         rig           `json:"rig"`
+	RigConfig   []RigConfig   `json:"rigConfig"`
+	MacroKeyMap []MacroKeyMap `json:"macroKeyMap"`
 }
 
 type sessionState struct {

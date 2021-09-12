@@ -9,6 +9,7 @@ import (
 
 type ConfigWindow struct {
 	contestConfig
+	macroConfig
 
 	dialog *gtk.Dialog
 }
@@ -31,6 +32,7 @@ func (c *ConfigWindow) Init(builder *gtk.Builder) {
 	c.initRigConfig(builder)
 	c.initContestConfig(builder)
 	c.initSystemConfig(builder)
+	c.initMacroConfig(builder)
 	mustGetObj(builder, "config-save").(*gtk.Button).Connect("clicked", onSaveClicked)
 }
 

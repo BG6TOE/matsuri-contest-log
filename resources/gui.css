@@ -1,6 +1,6 @@
-.contest-input { font-family: 'Fira Code', monospace; font-size: xx-large; }
-.input-hint-label { font-family: 'Fira Code', monospace; font-size: large; }
-.baseinfo-labels { font-family: 'Fira Code', monospace; font-size: large; font-weight: 900; }
+.contest-input { font-size: xx-large; }
+.input-hint-label { font-size: large; }
+.baseinfo-labels { font-size: large; font-weight: 900; }
 
 .infomation-error { color: #900; }
 .infomation-warning { color: #990; }
@@ -11,3 +11,5 @@
 .statuslight-busy { color: #0c0; }
 .statuslight-init { color: #cc0; }
 .statuslight-error { color: #fcc; }
+
+.monospace { font-family: 'Courier New', Courier, monospace; }

@@ -155,6 +155,9 @@ It might be:
                   <object class="GtkEntry" id="config-rig-portname">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <style>
+                      <class name="monospace"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
@@ -509,6 +512,9 @@ It might be:
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="max-length">12</property>
+                    <style>
+                      <class name="monospace"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
@@ -533,6 +539,9 @@ It might be:
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="max-length">12</property>
+                    <style>
+                      <class name="monospace"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
@@ -562,6 +571,32 @@ It might be:
               </packing>
             </child>
             <child>
+              <object class="GtkTreeView" id="config-macros">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+                <style>
+                  <class name="monospace"/>
+                </style>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Macro</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -586,9 +621,12 @@ Build time: ?</property>
                 <child>
                   <placeholder/>
                 </child>
+                <style>
+                  <class name="monospace"/>
+                </style>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child type="tab">
@@ -598,7 +636,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">System</property>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">3</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
@@ -644,6 +682,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">Call: AA1AAA</property>
                 <style>
                   <class name="baseinfo-labels"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -660,6 +699,7 @@ Build time: ?</property>
                 <property name="justify">center</property>
                 <style>
                   <class name="baseinfo-labels"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -677,6 +717,7 @@ Build time: ?</property>
                 <property name="track-visited-links">False</property>
                 <style>
                   <class name="baseinfo-labels"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -706,6 +747,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">Callsign</property>
                 <style>
                   <class name="input-hint-label"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -722,6 +764,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">RST Sent</property>
                 <style>
                   <class name="input-hint-label"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -737,6 +780,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">RST Rcvd</property>
                 <style>
                   <class name="input-hint-label"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -752,6 +796,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">Exch Sent</property>
                 <style>
                   <class name="input-hint-label"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -767,6 +812,7 @@ Build time: ?</property>
                 <property name="label" translatable="yes">Exch Rcvd</property>
                 <style>
                   <class name="input-hint-label"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -782,6 +828,7 @@ Build time: ?</property>
                 <property name="width-chars">12</property>
                 <style>
                   <class name="contest-input"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -799,6 +846,7 @@ Build time: ?</property>
                 <property name="max-width-chars">3</property>
                 <style>
                   <class name="contest-input"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -815,6 +863,7 @@ Build time: ?</property>
                 <property name="max-width-chars">3</property>
                 <style>
                   <class name="contest-input"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -829,6 +878,7 @@ Build time: ?</property>
                 <property name="width-chars">5</property>
                 <style>
                   <class name="contest-input"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
@@ -843,6 +893,7 @@ Build time: ?</property>
                 <property name="width-chars">5</property>
                 <style>
                   <class name="contest-input"/>
+                  <class name="monospace"/>
                 </style>
               </object>
               <packing>
