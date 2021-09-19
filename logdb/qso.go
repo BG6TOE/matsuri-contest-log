@@ -49,6 +49,25 @@ func NewQSO(c *Contest, q *QSO) error {
 	return err
 }
 
+func UpdateQSO(qso *QSO) error {
+	if db == nil {
+		return errors.New("database not initialzied")
+	}
+	_, err := db.Exec(`UPDATE log
+	SET dx_callsign = ?, time = ?, mode = ?, rst_sent = ?, rst_rcvd = ?, exch_sent = ?, exch_rcvd = ?, freq_hz = ?
+	WHERE uid = ?
+	`, qso.DXCallsign, qso.Time.Unix(), qso.Mode, qso.RSTSent, qso.RSTRcvd, qso.ExchSent, qso.ExchRcvd, qso.FreqHz)
+
+	if err == nil {
+		ws.Broadcast(&ws.BroadcastMessage{
+			Class:   "UpdateQSO",
+			Message: qso,
+		})
+	}
+
+	return err
+}
+
 func GetQSOs(c *Contest) (qso []*QSO, err error) {
 	var rows *sql.Rows
 	rows, err = db.Query(`
