@@ -2,6 +2,7 @@ package rpcserver
 
 import (
 	"context"
+	"time"
 
 	"matsu.dev/matsuri-contest-log/logdb"
 	"matsu.dev/matsuri-contest-log/webui/rpc_gen"
@@ -29,7 +30,7 @@ func (s *MCLServer) GetQSOList(ctx context.Context) ([]*rpc_gen.QSO, error) {
 		q2.Rst_sent = q.RSTSent
 		q2.Station_callsign = q.StationCallsign
 		q2.Uid = q.UID
-		q2.Time = uint64(q.Time.Unix())
+		q2.Time = q.Time.Format(time.RFC3339Nano)
 		ret = append(ret, q2)
 	}
 	return ret, nil

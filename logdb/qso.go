@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"matsu.dev/matsuri-contest-log/adif"
+	"matsu.dev/matsuri-contest-log/webui/ws"
 )
 
 type QSO struct {
@@ -37,6 +38,14 @@ func NewQSO(c *Contest, q *QSO) error {
 	(uid, contest_id, sta_callsign, op_callsign, dx_callsign, time, mode, rst_sent, rst_rcvd, exch_sent, exch_rcvd, freq_hz)
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, q.UID, q.ContestId, q.StationCallsign, q.OpCallsign, q.DXCallsign, q.Time.Unix(), q.Mode, q.RSTSent, q.RSTRcvd, q.ExchSent, q.ExchRcvd, q.FreqHz)
+
+	if err == nil {
+		ws.Broadcast(&ws.BroadcastMessage{
+			Class:   "NewQSO",
+			Message: q,
+		})
+	}
+
 	return err
 }
 

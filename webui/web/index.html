@@ -1,52 +1,107 @@
 <html>
 
-<head></head>
+<head>
+    <style>
+        td {
+            border-width: 1px;
+            border-collapse: collapse;
+            border-style: solid;
+        }
+    </style>
+</head>
 
 <body>
-    <div id="qso_list">
-
+    <div id="app">
+        <pre>
+        <table>
+            <thead>
+                <td>Callsign</td>
+                <td>Freq</td>
+                <td>Mode</td>
+                <td>Time</td>
+                <td>Exch Sent</td>
+                <td>Exch Rcvd</td>
+                <td>RST Sent</td>
+                <td>RST Rcvd</td>
+            </thead>
+            <tbody>
+                <tr v-for="qso in qsoList" :key="qso.uid">
+                    <td>{{ qso.dx_callsign }}</td>
+                    <td>{{ FormatFreq(qso.freq_hz) }}</td>
+                    <td>{{ qso.mode }}</td>
+                    <td>{{ FormatTime(qso.time) }}</td>
+                    <td>{{ qso.exch_sent }}</td>
+                    <td>{{ qso.exch_rcvd }}</td>
+                    <td>{{ qso.rst_sent }}</td>
+                    <td>{{ qso.rst_rcvd }}</td>
+                </tr>
+            </tbody>
+        </table>
+        </pre>
     </div>
+
+    <script src="./dev_lib/vue.js"></script>
     <script type="module">
         const svcFetch = window.fetch.bind(window)
-        import {MCLService} from "./rpc.gen.js"
+        import { MCLService } from "./rpc.gen.js"
         let svc = new MCLService('', svcFetch)
-        export default function refresh() {
-            svc.getQSOList().then((res) => {
-                console.log(res)
-                let table = ""
-                res.qsos.forEach(element => {
-                    table += `<tr>
-                        <td>${element.dx_callsign}</td>
-                        <td>${element.freq_hz}</td>
-                        <td>${element.mode}</td>
-                        <td>${new Date(element.time * 1000)}</td>
-                        <td>${element.exch_sent}</td>
-                        <td>${element.exch_rcvd}</td>
-                        <td>${element.rst_sent}</td>
-                        <td>${element.rst_rcvd}</td>
-                        </tr>`
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                qsoList: []
+            },
+            methods: {
+                AppendQSO: function (qso) {
+                    this.qsoList.push(qso);
+                },
+                FormatTime: function (time) {
+                    let newDate = new Date(time)
+                    let month = newDate.getUTCMonth() + 1
+                    let day = newDate.getUTCDate()
+                    let hour = newDate.getUTCHours()
+                    let minute = newDate.getUTCMinutes()
+                    return (month < 10 ? "0" + month : month) + "-" +
+                        (day < 10 ? "0" + day : day) + " " +
+                        (hour < 10 ? "0" + hour : hour) + ":" +
+                        (minute < 10 ? "0" + minute : minute);
+                },
+                FormatFreq: function (freq) {
+                    return (freq / 1000).toFixed(3) + " k";
+                },
+                GetQSOList: function () {
+                    svc.getQSOList().then((res) => {
+                        this.qsoList = res.qsos;
+                    })
+                }
+            },
+            created: function () {
+                this.GetQSOList();
+
+                const socket = new WebSocket('ws://' + document.location.host + '/ws');
+
+                socket.addEventListener('open', function (event) {
+                    console.log('Websocket connection established');
                 });
-                table = `
-                <pre>
-                <table>
-                    <thead>
-                        <td>Callsign</td>
-                        <td>Freq</td>
-                        <td>Mode</td>
-                        <td>Time</td>
-                        <td>Exch Sent</td>
-                        <td>Exch Rcvd</td>
-                        <td>RST Sent</td>
-                        <td>RST_RCVD</td>
-                        </thead>
-                    <tbody>${table}</tbody>
-                </table></pre>`
-                document.getElementById("qso_list").innerHTML = table
-            }).finally(()=> {
-                setTimeout(refresh, 1000);
-            })
-        }
-        refresh();
+                socket.addEventListener('message', (event) => {
+                    const events = {
+                        "NewQSO": (msg) => {
+                            this.AppendQSO(msg)
+                        }
+                    }
+                    let payload = JSON.parse(event.data)
+                    if (events[payload.Class]) {
+                        events[payload.Class](payload.Message);
+                    }
+                });
+                socket.addEventListener('close', (event) => {
+                    console.log('Websocket connection closed');
+                });
+                socket.addEventListener('error', (event) => {
+                    console.log('Websocket connection error');
+                })
+            }
+        })
     </script>
 </body>
 

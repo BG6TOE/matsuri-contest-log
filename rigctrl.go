@@ -11,6 +11,7 @@ import (
 	goHamlib "matsu.dev/matsuri-contest-log/hamlib"
 	resources "matsu.dev/matsuri-contest-log/resources"
 	"matsu.dev/matsuri-contest-log/state"
+	"matsu.dev/matsuri-contest-log/webui/ws"
 )
 
 var (
@@ -135,6 +136,10 @@ func ShutdownRig() {
 
 	setRadioStatusLight(resources.StatusLightDisabled)
 	isRigReady = false
+
+	ws.Broadcast(&ws.BroadcastMessage{
+		Class: "RigShutdown",
+	})
 }
 
 func ResetRig() {
@@ -199,4 +204,8 @@ func ResetRig() {
 	cwSender.Init(rigConfig)
 
 	isRigReady = true
+
+	ws.Broadcast(&ws.BroadcastMessage{
+		Class: "RigReady",
+	})
 }

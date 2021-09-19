@@ -9,7 +9,7 @@ message QSO
   - station_callsign: string   
   - dx_callsign: string   
   - freq_hz: uint64   
-  - time: uint64
+  - time: string
   - mode: string   
   - rst_sent: string   
   - rst_rcvd: string   
