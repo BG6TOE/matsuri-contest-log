@@ -4,7 +4,6 @@
       <div class="d-flex align-center">MCL</div>
 
       <v-spacer></v-spacer>
-      <code>{{ version }}</code>
     </v-app-bar>
 
     <v-main>
@@ -12,7 +11,7 @@
     </v-main>
 
     <v-footer padless>
-      <v-col cols="12"> MCL WebUI Version: {{ version.raw }}</v-col>
+      <v-col cols="12"> MCL WebUI Version: {{ version.hash }}</v-col>
     </v-footer>
   </v-app>
 </template>
@@ -28,7 +27,7 @@ export default {
   },
 
   data: () => ({
-    version: process.env.VUE_APP_GIT_VERSION,
+    version: JSON.parse(process.env.VUE_APP_GIT_VERSION),
   }),
 };
 </script>

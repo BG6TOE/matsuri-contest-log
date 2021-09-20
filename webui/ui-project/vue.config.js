@@ -1,5 +1,5 @@
 const { gitDescribe, gitDescribeSync } = require('git-describe');
-process.env.VUE_APP_GIT_VERSION = gitDescribeSync()
+process.env.VUE_APP_GIT_VERSION = JSON.stringify(gitDescribeSync())
 
 module.exports = {
   transpileDependencies: [
