@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 OS="$(uname)"
 
 COMMITID=$(git rev-parse HEAD)
@@ -23,6 +25,8 @@ build_Mingw() {
     cd $output
     ldd MatsuriLog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
 }
+
+./webui/build.sh
 
 if uname | grep -q "Linux" -; then
  build_Linux
