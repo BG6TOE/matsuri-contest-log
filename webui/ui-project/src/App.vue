@@ -9,13 +9,16 @@
         <code>{{ currentInputtingCallsign }}</code>
       </h1>
 
-
       <v-spacer></v-spacer>
     </v-app-bar>
 
     <v-main>
       <LogList />
     </v-main>
+
+    <v-snackbar v-model="snackbar" timeout="2000">
+      {{ snackbarText }}
+    </v-snackbar>
 
     <v-footer padless>
       <v-col cols="12">MCL WebUI Version: {{ version.hash }}</v-col>
@@ -37,6 +40,9 @@ export default {
 
   data: () => ({
     Helper,
+    snackbarText: "",
+    snackbar: false,
+    websocketConnected: false,
     version: JSON.parse(process.env.VUE_APP_GIT_VERSION),
 
     state: {
@@ -66,18 +72,37 @@ export default {
       this.state = JSON.parse(JSON.stringify(state));
     },
     HandleInputtedCallsign(callsign) {
-      this.currentInputtingCallsign = callsign
-    }
+      this.currentInputtingCallsign = callsign;
+    },
+    localEventHandler(event) {
+      switch (event.name) {
+        case "WS.OnOpen":
+          this.websocketConnected = true;
+          this.snackbarText = "Connected to MCL program.";
+          this.snackbar = true;
+          break;
+        case "WS.OnClose":
+          if (this.websocketConnected != false) {
+            this.snackbarText = "Disconnected from MCL program.";
+            this.snackbar = true;
+          }
+          this.websocketConnected = false;
+          break;
+        default:
+      }
+    },
   },
 
   created: function () {
     Event.$on("StateReport", this.HandleStateReport);
     Event.$on("InputCallsignChanged", this.HandleInputtedCallsign);
+    Event.$on("LocalEvent", this.localEventHandler);
   },
 
   beforeDestroy: function () {
     Event.$off("StateReport", this.HandleStateReport);
     Event.$off("InputCallsignChanged", this.HandleInputtedCallsign);
+    Event.$off("LocalEvent", this.localEventHandler);
   },
 };
 </script>

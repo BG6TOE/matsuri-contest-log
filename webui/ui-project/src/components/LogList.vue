@@ -34,10 +34,15 @@
               </v-col>
 
               <v-col cols="12" sm="3" md="4">
-                <vc-date-picker v-model="editedItem.time" mode="dateTime" is24hr timezone="UTC">
+                <vc-date-picker
+                  v-model="editedItem.time"
+                  mode="dateTime"
+                  is24hr
+                  timezone="UTC"
+                >
                   <template v-slot="{ inputValue, inputEvents }">
                     <v-text-field
-                     :value="Helper.FormatTime(editedItem.time)"
+                      :value="Helper.FormatTime(editedItem.time)"
                       v-on="inputEvents"
                     />
                   </template>
@@ -131,19 +136,30 @@ export default {
     },
     save() {
       let updateQSO = JSON.parse(JSON.stringify(this.editedItem));
-      updateQSO.time = (new Date(this.editedItem.time)).toISOString();
+      updateQSO.time = new Date(this.editedItem.time).toISOString();
       console.log(updateQSO.time);
       updateQSO.freq_hz = Number(updateQSO.freq_hz);
-      RPC.updateQSO({qso: updateQSO});
+      RPC.updateQSO({ qso: updateQSO });
       this.qsoList.forEach((e, index) => {
         if (e.uid == updateQSO.uid) {
-          this.qsoList.splice(index, 1, updateQSO)
+          this.qsoList.splice(index, 1, updateQSO);
         }
-      })
+      });
       this.dialog = false;
     },
     close() {
       this.dialog = false;
+    },
+
+    localEventHandler(event) {
+      switch (event.name) {
+        case "WS.OnOpen":
+          RPC.getQSOList().then((res) => {
+            this.qsoList = res.qsos;
+          });
+          break;
+        default:
+      }
     },
   },
 
@@ -153,10 +169,12 @@ export default {
     RPC.getQSOList().then((res) => {
       this.qsoList = res.qsos;
     });
+    Event.$on("LocalEvent", this.localEventHandler);
   },
 
   beforeDestroy() {
     Event.$off("NewQSO", this.HandleNewQSO);
+    Event.$off("LocalEvent", this.localEventHandler);
   },
 };
 </script>
