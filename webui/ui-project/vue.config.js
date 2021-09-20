@@ -1,3 +1,6 @@
+const { gitDescribe, gitDescribeSync } = require('git-describe');
+process.env.VUE_APP_GIT_VERSION = gitDescribeSync()
+
 module.exports = {
   transpileDependencies: [
     'vuetify'
@@ -9,7 +12,9 @@ module.exports = {
         target: 'http://localhost:22222/'
       },
       '/ws': {
-        target: 'http://localhost:22222/'
+        target: 'http://localhost:22222/',
+        changeOrigin: true,
+        ws: true,
       }
     }
   }
