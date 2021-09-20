@@ -20,7 +20,7 @@ const Helper = {
       }
       while (freq > 1) {
         res = [freq % 1000, ...res];
-        freq = Math.round(freq / 1000);
+        freq = Math.floor(freq / 1000);
       }
       ret = "" + res[0];
       for (let i = 1; i < res.length; i++) {

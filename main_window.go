@@ -15,6 +15,7 @@ import (
 	logdb "matsu.dev/matsuri-contest-log/logdb"
 	"matsu.dev/matsuri-contest-log/resources"
 	"matsu.dev/matsuri-contest-log/state"
+	"matsu.dev/matsuri-contest-log/webui/ws"
 )
 
 func timer(ctx context.Context, timeLabel *gtk.Label) {
@@ -148,7 +149,13 @@ func setupInputEvents(builder *gtk.Builder) {
 	}
 
 	inputCallsign := mustGetObj(builder, "input-callsign").(*gtk.Entry)
-	inputCallsign.ConnectAfter("changed", capitalizeInputHandler)
+	inputCallsign.ConnectAfter("changed", func(entry *gtk.Entry) {
+		capitalizeInputHandler(entry)
+		ws.Broadcast(&ws.BroadcastMessage{
+			Class:   "InputCallsignChanged",
+			Message: entry.GetChars(0, -1),
+		})
+	})
 
 	inputExchSent := mustGetObj(builder, "input-exch-sent").(*gtk.Entry)
 	inputExchSent.ConnectAfter("changed", capitalizeInputHandler)

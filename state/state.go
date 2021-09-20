@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	goHamlib "matsu.dev/matsuri-contest-log/hamlib"
 	"matsu.dev/matsuri-contest-log/logdb"
+	"matsu.dev/matsuri-contest-log/webui/ws"
 )
 
 type rig struct {
@@ -128,6 +129,10 @@ func tick() {
 	for _, cb := range stateChangeCallbacks {
 		cb()
 	}
+	ws.Broadcast(&ws.BroadcastMessage{
+		Class:   "StateReport",
+		Message: &globalState.state,
+	})
 }
 
 func Kick() {

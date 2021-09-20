@@ -18,3 +18,4 @@ message QSO
 
 service MCLService
   - GetQSOList() => (qsos: []QSO)
+  - UpdateQSO(qso: QSO) => (success: bool)

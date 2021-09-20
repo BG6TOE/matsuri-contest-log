@@ -12,7 +12,7 @@ module.exports = {
         target: 'http://localhost:22222/'
       },
       '/ws': {
-        target: 'http://localhost:22222/',
+        target: 'http://localhost:22222',
         changeOrigin: true,
         ws: true,
       }

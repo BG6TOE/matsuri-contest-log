@@ -18,7 +18,8 @@ socket.onmessage = function (msg) {
 }
 
 socket.onerror = function (err) {
-    console.warn(`Websocket connection error: ${err}`)
+    console.warn(`Websocket connection error:`)
+    console.warn(err)
 }
 
 export default emitter
