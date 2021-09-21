@@ -26,14 +26,25 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="3" md="4">
+              <v-col cols="12" sm="3" md="2">
                 <v-text-field
                   v-model="editedItem.dx_callsign"
                   label="Callsign"
                 ></v-text-field>
               </v-col>
-
-              <v-col cols="12" sm="3" md="4">
+              <v-col cols="12" sm="3" md="2">
+                <v-text-field
+                  v-model="editedItem.freq_hz"
+                  label="Freq"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="3" md="2">
+                <v-text-field
+                  v-model="editedItem.mode"
+                  label="Mode"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="3" md="2">
                 <vc-date-picker
                   v-model="editedItem.time"
                   mode="dateTime"
@@ -44,41 +55,30 @@
                     <v-text-field
                       :value="Helper.FormatTime(editedItem.time)"
                       v-on="inputEvents"
+                      label="Time"
                     />
                   </template>
                 </vc-date-picker>
               </v-col>
-              <v-col cols="12" sm="3" md="4">
-                <v-text-field
-                  v-model="editedItem.freq_hz"
-                  label="Freq"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="3" md="4">
-                <v-text-field
-                  v-model="editedItem.mode"
-                  label="Mode"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="3" md="4">
+             <v-col cols="12" sm="3" md="1">
                 <v-text-field
                   v-model="editedItem.rst_sent"
                   label="RST Sent"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="3" md="4">
+              <v-col cols="12" sm="3" md="1">
                 <v-text-field
                   v-model="editedItem.exch_sent"
                   label="Exch Sent"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="3" md="4">
+              <v-col cols="12" sm="3" md="1">
                 <v-text-field
                   v-model="editedItem.rst_rcvd"
                   label="RST Rcvd"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="3" md="4">
+              <v-col cols="12" sm="3" md="1">
                 <v-text-field
                   v-model="editedItem.exch_rcvd"
                   label="Exch Rcvd"
@@ -131,6 +131,7 @@ export default {
       console.log(event);
       console.log(item);
       this.editedItem = JSON.parse(JSON.stringify(item.item));
+      this.editedItem.time = new Date(this.editedItem.time);
       this.editedItem.timeVar = this.Helper.FormatTime(this.editedItem.time);
       this.dialog = true;
     },
