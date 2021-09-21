@@ -282,6 +282,88 @@ func saveFileChooser(builder *gtk.Builder, parent gtk.IWindow, title string, fil
 	return true, dialog.GetFilename()
 }
 
+func SendCWMacro(key uint) {
+	templateCtx := &MacroRenderContext{
+		MyCall:  state.GetState().Contest.StationCallsign,
+		DxCall:  mustGetObj(state.GetState().Gui, "input-callsign").(*gtk.Entry).GetChars(0, -1),
+		Exch:    mustGetObj(state.GetState().Gui, "input-exch-sent").(*gtk.Entry).GetChars(0, -1),
+		ExchRST: mustGetObj(state.GetState().Gui, "input-rst-sent").(*gtk.Entry).GetChars(0, -1),
+	}
+
+	cwToSent := ""
+	render := macroRenderer.RenderMacroKey
+	switch key {
+	case gdk.KEY_F1:
+		cwToSent = render("F1", templateCtx)
+	case gdk.KEY_F2:
+		cwToSent = render("F2", templateCtx)
+	case gdk.KEY_F3:
+		cwToSent = render("F3", templateCtx)
+	case gdk.KEY_F4:
+		cwToSent = render("F4", templateCtx)
+	case gdk.KEY_F5:
+		cwToSent = render("F5", templateCtx)
+	case gdk.KEY_F6:
+		cwToSent = render("F6", templateCtx)
+	case gdk.KEY_F7:
+		cwToSent = render("F7", templateCtx)
+	case gdk.KEY_F8:
+		cwToSent = render("F8", templateCtx)
+	case gdk.KEY_F9:
+		cwToSent = render("F9", templateCtx)
+	case gdk.KEY_F10:
+		cwToSent = render("F10", templateCtx)
+	case gdk.KEY_F11:
+		cwToSent = render("F11", templateCtx)
+	case gdk.KEY_F12:
+		cwToSent = render("F12", templateCtx)
+	}
+	if cwToSent == "" {
+		return
+	}
+	emitInfomation(state.GetState().Gui, fmt.Sprintf("Sending: %v", cwToSent), resources.InfoClassNotice)
+	go func() {
+		if runtime.GOOS == "windows" {
+			ShutdownRig()
+			time.Sleep(50 * time.Millisecond)
+			if len(state.GetState().RigConfig) > 0 {
+				cwSender.Init(&state.GetState().RigConfig[0])
+			}
+			setRadioStatusLight(resources.StatusLightBusy)
+		}
+		cwSender.EnableSendMorse()
+		cwSender.SendMorse(cwToSent)
+		if runtime.GOOS == "windows" {
+			cwSender.Deinit()
+			time.Sleep(50 * time.Millisecond)
+			ResetRig()
+		}
+	}()
+}
+
+func InitMacroKey(builder *gtk.Builder) {
+	getMacroKeyConfig := func(key string) (state.MacroKeyMap, bool) {
+		for _, v := range state.GetState().MacroKeyMap {
+			if v.Key == key {
+				return v, true
+			}
+		}
+		return state.MacroKeyMap{}, false
+	}
+
+	for i := 1; i <= 12; i++ {
+		key, ok := getMacroKeyConfig(fmt.Sprintf("F%d", i))
+		btn := mustGetObj(builder, fmt.Sprintf("f%d-button", i)).(*gtk.Button)
+
+		btn.SetLabel(fmt.Sprintf("F%d %s", i, key.Title))
+		if !ok || key.Value == "" {
+			btn.SetSensitive(false)
+			continue
+		}
+		btn.SetSensitive(true)
+	}
+}
+
 func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 	win := mustGetObj(builder, "main_window").(*gtk.ApplicationWindow)
 	win.SetTitlebar(mustGetObj(builder, "application-header-bar").(*gtk.HeaderBar))
@@ -309,6 +391,34 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 		gtk.MainQuit()
 	})
 
+	InitMacroKey(builder)
+
+	func() {
+		btns := []uint{
+			0,
+			gdk.KEY_F1,
+			gdk.KEY_F2,
+			gdk.KEY_F3,
+			gdk.KEY_F4,
+			gdk.KEY_F5,
+			gdk.KEY_F6,
+			gdk.KEY_F7,
+			gdk.KEY_F8,
+			gdk.KEY_F9,
+			gdk.KEY_F10,
+			gdk.KEY_F11,
+			gdk.KEY_F12,
+		}
+		for i := 1; i <= 12; i++ {
+			func(btnid int) {
+				btn := mustGetObj(builder, fmt.Sprintf("f%d-button", i)).(*gtk.Button)
+				btn.Connect("clicked", func(btn *gtk.Button) {
+					SendCWMacro(btns[btnid])
+				})
+			}(i)
+		}
+	}()
+
 	win.Connect("key_press_event", func(win *gtk.ApplicationWindow, event *gdk.Event) {
 		key := gdk.EventKeyNewFromEvent(event)
 		if key.KeyVal() == gdk.KEY_F1 && ((key.State() & gdk.CONTROL_MASK) != 0) {
@@ -320,61 +430,32 @@ func InitMainWindow(builder *gtk.Builder, application *gtk.Application) {
 			return
 		}
 
-		templateCtx := &MacroRenderContext{
-			MyCall:  state.GetState().Contest.StationCallsign,
-			DxCall:  mustGetObj(builder, "input-callsign").(*gtk.Entry).GetChars(0, -1),
-			Exch:    mustGetObj(builder, "input-exch-sent").(*gtk.Entry).GetChars(0, -1),
-			ExchRST: mustGetObj(builder, "input-rst-sent").(*gtk.Entry).GetChars(0, -1),
-		}
-		cwToSent := ""
-		render := macroRenderer.RenderMacroKey
 		switch key.KeyVal() {
 		case gdk.KEY_F1:
-			cwToSent = render("F1", templateCtx)
+			fallthrough
 		case gdk.KEY_F2:
-			cwToSent = render("F2", templateCtx)
+			fallthrough
 		case gdk.KEY_F3:
-			cwToSent = render("F3", templateCtx)
+			fallthrough
 		case gdk.KEY_F4:
-			cwToSent = render("F4", templateCtx)
+			fallthrough
 		case gdk.KEY_F5:
-			cwToSent = render("F5", templateCtx)
+			fallthrough
 		case gdk.KEY_F6:
-			cwToSent = render("F6", templateCtx)
+			fallthrough
 		case gdk.KEY_F7:
-			cwToSent = render("F7", templateCtx)
+			fallthrough
 		case gdk.KEY_F8:
-			cwToSent = render("F8", templateCtx)
+			fallthrough
 		case gdk.KEY_F9:
-			cwToSent = render("F9", templateCtx)
+			fallthrough
 		case gdk.KEY_F10:
-			cwToSent = render("F10", templateCtx)
+			fallthrough
 		case gdk.KEY_F11:
-			cwToSent = render("F11", templateCtx)
+			fallthrough
 		case gdk.KEY_F12:
-			cwToSent = render("F12", templateCtx)
+			SendCWMacro(key.KeyVal())
 		}
-		if cwToSent == "" {
-			return
-		}
-		emitInfomation(builder, fmt.Sprintf("Sending: %v", cwToSent), resources.InfoClassNotice)
-		go func() {
-			if runtime.GOOS == "windows" {
-				ShutdownRig()
-				time.Sleep(50 * time.Millisecond)
-				if len(state.GetState().RigConfig) > 0 {
-					cwSender.Init(&state.GetState().RigConfig[0])
-				}
-				setRadioStatusLight(resources.StatusLightBusy)
-			}
-			cwSender.EnableSendMorse()
-			cwSender.SendMorse(cwToSent)
-			if runtime.GOOS == "windows" {
-				cwSender.Deinit()
-				time.Sleep(50 * time.Millisecond)
-				ResetRig()
-			}
-		}()
 	})
 
 	win.ShowAll()

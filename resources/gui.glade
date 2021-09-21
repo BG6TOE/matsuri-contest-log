@@ -1098,6 +1098,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1113,6 +1114,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1128,6 +1130,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1143,6 +1146,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1158,6 +1162,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1173,6 +1178,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1188,6 +1194,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1203,6 +1210,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1218,6 +1226,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1233,6 +1242,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1248,6 +1258,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1263,6 +1274,7 @@ Build time: ?</property>
                     <property name="receives-default">True</property>
                     <style>
                       <class name="fn-buttons"/>
+                      <class name="monospace"/>
                     </style>
                   </object>
                   <packing>
@@ -1308,7 +1320,7 @@ Build time: ?</property>
               <object class="GtkLabel" id="statuslight-ntp">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">⬤ Time</property>
+                <property name="label" translatable="yes">Time</property>
                 <style>
                   <class name="statuslight-disabled"/>
                 </style>
@@ -1322,7 +1334,7 @@ Build time: ?</property>
               <object class="GtkLabel" id="statuslight-network">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">⬤ Network</property>
+                <property name="label" translatable="yes">Network</property>
                 <style>
                   <class name="statuslight-disabled"/>
                 </style>
@@ -1334,13 +1346,12 @@ Build time: ?</property>
             </child>
             <child>
               <object class="GtkButton" id="statuslight-radio">
-                <property name="label" translatable="yes">⬤ Radio</property>
+                <property name="label" translatable="yes">Radio</property>
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
-                <property name="relief">none</property>
+                <property name="relief">half</property>
                 <style>
                   <class name="statuslight-disabled"/>
                 </style>

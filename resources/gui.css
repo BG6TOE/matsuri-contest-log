@@ -7,9 +7,9 @@
 .infomation-notice { color: #009; }
 
 .statuslight-disabled { color: #ccc; }
-.statuslight-idle { color: #00c; }
-.statuslight-busy { color: #0c0; }
-.statuslight-init { color: #cc0; }
-.statuslight-error { color: #fcc; }
+.statuslight-idle { color: #009;}
+.statuslight-busy { color: #0c0;}
+.statuslight-init { color: #cc0;}
+.statuslight-error { color: #900;}
 
 .monospace { font-family: 'Courier New', Courier, monospace; }

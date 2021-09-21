@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
@@ -119,7 +120,11 @@ func (c *ConfigWindow) onSaveClickedRig(btn *gtk.Button) {
 
 	state.GetState().RigConfig = []state.RigConfig{currentRigConfig}
 
-	go ResetRig()
+	go func() {
+		ShutdownRig()
+		time.Sleep(1 * time.Second)
+		ResetRig()
+	}()
 	c.Hide()
 }
 

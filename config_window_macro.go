@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
@@ -21,12 +23,37 @@ const (
 	CONFIG_MACRO_COLUMN_MACRO
 )
 
+func (mc *macroConfig) UpdateField(col int, rowStr string, newText string) {
+	row, err := strconv.Atoi(rowStr)
+	if err != nil {
+		return
+	}
+	switch col {
+	case CONFIG_MACRO_COLUMN_TITLE:
+		state.GetState().MacroKeyMap[row].Title = newText
+	case CONFIG_MACRO_COLUMN_MACRO:
+		state.GetState().MacroKeyMap[row].Value = newText
+	}
+	newValue := state.GetState().MacroKeyMap[row]
+	iter, err := mc.macroListStore.GetIterFromString(rowStr)
+	if err != nil {
+		return
+	}
+	mc.macroListStore.Set(
+		iter,
+		[]int{CONFIG_MACRO_COLUMN_KEY, CONFIG_MACRO_COLUMN_TITLE, CONFIG_MACRO_COLUMN_MACRO},
+		[]interface{}{newValue.Key, newValue.Title, newValue.Value})
+}
+
 func (mc *macroConfig) createColumn(title string, id int, editable bool) *gtk.TreeViewColumn {
 	renderer, err := gtk.CellRendererTextNew()
 	if err != nil {
 		logrus.Fatal("Failed to create text cell renderer: ", err)
 	}
 	renderer.Set("editable", editable)
+	renderer.Connect("edited", func(r *gtk.CellRendererText, path string, newText string) {
+		mc.UpdateField(id, path, newText)
+	})
 	col, err := gtk.TreeViewColumnNewWithAttribute(title, renderer, "text", id)
 	if err != nil {
 		logrus.Fatal("Failed to create tree view column: ", err)
@@ -75,6 +102,8 @@ func (mc *macroConfig) initMacroConfig(builder *gtk.Builder) {
 	if state.GetState().MacroKeyMap == nil {
 		state.GetState().MacroKeyMap = mc.defaultMacro
 	}
+
+	InitMacroKey(builder)
 
 	for _, v := range state.GetState().MacroKeyMap {
 		mc.insertMacroKeySetting(v.Key, v.Title, v.Value)
