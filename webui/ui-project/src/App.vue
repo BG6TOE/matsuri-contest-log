@@ -12,7 +12,7 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-main>
+    <v-main :style="!websocketConnected ? 'filter: blur(0.5rem);' : ''">
       <LogList />
     </v-main>
 
@@ -23,6 +23,12 @@
     <v-footer padless>
       <v-col cols="12">MCL WebUI Version: {{ version.hash }}</v-col>
     </v-footer>
+
+    <v-overlay :value="!websocketConnected">
+      <v-alert dense type="error">
+        Failed to communicate with MCL program. Is it running now?
+      </v-alert>
+    </v-overlay>
   </v-app>
 </template>
 
