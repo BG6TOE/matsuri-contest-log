@@ -3,12 +3,13 @@ module matsu.dev/matsuri-contest-log
 go 1.16
 
 require (
-	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.4.2
+	github.com/google/uuid v1.3.0
 	github.com/gotk3/gotk3 v0.6.1
-	github.com/mattn/go-sqlite3 v1.14.8
+	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/sirupsen/logrus v1.8.1
-	go.bug.st/serial v1.3.2
-	golang.org/x/sys v0.0.0-20210917161153-d61c044b1678 // indirect
-	gopkg.in/yaml.v2 v2.2.4 // indirect
+	golang.org/x/net v0.0.0-20221002022538-bcab6841153b // indirect
+	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	google.golang.org/genproto v0.0.0-20220930163606-c98284e70a91 // indirect
+	google.golang.org/grpc v1.49.0
+	google.golang.org/protobuf v1.28.1
 )

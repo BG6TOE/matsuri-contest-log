@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+option go_package = "proto/.";
+
+message Station {
+  string callsign = 1; // Station Callsign
+  string grid = 2;     // Grid locator XX## or XX##xx
+  int32 region = 3;    // ITU region 1, 2, 3 (0 for unspecified)
+  int32 cq_zone = 4;   // CQ Zone
+  int32 itu_zone = 5;  // ITU Zone
+  int32 dxcc_id = 6;   // DXCC Id
+}
+
+message Contest {
+  string name = 1;
+  string uid = 2;
+  string filename = 3;
+  string category = 4;
+  int64 begin_timestamp = 5;
+  int64 end_timestamp = 6;
+}
+
+message ContestManifest {
+  string name = 1;
+  string display_name = 2;
+  repeated string exchange_data = 3;
+}
+
+enum Mode {
+  phone = 0;
+  phone_lsb = 1;
+  phone_usb = 2;
+  phone_am = 3;
+  phone_fm = 4;
+  cw = 128;
+  data = 129;
+  data_rtty = 130;
+  data_psk = 131;
+  data_ft8 = 132;
+  data_jt65 = 133;
+}
+
+enum QSOType {
+  qso = 0;
+  xqso = 1;
+}
+
+message QSO {
+  string uid = 1;
+  string local_callsign = 2;
+  string dx_callsign = 3;
+  int64 time = 4;
+  int64 freq = 5;
+  Mode mode = 6;
+  bool is_satellite = 7;
+  repeated string exch_sent = 8;
+  repeated string exch_rcvd = 9;
+  QSOType type = 10;
+  string operator = 11;
+}
+
+enum QSOOperationType {
+  add_or_update = 0; // Adds or update the QSO, the QSO data should exist in
+                     // previous binlog.
+  delete = 2;
+}
+
+message QSOOp {
+  QSOOperationType type = 1;
+  string uid = 2;
+}
+
+message BinlogMessage {
+  uint64 serial = 1; // A unique number counting from 0 for a single database
+  // 2 and 3 are reserved
+  oneof message {
+    QSOOp qso_op = 4;
+    QSO qso = 5;
+  }
+}
+
+message SnapshotMessage {
+  // A snapshot message is a set of calculated QSOs calculated based on the
+  // binlog, in UID asending order
+  repeated QSO qso = 1;
+  // Sequence is the last serial number for calculating this snapshot, means all
+  // messages from [0 to serial) are considered in this snapshot.
+  uint64 serial = 2;
+}
+
+message BinlogMessageSet {
+  // A binlog message set is a set of binlog messages that should be atomically
+  // inserted into the database
+  repeated BinlogMessage messages = 1;
+}
+
+enum ResultCode {
+    success = 0;
+    invalid_binlog = 1;
+}
+
+message StandardResponse {
+  ResultCode result_code = 1;
+  string error_message = 2;
+}
+
+message RetrieveBinlogRequest {
+  uint64 serial_start = 1;
+  uint64 serial_end = 2;
+}
+
+service Binlog {
+  rpc Push(BinlogMessageSet) returns (StandardResponse);
+  rpc Retrieve(RetrieveBinlogRequest) returns (BinlogMessageSet);
+  rpc RetrieveSnapshot(RetrieveBinlogRequest) returns (SnapshotMessage);
+}

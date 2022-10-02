@@ -26,8 +26,6 @@ build_Mingw() {
     ldd MatsuriLog.exe | grep '\/mingw.*\.dll' -o | xargs -I{} cp -n "{}" .
 }
 
-./webui/build.sh
-
 if uname | grep -q "Linux" -; then
  build_Linux
  exit 0
