@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,39 +40,77 @@ class QSOInput extends StatefulWidget {
   State<QSOInput> createState() => _QSOInputState();
 }
 
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
 class _QSOInputState extends State<QSOInput> {
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: const <Widget>[
+      children: <Widget>[
         Expanded(
             child: TextField(
-                decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Callsign',
-        ))),
-        SizedBox(width: 4, height: 1),
+          style: const TextStyle(fontFamily: "monospace"),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Callsign',
+            labelStyle: TextStyle(fontFamily: "serif"),
+          ),
+          inputFormatters: <TextInputFormatter>[
+            LengthLimitingTextInputFormatter(10),
+            UpperCaseTextFormatter(),
+          ],
+        )),
+        const SizedBox(width: 4, height: 1),
         Expanded(
             child: TextField(
-                decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'RST Sent',
-        ))),
-        SizedBox(width: 4, height: 1),
+          style: const TextStyle(fontFamily: "monospace"),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(fontFamily: "serif"),
+            labelText: 'RST Sent',
+          ),
+          inputFormatters: <TextInputFormatter>[
+            LengthLimitingTextInputFormatter(5),
+            UpperCaseTextFormatter(),
+          ],
+        )),
+        const SizedBox(width: 4, height: 1),
         Expanded(
             child: TextField(
-                decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'RST Rcvd',
-        ))),
-        SizedBox(width: 4, height: 1),
+          style: const TextStyle(fontFamily: "monospace"),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(fontFamily: "serif"),
+            labelText: 'RST Rcvd',
+          ),
+          inputFormatters: <TextInputFormatter>[
+            LengthLimitingTextInputFormatter(5),
+            UpperCaseTextFormatter(),
+          ],
+        )),
+        const SizedBox(width: 4, height: 1),
         Expanded(
             child: TextField(
-                decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Exch Rcvd',
-        ))),
+          style: const TextStyle(fontFamily: "monospace"),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(fontFamily: "serif"),
+            labelText: 'Exch Rcvd',
+          ),
+          inputFormatters: <TextInputFormatter>[
+            UpperCaseTextFormatter(),
+          ],
+        )),
       ],
     );
   }
@@ -86,7 +127,12 @@ class HotKeyButton extends TextButton {
   final String text;
   HotKeyButton({super.key, required this.text, required super.onPressed})
       : super(
-            child: Text(text, textAlign: TextAlign.left, textWidthBasis: TextWidthBasis.parent, softWrap: false,),
+            child: Text(
+              text,
+              textAlign: TextAlign.left,
+              textWidthBasis: TextWidthBasis.parent,
+              softWrap: false,
+            ),
             style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.black12)));
 }
@@ -153,6 +199,52 @@ class GuiMainPage extends StatefulWidget {
   State<GuiMainPage> createState() => _GuiMainPageState();
 }
 
+class GuiTitle extends StatefulWidget {
+  const GuiTitle({super.key});
+
+  @override
+  State<GuiTitle> createState() => _GuiTitleState();
+}
+
+class _GuiTitleState extends State<GuiTitle> {
+  DateTime _current = DateTime.now();
+
+  void refreshTime() {
+    _current = DateTime.now();
+    Timer(Duration(milliseconds: 1000 - _current.millisecond), () {
+      setState(() {
+        refreshTime();
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    refreshTime();
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    String year = dateTime.year.toString().padLeft(4, '0');
+    String month = dateTime.month.toString().padLeft(2, '0');
+    String day = dateTime.day.toString().padLeft(2, '0');
+    String hour = dateTime.hour.toString().padLeft(2, '0');
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+    String second = dateTime.second.toString().padLeft(2, '0');
+    String timezone = dateTime.timeZoneName;
+
+    return "$year-$month-$day $hour:$minute:$second $timezone";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String currentUtc = formatDateTime(_current.toUtc());
+    final String currentLocal = formatDateTime(_current);
+
+    return Text("Contest Name | $currentUtc | $currentLocal | Current Frequency");
+  }
+}
+
 class _GuiMainPageState extends State<GuiMainPage> {
   int _counter = 0;
 
@@ -176,11 +268,6 @@ class _GuiMainPageState extends State<GuiMainPage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Contest Name | Current Time | Current Frequency"),
-      ),
       body: Row(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
@@ -218,17 +305,18 @@ class _GuiMainPageState extends State<GuiMainPage> {
                     // horizontal).
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const <Widget>[
-                  SizedBox(width: 1, height: 8),
-                  QSOInput(),
-                  SizedBox(width: 1, height: 4),
-                  Text(
+                    children: <Widget>[
+                  GuiTitle(),
+                  const SizedBox(width: 1, height: 8),
+                  const QSOInput(),
+                  const SizedBox(width: 1, height: 4),
+                  const Text(
                     "BY AS/CHINA, Zn 24, ITU 44",
                     textAlign: TextAlign.left,
                     textWidthBasis: TextWidthBasis.parent,
                   ),
-                  SizedBox(width: 1, height: 4),
-                  HotkeyPanel(),
+                  const SizedBox(width: 1, height: 4),
+                  const HotkeyPanel(),
                 ])),
             const SizedBox(width: 8, height: 1),
           ]),
