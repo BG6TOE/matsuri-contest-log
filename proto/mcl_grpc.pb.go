@@ -37,7 +37,7 @@ func NewBinlogClient(cc grpc.ClientConnInterface) BinlogClient {
 
 func (c *binlogClient) Push(ctx context.Context, in *BinlogMessageSet, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
-	err := c.cc.Invoke(ctx, "/Binlog/Push", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Binlog/Push", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *binlogClient) Push(ctx context.Context, in *BinlogMessageSet, opts ...g
 
 func (c *binlogClient) Retrieve(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*BinlogMessageSet, error) {
 	out := new(BinlogMessageSet)
-	err := c.cc.Invoke(ctx, "/Binlog/Retrieve", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Binlog/Retrieve", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *binlogClient) Retrieve(ctx context.Context, in *RetrieveBinlogRequest, 
 
 func (c *binlogClient) RetrieveSnapshot(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*SnapshotMessage, error) {
 	out := new(SnapshotMessage)
-	err := c.cc.Invoke(ctx, "/Binlog/RetrieveSnapshot", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Binlog/RetrieveSnapshot", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func _Binlog_Push_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Binlog/Push",
+		FullMethod: "/mcl.Binlog/Push",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BinlogServer).Push(ctx, req.(*BinlogMessageSet))
@@ -126,7 +126,7 @@ func _Binlog_Retrieve_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Binlog/Retrieve",
+		FullMethod: "/mcl.Binlog/Retrieve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BinlogServer).Retrieve(ctx, req.(*RetrieveBinlogRequest))
@@ -144,7 +144,7 @@ func _Binlog_RetrieveSnapshot_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Binlog/RetrieveSnapshot",
+		FullMethod: "/mcl.Binlog/RetrieveSnapshot",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BinlogServer).RetrieveSnapshot(ctx, req.(*RetrieveBinlogRequest))
@@ -156,7 +156,7 @@ func _Binlog_RetrieveSnapshot_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Binlog_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Binlog",
+	ServiceName: "mcl.Binlog",
 	HandlerType: (*BinlogServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

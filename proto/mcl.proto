@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package mcl;
+
 option go_package = "proto/.";
 
 message Station {

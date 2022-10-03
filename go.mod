@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/go-flutter-desktop/go-flutter v0.52.2
+	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/gotk3/gotk3 v0.6.1
 	github.com/mattn/go-sqlite3 v1.14.15

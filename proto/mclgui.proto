@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package mcl;
+
+option go_package = "proto/.";
+
+import "proto/mcl.proto";
+import "google/protobuf/empty.proto";
+
+message QSOMessage {
+  string dx_callsign = 1;
+  string operator = 2;
+  repeated string exchange_sent = 3;
+  repeated string exchange_rcvd = 4;
+}
+
+message DraftQSOMessage { string dx_callsign = 1; }
+
+message ScoreResponse {
+  map<string, int64> category_score = 1;
+}
+
+service GuiServer {
+  rpc LogQSO(QSOMessage) returns (mcl.QSO);
+  rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);
+  rpc DeleteQSO(mcl.QSO) returns (mcl.StandardResponse);
+
+  rpc GetScore(google.protobuf.Empty) returns (ScoreResponse);
+}
+
+message Spot {
+  string dx_callsign = 1;
+  string de_callsign = 2;
+  int64 spot_timestamp = 3;
+  int64 spot_frequency = 4;
+  string memo = 5;
+}
+
+message CallsignLookupResultCatrgory { repeated string possible_callsigns = 1; }
+
+message BandStatus { map<int64, string> band_status = 1; }
+
+message CallsignLookupResult {
+  map<string, CallsignLookupResultCatrgory> database_lookup = 1; // category -> list of possible callsigns
+  map<string, BandStatus> band_status = 2; // mode -> per band status of the mode
+}
+
+service RealtimeGuiServer {
+  // Defines a series of extended functions for server
+
+  // Prepares a QSO, used to generate default QSO content for a specific DX
+  // station. e.g. The server will generate exchange message to be sent (like
+  // serial number) and expected message from the DX station (like zone)
+  rpc DraftQSO(DraftQSOMessage) returns (QSOMessage);
+
+  // Retrieves raw binlog messages from the backend.
+  rpc RetrieveQSOUpdates(google.protobuf.Empty) returns (stream BinlogMessage);
+
+  // Connects to and waiting for cooked spots.
+  rpc RetrieveTelnet(google.protobuf.Empty) returns (stream Spot);
+  rpc SendSpotToTelnet(Spot) returns (mcl.StandardResponse);
+}
+
+enum RadioMode {
+  UNKNOWN = 0;
+  CW = 1;
+  CWR = 2;
+  LSB = 3;
+  USB = 4;
+  AM = 5;
+  FM = 6;
+  DATAL = 7;
+  DATAU = 8;
+}
+
+message RadioStatus {
+  int64 freq = 1;
+  RadioMode mode = 2;
+  bool tx = 3;
+}
+
+message RadioCommands {
+  oneof op {
+    string send_cw_message = 1;
+    int32 set_cw_speed = 2;
+    RadioMode set_radio_band_mode = 3;
+    bool abort = 4;
+  }
+}
+
+service RadioServer {
+  rpc GetRadioMode(google.protobuf.Empty) returns (RadioStatus);
+  rpc PollRadioMode(google.protobuf.Empty) returns (stream RadioStatus);
+  rpc RadioOp(RadioCommands) returns (mcl.StandardResponse);
+}
