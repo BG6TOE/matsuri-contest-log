@@ -10,8 +10,11 @@ import "google/protobuf/empty.proto";
 message QSOMessage {
   string dx_callsign = 1;
   string operator = 2;
-  repeated string exchange_sent = 3;
-  repeated string exchange_rcvd = 4;
+  int64 time = 3;
+  int64 freq = 4;
+  mcl.Mode mode = 5;
+  repeated string exchange_sent = 6;
+  repeated string exchange_rcvd = 7;
 }
 
 message DraftQSOMessage { string dx_callsign = 1; }
@@ -20,7 +23,7 @@ message ScoreResponse {
   map<string, int64> category_score = 1;
 }
 
-service GuiServer {
+service Gui {
   rpc LogQSO(QSOMessage) returns (mcl.QSO);
   rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);
   rpc DeleteQSO(mcl.QSO) returns (mcl.StandardResponse);
@@ -88,7 +91,7 @@ message RadioCommands {
   }
 }
 
-service RadioServer {
+service Radio {
   rpc GetRadioMode(google.protobuf.Empty) returns (RadioStatus);
   rpc PollRadioMode(google.protobuf.Empty) returns (stream RadioStatus);
   rpc RadioOp(RadioCommands) returns (mcl.StandardResponse);

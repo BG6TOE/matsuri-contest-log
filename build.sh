@@ -8,7 +8,7 @@ COMMITID=$(git rev-parse HEAD)
 BUILDTIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 VERSION=$(git describe)
 
-GOLDFLAGS="-X main.GitCommit=$COMMITID -X main.BuildTime=$BUILDTIME -X main.Version=$VERSION"
+GOLDFLAGS="-X version.GitCommit=$COMMITID -X version.BuildTime=$BUILDTIME -X version.Version=$VERSION"
 
 echo "Current OS is $OS"
 

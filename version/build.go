@@ -1,4 +1,4 @@
-package main
+package version
 
 var GitCommit string
 var BuildTime string

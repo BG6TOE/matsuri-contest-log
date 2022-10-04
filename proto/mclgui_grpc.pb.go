@@ -8,10 +8,10 @@ package __
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,194 +19,194 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// GuiServerClient is the client API for GuiServer service.
+// GuiClient is the client API for Gui service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GuiServerClient interface {
+type GuiClient interface {
 	LogQSO(ctx context.Context, in *QSOMessage, opts ...grpc.CallOption) (*QSO, error)
-	GetActiveQSOs(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error)
+	GetActiveQSOs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error)
 	DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error)
-	GetScore(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ScoreResponse, error)
+	GetScore(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ScoreResponse, error)
 }
 
-type guiServerClient struct {
+type guiClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGuiServerClient(cc grpc.ClientConnInterface) GuiServerClient {
-	return &guiServerClient{cc}
+func NewGuiClient(cc grpc.ClientConnInterface) GuiClient {
+	return &guiClient{cc}
 }
 
-func (c *guiServerClient) LogQSO(ctx context.Context, in *QSOMessage, opts ...grpc.CallOption) (*QSO, error) {
+func (c *guiClient) LogQSO(ctx context.Context, in *QSOMessage, opts ...grpc.CallOption) (*QSO, error) {
 	out := new(QSO)
-	err := c.cc.Invoke(ctx, "/mcl.GuiServer/LogQSO", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/LogQSO", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *guiServerClient) GetActiveQSOs(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error) {
+func (c *guiClient) GetActiveQSOs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error) {
 	out := new(SnapshotMessage)
-	err := c.cc.Invoke(ctx, "/mcl.GuiServer/GetActiveQSOs", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/GetActiveQSOs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *guiServerClient) DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *guiClient) DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
-	err := c.cc.Invoke(ctx, "/mcl.GuiServer/DeleteQSO", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/DeleteQSO", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *guiServerClient) GetScore(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ScoreResponse, error) {
+func (c *guiClient) GetScore(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ScoreResponse, error) {
 	out := new(ScoreResponse)
-	err := c.cc.Invoke(ctx, "/mcl.GuiServer/GetScore", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/GetScore", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GuiServerServer is the server API for GuiServer service.
-// All implementations must embed UnimplementedGuiServerServer
+// GuiServer is the server API for Gui service.
+// All implementations must embed UnimplementedGuiServer
 // for forward compatibility
-type GuiServerServer interface {
+type GuiServer interface {
 	LogQSO(context.Context, *QSOMessage) (*QSO, error)
-	GetActiveQSOs(context.Context, *empty.Empty) (*SnapshotMessage, error)
+	GetActiveQSOs(context.Context, *emptypb.Empty) (*SnapshotMessage, error)
 	DeleteQSO(context.Context, *QSO) (*StandardResponse, error)
-	GetScore(context.Context, *empty.Empty) (*ScoreResponse, error)
-	mustEmbedUnimplementedGuiServerServer()
+	GetScore(context.Context, *emptypb.Empty) (*ScoreResponse, error)
+	mustEmbedUnimplementedGuiServer()
 }
 
-// UnimplementedGuiServerServer must be embedded to have forward compatible implementations.
-type UnimplementedGuiServerServer struct {
+// UnimplementedGuiServer must be embedded to have forward compatible implementations.
+type UnimplementedGuiServer struct {
 }
 
-func (UnimplementedGuiServerServer) LogQSO(context.Context, *QSOMessage) (*QSO, error) {
+func (UnimplementedGuiServer) LogQSO(context.Context, *QSOMessage) (*QSO, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogQSO not implemented")
 }
-func (UnimplementedGuiServerServer) GetActiveQSOs(context.Context, *empty.Empty) (*SnapshotMessage, error) {
+func (UnimplementedGuiServer) GetActiveQSOs(context.Context, *emptypb.Empty) (*SnapshotMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActiveQSOs not implemented")
 }
-func (UnimplementedGuiServerServer) DeleteQSO(context.Context, *QSO) (*StandardResponse, error) {
+func (UnimplementedGuiServer) DeleteQSO(context.Context, *QSO) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteQSO not implemented")
 }
-func (UnimplementedGuiServerServer) GetScore(context.Context, *empty.Empty) (*ScoreResponse, error) {
+func (UnimplementedGuiServer) GetScore(context.Context, *emptypb.Empty) (*ScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScore not implemented")
 }
-func (UnimplementedGuiServerServer) mustEmbedUnimplementedGuiServerServer() {}
+func (UnimplementedGuiServer) mustEmbedUnimplementedGuiServer() {}
 
-// UnsafeGuiServerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GuiServerServer will
+// UnsafeGuiServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GuiServer will
 // result in compilation errors.
-type UnsafeGuiServerServer interface {
-	mustEmbedUnimplementedGuiServerServer()
+type UnsafeGuiServer interface {
+	mustEmbedUnimplementedGuiServer()
 }
 
-func RegisterGuiServerServer(s grpc.ServiceRegistrar, srv GuiServerServer) {
-	s.RegisterService(&GuiServer_ServiceDesc, srv)
+func RegisterGuiServer(s grpc.ServiceRegistrar, srv GuiServer) {
+	s.RegisterService(&Gui_ServiceDesc, srv)
 }
 
-func _GuiServer_LogQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Gui_LogQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QSOMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GuiServerServer).LogQSO(ctx, in)
+		return srv.(GuiServer).LogQSO(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.GuiServer/LogQSO",
+		FullMethod: "/mcl.Gui/LogQSO",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GuiServerServer).LogQSO(ctx, req.(*QSOMessage))
+		return srv.(GuiServer).LogQSO(ctx, req.(*QSOMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GuiServer_GetActiveQSOs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
+func _Gui_GetActiveQSOs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GuiServerServer).GetActiveQSOs(ctx, in)
+		return srv.(GuiServer).GetActiveQSOs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.GuiServer/GetActiveQSOs",
+		FullMethod: "/mcl.Gui/GetActiveQSOs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GuiServerServer).GetActiveQSOs(ctx, req.(*empty.Empty))
+		return srv.(GuiServer).GetActiveQSOs(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GuiServer_DeleteQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Gui_DeleteQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QSO)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GuiServerServer).DeleteQSO(ctx, in)
+		return srv.(GuiServer).DeleteQSO(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.GuiServer/DeleteQSO",
+		FullMethod: "/mcl.Gui/DeleteQSO",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GuiServerServer).DeleteQSO(ctx, req.(*QSO))
+		return srv.(GuiServer).DeleteQSO(ctx, req.(*QSO))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GuiServer_GetScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
+func _Gui_GetScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GuiServerServer).GetScore(ctx, in)
+		return srv.(GuiServer).GetScore(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.GuiServer/GetScore",
+		FullMethod: "/mcl.Gui/GetScore",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GuiServerServer).GetScore(ctx, req.(*empty.Empty))
+		return srv.(GuiServer).GetScore(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GuiServer_ServiceDesc is the grpc.ServiceDesc for GuiServer service.
+// Gui_ServiceDesc is the grpc.ServiceDesc for Gui service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var GuiServer_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcl.GuiServer",
-	HandlerType: (*GuiServerServer)(nil),
+var Gui_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mcl.Gui",
+	HandlerType: (*GuiServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "LogQSO",
-			Handler:    _GuiServer_LogQSO_Handler,
+			Handler:    _Gui_LogQSO_Handler,
 		},
 		{
 			MethodName: "GetActiveQSOs",
-			Handler:    _GuiServer_GetActiveQSOs_Handler,
+			Handler:    _Gui_GetActiveQSOs_Handler,
 		},
 		{
 			MethodName: "DeleteQSO",
-			Handler:    _GuiServer_DeleteQSO_Handler,
+			Handler:    _Gui_DeleteQSO_Handler,
 		},
 		{
 			MethodName: "GetScore",
-			Handler:    _GuiServer_GetScore_Handler,
+			Handler:    _Gui_GetScore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -222,9 +222,9 @@ type RealtimeGuiServerClient interface {
 	// serial number) and expected message from the DX station (like zone)
 	DraftQSO(ctx context.Context, in *DraftQSOMessage, opts ...grpc.CallOption) (*QSOMessage, error)
 	// Retrieves raw binlog messages from the backend.
-	RetrieveQSOUpdates(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error)
+	RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error)
 	// Connects to and waiting for cooked spots.
-	RetrieveTelnet(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error)
+	RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error)
 	SendSpotToTelnet(ctx context.Context, in *Spot, opts ...grpc.CallOption) (*StandardResponse, error)
 }
 
@@ -245,7 +245,7 @@ func (c *realtimeGuiServerClient) DraftQSO(ctx context.Context, in *DraftQSOMess
 	return out, nil
 }
 
-func (c *realtimeGuiServerClient) RetrieveQSOUpdates(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error) {
+func (c *realtimeGuiServerClient) RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &RealtimeGuiServer_ServiceDesc.Streams[0], "/mcl.RealtimeGuiServer/RetrieveQSOUpdates", opts...)
 	if err != nil {
 		return nil, err
@@ -277,7 +277,7 @@ func (x *realtimeGuiServerRetrieveQSOUpdatesClient) Recv() (*BinlogMessage, erro
 	return m, nil
 }
 
-func (c *realtimeGuiServerClient) RetrieveTelnet(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error) {
+func (c *realtimeGuiServerClient) RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error) {
 	stream, err := c.cc.NewStream(ctx, &RealtimeGuiServer_ServiceDesc.Streams[1], "/mcl.RealtimeGuiServer/RetrieveTelnet", opts...)
 	if err != nil {
 		return nil, err
@@ -327,9 +327,9 @@ type RealtimeGuiServerServer interface {
 	// serial number) and expected message from the DX station (like zone)
 	DraftQSO(context.Context, *DraftQSOMessage) (*QSOMessage, error)
 	// Retrieves raw binlog messages from the backend.
-	RetrieveQSOUpdates(*empty.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error
+	RetrieveQSOUpdates(*emptypb.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error
 	// Connects to and waiting for cooked spots.
-	RetrieveTelnet(*empty.Empty, RealtimeGuiServer_RetrieveTelnetServer) error
+	RetrieveTelnet(*emptypb.Empty, RealtimeGuiServer_RetrieveTelnetServer) error
 	SendSpotToTelnet(context.Context, *Spot) (*StandardResponse, error)
 	mustEmbedUnimplementedRealtimeGuiServerServer()
 }
@@ -341,10 +341,10 @@ type UnimplementedRealtimeGuiServerServer struct {
 func (UnimplementedRealtimeGuiServerServer) DraftQSO(context.Context, *DraftQSOMessage) (*QSOMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DraftQSO not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) RetrieveQSOUpdates(*empty.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error {
+func (UnimplementedRealtimeGuiServerServer) RetrieveQSOUpdates(*emptypb.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method RetrieveQSOUpdates not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) RetrieveTelnet(*empty.Empty, RealtimeGuiServer_RetrieveTelnetServer) error {
+func (UnimplementedRealtimeGuiServerServer) RetrieveTelnet(*emptypb.Empty, RealtimeGuiServer_RetrieveTelnetServer) error {
 	return status.Errorf(codes.Unimplemented, "method RetrieveTelnet not implemented")
 }
 func (UnimplementedRealtimeGuiServerServer) SendSpotToTelnet(context.Context, *Spot) (*StandardResponse, error) {
@@ -382,7 +382,7 @@ func _RealtimeGuiServer_DraftQSO_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _RealtimeGuiServer_RetrieveQSOUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(empty.Empty)
+	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -403,7 +403,7 @@ func (x *realtimeGuiServerRetrieveQSOUpdatesServer) Send(m *BinlogMessage) error
 }
 
 func _RealtimeGuiServer_RetrieveTelnet_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(empty.Empty)
+	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -472,38 +472,38 @@ var RealtimeGuiServer_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "proto/mclgui.proto",
 }
 
-// RadioServerClient is the client API for RadioServer service.
+// RadioClient is the client API for Radio service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RadioServerClient interface {
-	GetRadioMode(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*RadioStatus, error)
-	PollRadioMode(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RadioServer_PollRadioModeClient, error)
+type RadioClient interface {
+	GetRadioMode(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RadioStatus, error)
+	PollRadioMode(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (Radio_PollRadioModeClient, error)
 	RadioOp(ctx context.Context, in *RadioCommands, opts ...grpc.CallOption) (*StandardResponse, error)
 }
 
-type radioServerClient struct {
+type radioClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRadioServerClient(cc grpc.ClientConnInterface) RadioServerClient {
-	return &radioServerClient{cc}
+func NewRadioClient(cc grpc.ClientConnInterface) RadioClient {
+	return &radioClient{cc}
 }
 
-func (c *radioServerClient) GetRadioMode(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*RadioStatus, error) {
+func (c *radioClient) GetRadioMode(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RadioStatus, error) {
 	out := new(RadioStatus)
-	err := c.cc.Invoke(ctx, "/mcl.RadioServer/GetRadioMode", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Radio/GetRadioMode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *radioServerClient) PollRadioMode(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (RadioServer_PollRadioModeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RadioServer_ServiceDesc.Streams[0], "/mcl.RadioServer/PollRadioMode", opts...)
+func (c *radioClient) PollRadioMode(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (Radio_PollRadioModeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Radio_ServiceDesc.Streams[0], "/mcl.Radio/PollRadioMode", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &radioServerPollRadioModeClient{stream}
+	x := &radioPollRadioModeClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -513,16 +513,16 @@ func (c *radioServerClient) PollRadioMode(ctx context.Context, in *empty.Empty, 
 	return x, nil
 }
 
-type RadioServer_PollRadioModeClient interface {
+type Radio_PollRadioModeClient interface {
 	Recv() (*RadioStatus, error)
 	grpc.ClientStream
 }
 
-type radioServerPollRadioModeClient struct {
+type radioPollRadioModeClient struct {
 	grpc.ClientStream
 }
 
-func (x *radioServerPollRadioModeClient) Recv() (*RadioStatus, error) {
+func (x *radioPollRadioModeClient) Recv() (*RadioStatus, error) {
 	m := new(RadioStatus)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -530,128 +530,128 @@ func (x *radioServerPollRadioModeClient) Recv() (*RadioStatus, error) {
 	return m, nil
 }
 
-func (c *radioServerClient) RadioOp(ctx context.Context, in *RadioCommands, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *radioClient) RadioOp(ctx context.Context, in *RadioCommands, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
-	err := c.cc.Invoke(ctx, "/mcl.RadioServer/RadioOp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.Radio/RadioOp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RadioServerServer is the server API for RadioServer service.
-// All implementations must embed UnimplementedRadioServerServer
+// RadioServer is the server API for Radio service.
+// All implementations must embed UnimplementedRadioServer
 // for forward compatibility
-type RadioServerServer interface {
-	GetRadioMode(context.Context, *empty.Empty) (*RadioStatus, error)
-	PollRadioMode(*empty.Empty, RadioServer_PollRadioModeServer) error
+type RadioServer interface {
+	GetRadioMode(context.Context, *emptypb.Empty) (*RadioStatus, error)
+	PollRadioMode(*emptypb.Empty, Radio_PollRadioModeServer) error
 	RadioOp(context.Context, *RadioCommands) (*StandardResponse, error)
-	mustEmbedUnimplementedRadioServerServer()
+	mustEmbedUnimplementedRadioServer()
 }
 
-// UnimplementedRadioServerServer must be embedded to have forward compatible implementations.
-type UnimplementedRadioServerServer struct {
+// UnimplementedRadioServer must be embedded to have forward compatible implementations.
+type UnimplementedRadioServer struct {
 }
 
-func (UnimplementedRadioServerServer) GetRadioMode(context.Context, *empty.Empty) (*RadioStatus, error) {
+func (UnimplementedRadioServer) GetRadioMode(context.Context, *emptypb.Empty) (*RadioStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRadioMode not implemented")
 }
-func (UnimplementedRadioServerServer) PollRadioMode(*empty.Empty, RadioServer_PollRadioModeServer) error {
+func (UnimplementedRadioServer) PollRadioMode(*emptypb.Empty, Radio_PollRadioModeServer) error {
 	return status.Errorf(codes.Unimplemented, "method PollRadioMode not implemented")
 }
-func (UnimplementedRadioServerServer) RadioOp(context.Context, *RadioCommands) (*StandardResponse, error) {
+func (UnimplementedRadioServer) RadioOp(context.Context, *RadioCommands) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RadioOp not implemented")
 }
-func (UnimplementedRadioServerServer) mustEmbedUnimplementedRadioServerServer() {}
+func (UnimplementedRadioServer) mustEmbedUnimplementedRadioServer() {}
 
-// UnsafeRadioServerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RadioServerServer will
+// UnsafeRadioServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RadioServer will
 // result in compilation errors.
-type UnsafeRadioServerServer interface {
-	mustEmbedUnimplementedRadioServerServer()
+type UnsafeRadioServer interface {
+	mustEmbedUnimplementedRadioServer()
 }
 
-func RegisterRadioServerServer(s grpc.ServiceRegistrar, srv RadioServerServer) {
-	s.RegisterService(&RadioServer_ServiceDesc, srv)
+func RegisterRadioServer(s grpc.ServiceRegistrar, srv RadioServer) {
+	s.RegisterService(&Radio_ServiceDesc, srv)
 }
 
-func _RadioServer_GetRadioMode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
+func _Radio_GetRadioMode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RadioServerServer).GetRadioMode(ctx, in)
+		return srv.(RadioServer).GetRadioMode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.RadioServer/GetRadioMode",
+		FullMethod: "/mcl.Radio/GetRadioMode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RadioServerServer).GetRadioMode(ctx, req.(*empty.Empty))
+		return srv.(RadioServer).GetRadioMode(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RadioServer_PollRadioMode_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(empty.Empty)
+func _Radio_PollRadioMode_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RadioServerServer).PollRadioMode(m, &radioServerPollRadioModeServer{stream})
+	return srv.(RadioServer).PollRadioMode(m, &radioPollRadioModeServer{stream})
 }
 
-type RadioServer_PollRadioModeServer interface {
+type Radio_PollRadioModeServer interface {
 	Send(*RadioStatus) error
 	grpc.ServerStream
 }
 
-type radioServerPollRadioModeServer struct {
+type radioPollRadioModeServer struct {
 	grpc.ServerStream
 }
 
-func (x *radioServerPollRadioModeServer) Send(m *RadioStatus) error {
+func (x *radioPollRadioModeServer) Send(m *RadioStatus) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _RadioServer_RadioOp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Radio_RadioOp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RadioCommands)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RadioServerServer).RadioOp(ctx, in)
+		return srv.(RadioServer).RadioOp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.RadioServer/RadioOp",
+		FullMethod: "/mcl.Radio/RadioOp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RadioServerServer).RadioOp(ctx, req.(*RadioCommands))
+		return srv.(RadioServer).RadioOp(ctx, req.(*RadioCommands))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RadioServer_ServiceDesc is the grpc.ServiceDesc for RadioServer service.
+// Radio_ServiceDesc is the grpc.ServiceDesc for Radio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RadioServer_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcl.RadioServer",
-	HandlerType: (*RadioServerServer)(nil),
+var Radio_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mcl.Radio",
+	HandlerType: (*RadioServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetRadioMode",
-			Handler:    _RadioServer_GetRadioMode_Handler,
+			Handler:    _Radio_GetRadioMode_Handler,
 		},
 		{
 			MethodName: "RadioOp",
-			Handler:    _RadioServer_RadioOp_Handler,
+			Handler:    _Radio_RadioOp_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "PollRadioMode",
-			Handler:       _RadioServer_PollRadioMode_Handler,
+			Handler:       _Radio_PollRadioMode_Handler,
 			ServerStreams: true,
 		},
 	},

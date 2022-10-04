@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net"
-	"net/url"
 	"strconv"
 	"sync"
 	"time"
@@ -27,15 +25,6 @@ const (
 	MinSupportedDatabaseVersion = 1
 	DatabaseVersion             = 1
 )
-
-type binlogServer struct {
-	pb.UnimplementedBinlogServer
-
-	nextSerialNumber uint64
-	mutex            sync.RWMutex
-
-	mclServer *MclServer
-}
 
 type ContextManifest struct {
 	Uid                string    `json:"uid"`
@@ -68,32 +57,33 @@ type snapshotEvaluator struct {
 }
 
 type MclServer struct {
-	binlogServer *binlogServer
+	pb.UnimplementedBinlogServer
+
+	nextSerialNumber uint64
+	mutex            sync.RWMutex
 
 	currentContest ContextManifest
 	db             *sql.DB
 	evaluator      *snapshotEvaluator
-
-	grpcServer *grpc.Server
 }
 
-func (s *binlogServer) rlock() {
+func (s *MclServer) rlock() {
 	s.mutex.RLock()
 }
 
-func (s *binlogServer) runlock() {
+func (s *MclServer) runlock() {
 	s.mutex.RUnlock()
 }
 
-func (s *binlogServer) lock() {
+func (s *MclServer) lock() {
 	s.mutex.Lock()
 }
 
-func (s *binlogServer) unlock() {
+func (s *MclServer) unlock() {
 	s.mutex.Unlock()
 }
 
-func (s *binlogServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) (*pb.StandardResponse, error) {
+func (s *MclServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) (*pb.StandardResponse, error) {
 	s.lock()
 	defer s.unlock()
 
@@ -105,7 +95,7 @@ func (s *binlogServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) 
 	}
 
 	expectedSerial := s.nextSerialNumber
-	stagingSnapshot := s.mclServer.evaluator.Copy()
+	stagingSnapshot := s.evaluator.Copy()
 
 	for idx, message := range messages.GetMessages() {
 		if message == nil {
@@ -122,7 +112,7 @@ func (s *binlogServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) 
 		expectedSerial++
 	}
 
-	tx, err := s.mclServer.db.BeginTx(ctx, nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to prepare database transaction: %s", err.Error())
 	}
@@ -157,7 +147,7 @@ func (s *binlogServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) 
 
 	tx.Commit()
 	s.nextSerialNumber = expectedSerial
-	s.mclServer.evaluator = stagingSnapshot
+	s.evaluator = stagingSnapshot
 
 	logrus.Infof("database now have %d active QSOs", int(len(stagingSnapshot.activeQso)))
 
@@ -167,11 +157,11 @@ func (s *binlogServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) 
 	}, nil
 }
 
-func (s *binlogServer) Retrieve(ctx context.Context, req *pb.RetrieveBinlogRequest) (*pb.BinlogMessageSet, error) {
+func (s *MclServer) Retrieve(ctx context.Context, req *pb.RetrieveBinlogRequest) (*pb.BinlogMessageSet, error) {
 	ret := &pb.BinlogMessageSet{}
 	ret.Messages = make([]*pb.BinlogMessage, 0)
 
-	res, err := s.mclServer.db.Query("SELECT content FROM binlog WHERE serial >= ? AND serial < ?")
+	res, err := s.db.Query("SELECT content FROM binlog WHERE serial >= ? AND serial < ?", req.GetSerialStart(), req.GetSerialEnd())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to retrieve data: %v", err)
 	}
@@ -188,22 +178,24 @@ func (s *binlogServer) Retrieve(ctx context.Context, req *pb.RetrieveBinlogReque
 	return ret, nil
 }
 
-func (s *binlogServer) RetrieveSnapshot(ctx context.Context, req *pb.RetrieveBinlogRequest) (*pb.SnapshotMessage, error) {
+func (s *MclServer) RetrieveSnapshot(ctx context.Context, req *pb.RetrieveBinlogRequest) (*pb.SnapshotMessage, error) {
 	ret := &pb.SnapshotMessage{}
 	ret.Qso = make([]*pb.QSO, 0)
 
-	res := s.mclServer.db.QueryRow("SELECT content FROM snapshot WHERE serial < ? ORDER BY serial DESC LIMIT 1")
-	if res != nil {
+	res := s.db.QueryRow("SELECT serial, content FROM snapshot WHERE serial >= ? AND serial < ? ORDER BY serial DESC LIMIT 1", req.GetSerialStart(), req.GetSerialEnd())
+	if res == nil {
 		return &pb.SnapshotMessage{}, nil
 	}
 
 	var (
-		data []byte
+		data   []byte
+		serial uint64
 	)
-	if err := res.Scan(&data); err != nil {
+	if err := res.Scan(&serial, &data); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to retrieve data: %v", err)
 	}
 	proto.Unmarshal(data, ret)
+	ret.Serial = serial
 	return ret, nil
 }
 
@@ -225,7 +217,7 @@ func (s *MclServer) BuildSnapshot() {
 		return
 	}
 
-	if maxSerial == int(s.binlogServer.nextSerialNumber) {
+	if maxSerial == int(s.nextSerialNumber) {
 		logrus.Infof("existing snapshot %d is the latest", maxSerial)
 		return
 	}
@@ -251,7 +243,7 @@ func (s *MclServer) BuildSnapshot() {
 		return
 	}
 
-	if _, err := s.db.Exec("INSERT INTO snapshot (serial, content) VALUES (?, ?)", s.binlogServer.nextSerialNumber, data); err != nil {
+	if _, err := s.db.Exec("INSERT INTO snapshot (serial, content) VALUES (?, ?)", s.nextSerialNumber, data); err != nil {
 		logrus.Errorf("failed to save snapshot: %v", err)
 	}
 }
@@ -326,6 +318,8 @@ func NewContest(manifest ContextManifest) {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	logrus.Infof("opened database: %v", manifest.Filename)
 
 	sqlStmt := `
 	CREATE TABLE binlog (serial INTEGER NOT NULL PRIMARY KEY, content BLOB);
@@ -443,7 +437,7 @@ func (s *MclServer) RecoverFromBinlog() error {
 		var msg pb.BinlogMessage
 		proto.Unmarshal(data, &msg)
 
-		s.binlogServer.nextSerialNumber = serial + 1
+		s.nextSerialNumber = serial + 1
 
 		if err := s.evaluator.Eval(&msg); err != nil {
 			return err
@@ -455,28 +449,20 @@ func (s *MclServer) RecoverFromBinlog() error {
 	return nil
 }
 
-func NewServer(file string, rpcHost string) *MclServer {
-	url, err := url.Parse(rpcHost)
-	if err != nil {
-		panic(fmt.Errorf("failed to start server: %v", err))
-	}
-	lis, err := net.Listen(url.Scheme, url.Host)
-	if err != nil {
-		panic(fmt.Errorf("failed to create server: %v", err))
-	}
-	logrus.Infof("Listening at %s", lis.Addr().String())
+type BinlogServerConfig struct {
+	GrpcServer *grpc.Server
+	Database   string
+}
 
-	binlogServ := &binlogServer{}
+func NewServer(conf *BinlogServerConfig) *MclServer {
 	mclServ := &MclServer{
-		binlogServer: binlogServ,
-		evaluator:    NewSnapshotEvaluator(),
+		evaluator: NewSnapshotEvaluator(),
 		currentContest: ContextManifest{
-			Filename: file,
+			Filename: conf.Database,
 		},
 	}
 
 	mclServ.db = mclServ.currentContest.LoadContest()
-	binlogServ.mclServer = mclServ
 
 	{
 		startTime := time.Now()
@@ -487,13 +473,11 @@ func NewServer(file string, rpcHost string) *MclServer {
 	}
 
 	mclServ.BuildSnapshot()
-
-	mclServ.grpcServer = grpc.NewServer()
-	pb.RegisterBinlogServer(mclServ.grpcServer, mclServ.binlogServer)
-
-	if err := mclServ.grpcServer.Serve(lis); err != nil {
-		logrus.Panicf("failed to serve: %v", err)
-	}
+	pb.RegisterBinlogServer(conf.GrpcServer, mclServ)
 
 	return mclServ
+}
+
+func (s *MclServer) Init(conf *BinlogServerConfig) {
+	s.BuildSnapshot()
 }
