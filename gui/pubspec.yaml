@@ -37,6 +37,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   grpc: ^3.0.2
+  fixnum: ^1.0.1
+  protobuf: ^2.1.0
 
 dev_dependencies:
   flutter_test:

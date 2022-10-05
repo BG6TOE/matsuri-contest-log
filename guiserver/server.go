@@ -119,7 +119,7 @@ func (s *Server) LogQSO(ctx context.Context, msg *pb.QSOMessage) (*pb.QSO, error
 }
 
 func (s *Server) GetActiveQSOs(ctx context.Context, _ *empty.Empty) (*pb.SnapshotMessage, error) {
-	return s.binlog.RetrieveSnapshot(ctx, &pb.RetrieveBinlogRequest{SerialStart: 0, SerialEnd: 0xffff_ffff_ffff_ffff})
+	return s.binlog.RetrieveSnapshot(ctx, &pb.RetrieveBinlogRequest{SerialStart: 0, SerialEnd: 0x7fff_ffff_ffff_ffff})
 }
 
 func (s *Server) DeleteQSO(context.Context, *pb.QSO) (*pb.StandardResponse, error) {

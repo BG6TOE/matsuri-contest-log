@@ -2,7 +2,6 @@ package embed
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"net"
 	"net/url"
@@ -23,8 +22,6 @@ type EmbedConfig struct {
 }
 
 func Start(conf *EmbedConfig) {
-	flag.Parse()
-
 	logrus.Infof("MCL Version %s", version.Version)
 	logrus.Infof("Build time: %s", version.BuildTime)
 	logrus.Infof("Commit: %s", version.GitCommit)

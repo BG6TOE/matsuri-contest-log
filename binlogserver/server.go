@@ -83,6 +83,38 @@ func (s *MclServer) unlock() {
 	s.mutex.Unlock()
 }
 
+func FromProtobufQso(v *pb.QSO) QSO {
+	return QSO{
+		Uid:           v.Uid,
+		LocalCallsign: v.LocalCallsign,
+		DXCallsign:    v.DxCallsign,
+		Time:          v.Time,
+		Freq:          v.Freq,
+		Mode:          v.Mode,
+		IsSatellite:   v.IsSatellite,
+		ExchSent:      v.ExchSent,
+		ExchRcvd:      v.ExchRcvd,
+		Type:          v.Type,
+		Operator:      v.Operator,
+	}
+}
+
+func (q *QSO) ToProtobufQso() *pb.QSO {
+	return &pb.QSO{
+		Uid:           q.Uid,
+		LocalCallsign: q.LocalCallsign,
+		DxCallsign:    q.DXCallsign,
+		Time:          q.Time,
+		Freq:          q.Freq,
+		Mode:          q.Mode,
+		IsSatellite:   q.IsSatellite,
+		ExchSent:      q.ExchSent,
+		ExchRcvd:      q.ExchRcvd,
+		Type:          q.Type,
+		Operator:      q.Operator,
+	}
+}
+
 func (s *MclServer) Push(ctx context.Context, messages *pb.BinlogMessageSet) (*pb.StandardResponse, error) {
 	s.lock()
 	defer s.unlock()
@@ -182,6 +214,14 @@ func (s *MclServer) RetrieveSnapshot(ctx context.Context, req *pb.RetrieveBinlog
 	ret := &pb.SnapshotMessage{}
 	ret.Qso = make([]*pb.QSO, 0)
 
+	if req.SerialEnd == 0x7fff_ffff_ffff_ffff {
+		for _, qso := range s.evaluator.activeQso {
+			ret.Qso = append(ret.Qso, qso.ToProtobufQso())
+		}
+		ret.Serial = s.nextSerialNumber
+		return ret, nil
+	}
+
 	res := s.db.QueryRow("SELECT serial, content FROM snapshot WHERE serial >= ? AND serial < ? ORDER BY serial DESC LIMIT 1", req.GetSerialStart(), req.GetSerialEnd())
 	if res == nil {
 		return &pb.SnapshotMessage{}, nil
@@ -192,7 +232,7 @@ func (s *MclServer) RetrieveSnapshot(ctx context.Context, req *pb.RetrieveBinlog
 		serial uint64
 	)
 	if err := res.Scan(&serial, &data); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to retrieve data: %v", err)
+		return &pb.SnapshotMessage{Qso: []*pb.QSO{}, Serial: 0}, nil
 	}
 	proto.Unmarshal(data, ret)
 	ret.Serial = serial
@@ -223,19 +263,7 @@ func (s *MclServer) BuildSnapshot() {
 	}
 
 	for _, v := range s.evaluator.activeQso {
-		snapshot.Qso = append(snapshot.Qso, &pb.QSO{
-			Uid:           v.Uid,
-			LocalCallsign: v.LocalCallsign,
-			DxCallsign:    v.DXCallsign,
-			Time:          v.Time,
-			Freq:          v.Freq,
-			Mode:          v.Mode,
-			IsSatellite:   v.IsSatellite,
-			ExchSent:      v.ExchSent,
-			ExchRcvd:      v.ExchRcvd,
-			Type:          v.Type,
-			Operator:      v.Operator,
-		})
+		snapshot.Qso = append(snapshot.Qso, v.ToProtobufQso())
 	}
 
 	if data, err = proto.Marshal(snapshot); err != nil {
@@ -291,23 +319,11 @@ func (e *snapshotEvaluator) Eval(msg *pb.BinlogMessage) error {
 			return errors.New("unknown QSO operation")
 		}
 	case *pb.BinlogMessage_Qso:
-		qso := &QSO{
-			Uid:           val.Qso.GetUid(),
-			LocalCallsign: val.Qso.GetLocalCallsign(),
-			DXCallsign:    val.Qso.GetDxCallsign(),
-			Time:          val.Qso.GetTime(),
-			Freq:          val.Qso.GetFreq(),
-			Mode:          val.Qso.GetMode(),
-			IsSatellite:   val.Qso.GetIsSatellite(),
-			ExchSent:      val.Qso.GetExchSent(),
-			ExchRcvd:      val.Qso.GetExchRcvd(),
-			Type:          val.Qso.GetType(),
-			Operator:      val.Qso.GetOperator(),
-		}
+		qso := FromProtobufQso(val.Qso)
 		if qso.Uid == "" {
 			return errors.New("missing uid in QSO")
 		}
-		e.stagingQso[qso.Uid] = qso
+		e.stagingQso[qso.Uid] = &qso
 	}
 	return nil
 }
