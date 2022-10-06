@@ -1,15 +1,15 @@
-/**
- * Note: The contest descriptor should not use any global variables.
- * Functions will be provided with a "state" for saving the state
- */
+-- 
+-- Note: The contest descriptor should not use any global variables.
+-- Functions will be provided with a "state" for saving the state
+-- 
 
-/**
- * MCL runtime provides the following lookup function:
- * callsign_cq_zone()   -- Return the inferred CQ zone of the callsign, 0 for unknown
- * callsign_itu_zone()  -- Return the inferred ITU zone of the callsign, 0 for unknown
- * callsign_continent() -- Return the inferred continent of the callsign, "" for unknown
- * callsign_dxcc()      -- Return the inferred DXCC of the callsign, 0 for unknown
- */
+-- 
+-- MCL runtime provides the following lookup function:
+-- callsign_cq_zone()   -- Return the inferred CQ zone of the callsign, 0 for unknown
+-- callsign_itu_zone()  -- Return the inferred ITU zone of the callsign, 0 for unknown
+-- callsign_continent() -- Return the inferred continent of the callsign, "" for unknown
+-- callsign_dxcc()      -- Return the inferred DXCC of the callsign, 0 for unknown
+-- 
 
 -- Basic functions for getting contest metadata
 function metadata()
@@ -51,9 +51,6 @@ end
 -- MCL will not inteprete the content of the state, it is totally private.
 function init_state(station)
     return {
-        zone_band = {160 = {}, 80 = {}, 40 = {}, 20 = {}, 15 = {}, 10 = {}},
-        qso_band = {160 = {}, 80 = {}, 40 = {}, 20 = {}, 15 = {}, 10 = {}},
-        qsos = {160 = {}, 80 = {}, 40 = {}, 20 = {}, 15 = {}, 10 = {}},
     }
 end
 
@@ -89,13 +86,5 @@ end
 function check_callsign(state, qso)
     return {
         available_mults = { "qso" },
-        available_band_mult = {
-            "160" = { "qso" },
-            "80" = { "qso" },
-            "40" = { "qso" },
-            "20" = { "qso" },
-            "15" = { "qso" },
-            "10" = { "qso" },
-        }
     }
 end
