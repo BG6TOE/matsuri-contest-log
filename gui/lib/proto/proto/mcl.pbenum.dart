@@ -75,10 +75,16 @@ class QSOOperationType extends $pb.ProtobufEnum {
 class ResultCode extends $pb.ProtobufEnum {
   static const ResultCode success = ResultCode._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'success');
   static const ResultCode invalid_binlog = ResultCode._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'invalid_binlog');
+  static const ResultCode invalid_access = ResultCode._(2, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'invalid_access');
+  static const ResultCode exists = ResultCode._(3, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'exists');
+  static const ResultCode internal = ResultCode._(4, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'internal');
 
   static const $core.List<ResultCode> values = <ResultCode> [
     success,
     invalid_binlog,
+    invalid_access,
+    exists,
+    internal,
   ];
 
   static final $core.Map<$core.int, ResultCode> _byValue = $pb.ProtobufEnum.initByValue(values);

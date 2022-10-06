@@ -99,6 +99,9 @@ message BinlogMessageSet {
 enum ResultCode {
     success = 0;
     invalid_binlog = 1;
+    invalid_access = 2;
+    exists = 3;
+    internal = 4;
 }
 
 message StandardResponse {
@@ -111,7 +114,19 @@ message RetrieveBinlogRequest {
   uint64 serial_end = 2;
 }
 
+message LoadContestRequest {
+  string database_name = 1;
+}
+
+message CreateContestRequest {
+  string database_name = 1;
+  Contest contest = 2;
+}
+
 service Binlog {
+  rpc CreateContest(CreateContestRequest) returns (StandardResponse);
+  rpc LoadContest(LoadContestRequest) returns (StandardResponse);
+
   rpc Push(BinlogMessageSet) returns (StandardResponse);
   rpc Retrieve(RetrieveBinlogRequest) returns (BinlogMessageSet);
   rpc RetrieveSnapshot(RetrieveBinlogRequest) returns (SnapshotMessage);

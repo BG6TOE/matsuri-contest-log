@@ -10,12 +10,24 @@ import 'dart:async' as $async;
 import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
-import 'mclgui.pb.dart' as $1;
 import 'mcl.pb.dart' as $0;
+import 'mclgui.pb.dart' as $1;
 import '../google/protobuf/empty.pb.dart' as $2;
 export 'mclgui.pb.dart';
 
 class GuiClient extends $grpc.Client {
+  static final _$createContest =
+      $grpc.ClientMethod<$0.CreateContestRequest, $0.StandardResponse>(
+          '/mcl.Gui/CreateContest',
+          ($0.CreateContestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.StandardResponse.fromBuffer(value));
+  static final _$loadContest =
+      $grpc.ClientMethod<$0.LoadContestRequest, $0.StandardResponse>(
+          '/mcl.Gui/LoadContest',
+          ($0.LoadContestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.StandardResponse.fromBuffer(value));
   static final _$logQSO = $grpc.ClientMethod<$1.QSOMessage, $0.QSO>(
       '/mcl.Gui/LogQSO',
       ($1.QSOMessage value) => value.writeToBuffer(),
@@ -39,6 +51,18 @@ class GuiClient extends $grpc.Client {
       {$grpc.CallOptions? options,
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
+
+  $grpc.ResponseFuture<$0.StandardResponse> createContest(
+      $0.CreateContestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$createContest, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.StandardResponse> loadContest(
+      $0.LoadContestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$loadContest, request, options: options);
+  }
 
   $grpc.ResponseFuture<$0.QSO> logQSO($1.QSOMessage request,
       {$grpc.CallOptions? options}) {
@@ -65,6 +89,23 @@ abstract class GuiServiceBase extends $grpc.Service {
   $core.String get $name => 'mcl.Gui';
 
   GuiServiceBase() {
+    $addMethod(
+        $grpc.ServiceMethod<$0.CreateContestRequest, $0.StandardResponse>(
+            'CreateContest',
+            createContest_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.CreateContestRequest.fromBuffer(value),
+            ($0.StandardResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.LoadContestRequest, $0.StandardResponse>(
+        'LoadContest',
+        loadContest_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.LoadContestRequest.fromBuffer(value),
+        ($0.StandardResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.QSOMessage, $0.QSO>(
         'LogQSO',
         logQSO_Pre,
@@ -95,6 +136,16 @@ abstract class GuiServiceBase extends $grpc.Service {
         ($1.ScoreResponse value) => value.writeToBuffer()));
   }
 
+  $async.Future<$0.StandardResponse> createContest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.CreateContestRequest> request) async {
+    return createContest(call, await request);
+  }
+
+  $async.Future<$0.StandardResponse> loadContest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.LoadContestRequest> request) async {
+    return loadContest(call, await request);
+  }
+
   $async.Future<$0.QSO> logQSO_Pre(
       $grpc.ServiceCall call, $async.Future<$1.QSOMessage> request) async {
     return logQSO(call, await request);
@@ -115,6 +166,10 @@ abstract class GuiServiceBase extends $grpc.Service {
     return getScore(call, await request);
   }
 
+  $async.Future<$0.StandardResponse> createContest(
+      $grpc.ServiceCall call, $0.CreateContestRequest request);
+  $async.Future<$0.StandardResponse> loadContest(
+      $grpc.ServiceCall call, $0.LoadContestRequest request);
   $async.Future<$0.QSO> logQSO($grpc.ServiceCall call, $1.QSOMessage request);
   $async.Future<$0.SnapshotMessage> getActiveQSOs(
       $grpc.ServiceCall call, $2.Empty request);

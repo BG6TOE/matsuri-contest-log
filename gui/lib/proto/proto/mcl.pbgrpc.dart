@@ -14,6 +14,18 @@ import 'mcl.pb.dart' as $0;
 export 'mcl.pb.dart';
 
 class BinlogClient extends $grpc.Client {
+  static final _$createContest =
+      $grpc.ClientMethod<$0.CreateContestRequest, $0.StandardResponse>(
+          '/mcl.Binlog/CreateContest',
+          ($0.CreateContestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.StandardResponse.fromBuffer(value));
+  static final _$loadContest =
+      $grpc.ClientMethod<$0.LoadContestRequest, $0.StandardResponse>(
+          '/mcl.Binlog/LoadContest',
+          ($0.LoadContestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.StandardResponse.fromBuffer(value));
   static final _$push =
       $grpc.ClientMethod<$0.BinlogMessageSet, $0.StandardResponse>(
           '/mcl.Binlog/Push',
@@ -38,6 +50,18 @@ class BinlogClient extends $grpc.Client {
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
 
+  $grpc.ResponseFuture<$0.StandardResponse> createContest(
+      $0.CreateContestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$createContest, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.StandardResponse> loadContest(
+      $0.LoadContestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$loadContest, request, options: options);
+  }
+
   $grpc.ResponseFuture<$0.StandardResponse> push($0.BinlogMessageSet request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$push, request, options: options);
@@ -60,6 +84,23 @@ abstract class BinlogServiceBase extends $grpc.Service {
   $core.String get $name => 'mcl.Binlog';
 
   BinlogServiceBase() {
+    $addMethod(
+        $grpc.ServiceMethod<$0.CreateContestRequest, $0.StandardResponse>(
+            'CreateContest',
+            createContest_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.CreateContestRequest.fromBuffer(value),
+            ($0.StandardResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.LoadContestRequest, $0.StandardResponse>(
+        'LoadContest',
+        loadContest_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.LoadContestRequest.fromBuffer(value),
+        ($0.StandardResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.BinlogMessageSet, $0.StandardResponse>(
         'Push',
         push_Pre,
@@ -87,6 +128,16 @@ abstract class BinlogServiceBase extends $grpc.Service {
             ($0.SnapshotMessage value) => value.writeToBuffer()));
   }
 
+  $async.Future<$0.StandardResponse> createContest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.CreateContestRequest> request) async {
+    return createContest(call, await request);
+  }
+
+  $async.Future<$0.StandardResponse> loadContest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.LoadContestRequest> request) async {
+    return loadContest(call, await request);
+  }
+
   $async.Future<$0.StandardResponse> push_Pre($grpc.ServiceCall call,
       $async.Future<$0.BinlogMessageSet> request) async {
     return push(call, await request);
@@ -102,6 +153,10 @@ abstract class BinlogServiceBase extends $grpc.Service {
     return retrieveSnapshot(call, await request);
   }
 
+  $async.Future<$0.StandardResponse> createContest(
+      $grpc.ServiceCall call, $0.CreateContestRequest request);
+  $async.Future<$0.StandardResponse> loadContest(
+      $grpc.ServiceCall call, $0.LoadContestRequest request);
   $async.Future<$0.StandardResponse> push(
       $grpc.ServiceCall call, $0.BinlogMessageSet request);
   $async.Future<$0.BinlogMessageSet> retrieve(

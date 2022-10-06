@@ -865,3 +865,113 @@ class RetrieveBinlogRequest extends $pb.GeneratedMessage {
   void clearSerialEnd() => clearField(2);
 }
 
+class LoadContestRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'LoadContestRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'databaseName')
+    ..hasRequiredFields = false
+  ;
+
+  LoadContestRequest._() : super();
+  factory LoadContestRequest({
+    $core.String? databaseName,
+  }) {
+    final _result = create();
+    if (databaseName != null) {
+      _result.databaseName = databaseName;
+    }
+    return _result;
+  }
+  factory LoadContestRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory LoadContestRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  LoadContestRequest clone() => LoadContestRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  LoadContestRequest copyWith(void Function(LoadContestRequest) updates) => super.copyWith((message) => updates(message as LoadContestRequest)) as LoadContestRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static LoadContestRequest create() => LoadContestRequest._();
+  LoadContestRequest createEmptyInstance() => create();
+  static $pb.PbList<LoadContestRequest> createRepeated() => $pb.PbList<LoadContestRequest>();
+  @$core.pragma('dart2js:noInline')
+  static LoadContestRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<LoadContestRequest>(create);
+  static LoadContestRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get databaseName => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set databaseName($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasDatabaseName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearDatabaseName() => clearField(1);
+}
+
+class CreateContestRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'CreateContestRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'databaseName')
+    ..aOM<Contest>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: Contest.create)
+    ..hasRequiredFields = false
+  ;
+
+  CreateContestRequest._() : super();
+  factory CreateContestRequest({
+    $core.String? databaseName,
+    Contest? contest,
+  }) {
+    final _result = create();
+    if (databaseName != null) {
+      _result.databaseName = databaseName;
+    }
+    if (contest != null) {
+      _result.contest = contest;
+    }
+    return _result;
+  }
+  factory CreateContestRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory CreateContestRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  CreateContestRequest clone() => CreateContestRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  CreateContestRequest copyWith(void Function(CreateContestRequest) updates) => super.copyWith((message) => updates(message as CreateContestRequest)) as CreateContestRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static CreateContestRequest create() => CreateContestRequest._();
+  CreateContestRequest createEmptyInstance() => create();
+  static $pb.PbList<CreateContestRequest> createRepeated() => $pb.PbList<CreateContestRequest>();
+  @$core.pragma('dart2js:noInline')
+  static CreateContestRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<CreateContestRequest>(create);
+  static CreateContestRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get databaseName => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set databaseName($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasDatabaseName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearDatabaseName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  Contest get contest => $_getN(1);
+  @$pb.TagNumber(2)
+  set contest(Contest v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasContest() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearContest() => clearField(2);
+  @$pb.TagNumber(2)
+  Contest ensureContest() => $_ensure(1);
+}
+

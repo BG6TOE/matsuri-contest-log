@@ -22,8 +22,6 @@ type Server struct {
 
 	binlog               pb.BinlogClient
 	binlogSequenceNumber uint64
-
-	grpcServer *grpc.Server
 }
 
 type GuiServerConfig struct {
@@ -53,16 +51,6 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 	binlogClient := pb.NewBinlogClient(conn)
 
 	s.binlog = binlogClient
-
-	snapshot, err := binlogClient.RetrieveSnapshot(context.Background(), &pb.RetrieveBinlogRequest{
-		SerialStart: 0,
-		SerialEnd:   0x7fff_ffff_ffff_ffff,
-	})
-	if err != nil {
-		logrus.Errorf("failed to get latest snapshot from binlog server: %v", err)
-	}
-	s.binlogSequenceNumber = snapshot.GetSerial()
-	logrus.Infof("get snapshot #%d from binlog server", s.binlogSequenceNumber)
 
 	logrus.Infof("connected to binlog server: %s", conf.BinlogServerAddr)
 	return nil
@@ -128,4 +116,32 @@ func (s *Server) DeleteQSO(context.Context, *pb.QSO) (*pb.StandardResponse, erro
 
 func (s *Server) GetScore(context.Context, *empty.Empty) (*pb.ScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScore not implemented")
+}
+
+func (s *Server) CreateContest(ctx context.Context, msg *pb.CreateContestRequest) (*pb.StandardResponse, error) {
+	return s.binlog.CreateContest(ctx, msg)
+}
+
+func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*pb.StandardResponse, error) {
+	resp, err := s.binlog.LoadContest(ctx, msg)
+	if resp.ResultCode != pb.ResultCode_success || err != nil {
+		return resp, err
+	}
+
+	snapshot, err := s.binlog.RetrieveSnapshot(context.Background(), &pb.RetrieveBinlogRequest{
+		SerialStart: 0,
+		SerialEnd:   0x7fff_ffff_ffff_ffff,
+	})
+	if err != nil {
+		return &pb.StandardResponse{
+			ResultCode:   pb.ResultCode_internal,
+			ErrorMessage: fmt.Sprintf("cannot load snapshot: %v", err),
+		}, nil
+	}
+	s.binlogSequenceNumber = snapshot.GetSerial()
+	logrus.Infof("get snapshot #%d from binlog server", s.binlogSequenceNumber)
+
+	return &pb.StandardResponse{
+		ResultCode: pb.ResultCode_success,
+	}, nil
 }

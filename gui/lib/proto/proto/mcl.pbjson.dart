@@ -56,11 +56,14 @@ const ResultCode$json = const {
   '2': const [
     const {'1': 'success', '2': 0},
     const {'1': 'invalid_binlog', '2': 1},
+    const {'1': 'invalid_access', '2': 2},
+    const {'1': 'exists', '2': 3},
+    const {'1': 'internal', '2': 4},
   ],
 };
 
 /// Descriptor for `ResultCode`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List resultCodeDescriptor = $convert.base64Decode('CgpSZXN1bHRDb2RlEgsKB3N1Y2Nlc3MQABISCg5pbnZhbGlkX2JpbmxvZxAB');
+final $typed_data.Uint8List resultCodeDescriptor = $convert.base64Decode('CgpSZXN1bHRDb2RlEgsKB3N1Y2Nlc3MQABISCg5pbnZhbGlkX2JpbmxvZxABEhIKDmludmFsaWRfYWNjZXNzEAISCgoGZXhpc3RzEAMSDAoIaW50ZXJuYWwQBA==');
 @$core.Deprecated('Use stationDescriptor instead')
 const Station$json = const {
   '1': 'Station',
@@ -192,3 +195,24 @@ const RetrieveBinlogRequest$json = const {
 
 /// Descriptor for `RetrieveBinlogRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List retrieveBinlogRequestDescriptor = $convert.base64Decode('ChVSZXRyaWV2ZUJpbmxvZ1JlcXVlc3QSIQoMc2VyaWFsX3N0YXJ0GAEgASgEUgtzZXJpYWxTdGFydBIdCgpzZXJpYWxfZW5kGAIgASgEUglzZXJpYWxFbmQ=');
+@$core.Deprecated('Use loadContestRequestDescriptor instead')
+const LoadContestRequest$json = const {
+  '1': 'LoadContestRequest',
+  '2': const [
+    const {'1': 'database_name', '3': 1, '4': 1, '5': 9, '10': 'databaseName'},
+  ],
+};
+
+/// Descriptor for `LoadContestRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List loadContestRequestDescriptor = $convert.base64Decode('ChJMb2FkQ29udGVzdFJlcXVlc3QSIwoNZGF0YWJhc2VfbmFtZRgBIAEoCVIMZGF0YWJhc2VOYW1l');
+@$core.Deprecated('Use createContestRequestDescriptor instead')
+const CreateContestRequest$json = const {
+  '1': 'CreateContestRequest',
+  '2': const [
+    const {'1': 'database_name', '3': 1, '4': 1, '5': 9, '10': 'databaseName'},
+    const {'1': 'contest', '3': 2, '4': 1, '5': 11, '6': '.mcl.Contest', '10': 'contest'},
+  ],
+};
+
+/// Descriptor for `CreateContestRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List createContestRequestDescriptor = $convert.base64Decode('ChRDcmVhdGVDb250ZXN0UmVxdWVzdBIjCg1kYXRhYmFzZV9uYW1lGAEgASgJUgxkYXRhYmFzZU5hbWUSJgoHY29udGVzdBgCIAEoCzIMLm1jbC5Db250ZXN0Ugdjb250ZXN0');
