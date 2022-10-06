@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mcl_gui/proto/proto/mcl.pb.dart';
+import 'package:mcl_gui/proto/proto/mcl.pbjson.dart';
 import 'load_or_create_contest.dart';
 import 'gui_state.dart';
 import 'proto/proto/mcl.pbenum.dart';
@@ -12,6 +14,8 @@ import 'qso.dart';
 import 'title.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  state.startServer();
   runApp(const MyApp());
 }
 

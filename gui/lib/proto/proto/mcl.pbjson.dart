@@ -83,17 +83,22 @@ final $typed_data.Uint8List stationDescriptor = $convert.base64Decode('CgdTdGF0a
 const Contest$json = const {
   '1': 'Contest',
   '2': const [
-    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'uid', '3': 2, '4': 1, '5': 9, '10': 'uid'},
-    const {'1': 'filename', '3': 3, '4': 1, '5': 9, '10': 'filename'},
-    const {'1': 'category', '3': 4, '4': 1, '5': 9, '10': 'category'},
-    const {'1': 'begin_timestamp', '3': 5, '4': 1, '5': 3, '10': 'beginTimestamp'},
-    const {'1': 'end_timestamp', '3': 6, '4': 1, '5': 3, '10': 'endTimestamp'},
+    const {'1': 'api_version', '3': 1, '4': 1, '5': 5, '10': 'apiVersion'},
+    const {'1': 'version', '3': 2, '4': 1, '5': 9, '10': 'version'},
+    const {'1': 'name', '3': 16, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'uid', '3': 17, '4': 1, '5': 9, '10': 'uid'},
+    const {'1': 'filename', '3': 18, '4': 1, '5': 9, '10': 'filename'},
+    const {'1': 'category', '3': 19, '4': 1, '5': 9, '10': 'category'},
+    const {'1': 'begin_timestamp', '3': 20, '4': 1, '5': 3, '10': 'beginTimestamp'},
+    const {'1': 'end_timestamp', '3': 21, '4': 1, '5': 3, '10': 'endTimestamp'},
+    const {'1': 'exch_sent', '3': 22, '4': 3, '5': 9, '10': 'exchSent'},
+    const {'1': 'exch_rcvd', '3': 23, '4': 3, '5': 9, '10': 'exchRcvd'},
+    const {'1': 'custom_fields', '3': 24, '4': 3, '5': 9, '10': 'customFields'},
   ],
 };
 
 /// Descriptor for `Contest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List contestDescriptor = $convert.base64Decode('CgdDb250ZXN0EhIKBG5hbWUYASABKAlSBG5hbWUSEAoDdWlkGAIgASgJUgN1aWQSGgoIZmlsZW5hbWUYAyABKAlSCGZpbGVuYW1lEhoKCGNhdGVnb3J5GAQgASgJUghjYXRlZ29yeRInCg9iZWdpbl90aW1lc3RhbXAYBSABKANSDmJlZ2luVGltZXN0YW1wEiMKDWVuZF90aW1lc3RhbXAYBiABKANSDGVuZFRpbWVzdGFtcA==');
+final $typed_data.Uint8List contestDescriptor = $convert.base64Decode('CgdDb250ZXN0Eh8KC2FwaV92ZXJzaW9uGAEgASgFUgphcGlWZXJzaW9uEhgKB3ZlcnNpb24YAiABKAlSB3ZlcnNpb24SEgoEbmFtZRgQIAEoCVIEbmFtZRIQCgN1aWQYESABKAlSA3VpZBIaCghmaWxlbmFtZRgSIAEoCVIIZmlsZW5hbWUSGgoIY2F0ZWdvcnkYEyABKAlSCGNhdGVnb3J5EicKD2JlZ2luX3RpbWVzdGFtcBgUIAEoA1IOYmVnaW5UaW1lc3RhbXASIwoNZW5kX3RpbWVzdGFtcBgVIAEoA1IMZW5kVGltZXN0YW1wEhsKCWV4Y2hfc2VudBgWIAMoCVIIZXhjaFNlbnQSGwoJZXhjaF9yY3ZkGBcgAygJUghleGNoUmN2ZBIjCg1jdXN0b21fZmllbGRzGBggAygJUgxjdXN0b21GaWVsZHM=');
 @$core.Deprecated('Use contestManifestDescriptor instead')
 const ContestManifest$json = const {
   '1': 'ContestManifest',
@@ -216,3 +221,13 @@ const CreateContestRequest$json = const {
 
 /// Descriptor for `CreateContestRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List createContestRequestDescriptor = $convert.base64Decode('ChRDcmVhdGVDb250ZXN0UmVxdWVzdBIjCg1kYXRhYmFzZV9uYW1lGAEgASgJUgxkYXRhYmFzZU5hbWUSJgoHY29udGVzdBgCIAEoCzIMLm1jbC5Db250ZXN0Ugdjb250ZXN0');
+@$core.Deprecated('Use parseContestRequestDescriptor instead')
+const ParseContestRequest$json = const {
+  '1': 'ParseContestRequest',
+  '2': const [
+    const {'1': 'contest_descriptor', '3': 1, '4': 1, '5': 9, '10': 'contestDescriptor'},
+  ],
+};
+
+/// Descriptor for `ParseContestRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List parseContestRequestDescriptor = $convert.base64Decode('ChNQYXJzZUNvbnRlc3RSZXF1ZXN0Ei0KEmNvbnRlc3RfZGVzY3JpcHRvchgBIAEoCVIRY29udGVzdERlc2NyaXB0b3I=');

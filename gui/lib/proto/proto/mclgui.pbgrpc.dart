@@ -28,6 +28,11 @@ class GuiClient extends $grpc.Client {
           ($0.LoadContestRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $0.StandardResponse.fromBuffer(value));
+  static final _$parseContest =
+      $grpc.ClientMethod<$0.ParseContestRequest, $0.Contest>(
+          '/mcl.Gui/ParseContest',
+          ($0.ParseContestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Contest.fromBuffer(value));
   static final _$logQSO = $grpc.ClientMethod<$1.QSOMessage, $0.QSO>(
       '/mcl.Gui/LogQSO',
       ($1.QSOMessage value) => value.writeToBuffer(),
@@ -62,6 +67,11 @@ class GuiClient extends $grpc.Client {
       $0.LoadContestRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$loadContest, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Contest> parseContest($0.ParseContestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$parseContest, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.QSO> logQSO($1.QSOMessage request,
@@ -106,6 +116,14 @@ abstract class GuiServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.LoadContestRequest.fromBuffer(value),
         ($0.StandardResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.ParseContestRequest, $0.Contest>(
+        'ParseContest',
+        parseContest_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.ParseContestRequest.fromBuffer(value),
+        ($0.Contest value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.QSOMessage, $0.QSO>(
         'LogQSO',
         logQSO_Pre,
@@ -146,6 +164,11 @@ abstract class GuiServiceBase extends $grpc.Service {
     return loadContest(call, await request);
   }
 
+  $async.Future<$0.Contest> parseContest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.ParseContestRequest> request) async {
+    return parseContest(call, await request);
+  }
+
   $async.Future<$0.QSO> logQSO_Pre(
       $grpc.ServiceCall call, $async.Future<$1.QSOMessage> request) async {
     return logQSO(call, await request);
@@ -170,6 +193,8 @@ abstract class GuiServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.CreateContestRequest request);
   $async.Future<$0.StandardResponse> loadContest(
       $grpc.ServiceCall call, $0.LoadContestRequest request);
+  $async.Future<$0.Contest> parseContest(
+      $grpc.ServiceCall call, $0.ParseContestRequest request);
   $async.Future<$0.QSO> logQSO($grpc.ServiceCall call, $1.QSOMessage request);
   $async.Future<$0.SnapshotMessage> getActiveQSOs(
       $grpc.ServiceCall call, $2.Empty request);

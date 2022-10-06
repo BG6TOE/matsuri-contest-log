@@ -145,3 +145,7 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 		ResultCode: pb.ResultCode_success,
 	}, nil
 }
+
+func (s *Server) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {
+	return s.binlog.ParseContest(ctx, req)
+}

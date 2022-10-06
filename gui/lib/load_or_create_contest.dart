@@ -1,15 +1,6 @@
-import 'dart:async';
-import 'dart:ui';
 
 import 'package:file_selector/file_selector.dart';
-import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'gui_state.dart';
-import 'proto/proto/mcl.pbenum.dart';
-import 'proto/proto/mclgui.pbgrpc.dart';
-import 'qso.dart';
-import 'title.dart';
 
 class LoadOrCreateContestPage extends StatefulWidget {
   const LoadOrCreateContestPage({super.key});
@@ -36,12 +27,12 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
 
   @override
   Widget build(BuildContext context) {
-    final XTypeGroup typeGroup = const XTypeGroup(
-      label: 'Contest Database',
-      extensions: <String>['mcldb.sqlite3'],
+    const XTypeGroup contestDbTypes = XTypeGroup(
+      label: 'Contest Database (*.mclcontest.db)',
+      extensions: <String>['mclcontest.db'],
     );
-    final XTypeGroup contestDescriptor = const XTypeGroup(
-      label: 'Contest Descriptor',
+    const XTypeGroup contestDescriptor = XTypeGroup(
+      label: 'Contest Descriptor (*.mclcontest.lua)',
       extensions: <String>['mclcontest.lua'],
     );
     // This method is rerun every time setState is called, for instance as done
@@ -55,9 +46,21 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
         children: <Widget>[
           TextButton(
               onPressed: () async {
-                await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+                await openFile(acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
               },
-              child: Text("Open Database")),
+              child: Text("Open an existing contest database")),
+          
+          TextButton(
+              onPressed: () async {
+                await openFile(acceptedTypeGroups: <XTypeGroup>[contestDescriptor]);
+              },
+              child: Text("Create an new contest database for a contest")),
+          
+          TextButton(
+              onPressed: () async {
+                await getSavePath(suggestedName: 'NewContest.mcldb.sqlite3', acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
+              },
+              child: Text("Create and open contest")),
         ],
       ),
     );

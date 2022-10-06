@@ -133,25 +133,41 @@ class Station extends $pb.GeneratedMessage {
 
 class Contest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Contest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uid')
-    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'filename')
-    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'category')
-    ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'beginTimestamp')
-    ..aInt64(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endTimestamp')
+    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'apiVersion', $pb.PbFieldType.O3)
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'version')
+    ..aOS(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..aOS(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uid')
+    ..aOS(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'filename')
+    ..aOS(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'category')
+    ..aInt64(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'beginTimestamp')
+    ..aInt64(21, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endTimestamp')
+    ..pPS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent')
+    ..pPS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd')
+    ..pPS(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields')
     ..hasRequiredFields = false
   ;
 
   Contest._() : super();
   factory Contest({
+    $core.int? apiVersion,
+    $core.String? version,
     $core.String? name,
     $core.String? uid,
     $core.String? filename,
     $core.String? category,
     $fixnum.Int64? beginTimestamp,
     $fixnum.Int64? endTimestamp,
+    $core.Iterable<$core.String>? exchSent,
+    $core.Iterable<$core.String>? exchRcvd,
+    $core.Iterable<$core.String>? customFields,
   }) {
     final _result = create();
+    if (apiVersion != null) {
+      _result.apiVersion = apiVersion;
+    }
+    if (version != null) {
+      _result.version = version;
+    }
     if (name != null) {
       _result.name = name;
     }
@@ -169,6 +185,15 @@ class Contest extends $pb.GeneratedMessage {
     }
     if (endTimestamp != null) {
       _result.endTimestamp = endTimestamp;
+    }
+    if (exchSent != null) {
+      _result.exchSent.addAll(exchSent);
+    }
+    if (exchRcvd != null) {
+      _result.exchRcvd.addAll(exchRcvd);
+    }
+    if (customFields != null) {
+      _result.customFields.addAll(customFields);
     }
     return _result;
   }
@@ -194,58 +219,85 @@ class Contest extends $pb.GeneratedMessage {
   static Contest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get name => $_getSZ(0);
+  $core.int get apiVersion => $_getIZ(0);
   @$pb.TagNumber(1)
-  set name($core.String v) { $_setString(0, v); }
+  set apiVersion($core.int v) { $_setSignedInt32(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasName() => $_has(0);
+  $core.bool hasApiVersion() => $_has(0);
   @$pb.TagNumber(1)
-  void clearName() => clearField(1);
+  void clearApiVersion() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get uid => $_getSZ(1);
+  $core.String get version => $_getSZ(1);
   @$pb.TagNumber(2)
-  set uid($core.String v) { $_setString(1, v); }
+  set version($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasUid() => $_has(1);
+  $core.bool hasVersion() => $_has(1);
   @$pb.TagNumber(2)
-  void clearUid() => clearField(2);
+  void clearVersion() => clearField(2);
 
-  @$pb.TagNumber(3)
-  $core.String get filename => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set filename($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasFilename() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearFilename() => clearField(3);
+  @$pb.TagNumber(16)
+  $core.String get name => $_getSZ(2);
+  @$pb.TagNumber(16)
+  set name($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(16)
+  $core.bool hasName() => $_has(2);
+  @$pb.TagNumber(16)
+  void clearName() => clearField(16);
 
-  @$pb.TagNumber(4)
-  $core.String get category => $_getSZ(3);
-  @$pb.TagNumber(4)
-  set category($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasCategory() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearCategory() => clearField(4);
+  @$pb.TagNumber(17)
+  $core.String get uid => $_getSZ(3);
+  @$pb.TagNumber(17)
+  set uid($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(17)
+  $core.bool hasUid() => $_has(3);
+  @$pb.TagNumber(17)
+  void clearUid() => clearField(17);
 
-  @$pb.TagNumber(5)
-  $fixnum.Int64 get beginTimestamp => $_getI64(4);
-  @$pb.TagNumber(5)
-  set beginTimestamp($fixnum.Int64 v) { $_setInt64(4, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasBeginTimestamp() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearBeginTimestamp() => clearField(5);
+  @$pb.TagNumber(18)
+  $core.String get filename => $_getSZ(4);
+  @$pb.TagNumber(18)
+  set filename($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(18)
+  $core.bool hasFilename() => $_has(4);
+  @$pb.TagNumber(18)
+  void clearFilename() => clearField(18);
 
-  @$pb.TagNumber(6)
-  $fixnum.Int64 get endTimestamp => $_getI64(5);
-  @$pb.TagNumber(6)
-  set endTimestamp($fixnum.Int64 v) { $_setInt64(5, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasEndTimestamp() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearEndTimestamp() => clearField(6);
+  @$pb.TagNumber(19)
+  $core.String get category => $_getSZ(5);
+  @$pb.TagNumber(19)
+  set category($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(19)
+  $core.bool hasCategory() => $_has(5);
+  @$pb.TagNumber(19)
+  void clearCategory() => clearField(19);
+
+  @$pb.TagNumber(20)
+  $fixnum.Int64 get beginTimestamp => $_getI64(6);
+  @$pb.TagNumber(20)
+  set beginTimestamp($fixnum.Int64 v) { $_setInt64(6, v); }
+  @$pb.TagNumber(20)
+  $core.bool hasBeginTimestamp() => $_has(6);
+  @$pb.TagNumber(20)
+  void clearBeginTimestamp() => clearField(20);
+
+  @$pb.TagNumber(21)
+  $fixnum.Int64 get endTimestamp => $_getI64(7);
+  @$pb.TagNumber(21)
+  set endTimestamp($fixnum.Int64 v) { $_setInt64(7, v); }
+  @$pb.TagNumber(21)
+  $core.bool hasEndTimestamp() => $_has(7);
+  @$pb.TagNumber(21)
+  void clearEndTimestamp() => clearField(21);
+
+  @$pb.TagNumber(22)
+  $core.List<$core.String> get exchSent => $_getList(8);
+
+  @$pb.TagNumber(23)
+  $core.List<$core.String> get exchRcvd => $_getList(9);
+
+  @$pb.TagNumber(24)
+  $core.List<$core.String> get customFields => $_getList(10);
 }
 
 class ContestManifest extends $pb.GeneratedMessage {
@@ -973,5 +1025,52 @@ class CreateContestRequest extends $pb.GeneratedMessage {
   void clearContest() => clearField(2);
   @$pb.TagNumber(2)
   Contest ensureContest() => $_ensure(1);
+}
+
+class ParseContestRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ParseContestRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contestDescriptor')
+    ..hasRequiredFields = false
+  ;
+
+  ParseContestRequest._() : super();
+  factory ParseContestRequest({
+    $core.String? contestDescriptor,
+  }) {
+    final _result = create();
+    if (contestDescriptor != null) {
+      _result.contestDescriptor = contestDescriptor;
+    }
+    return _result;
+  }
+  factory ParseContestRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ParseContestRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ParseContestRequest clone() => ParseContestRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ParseContestRequest copyWith(void Function(ParseContestRequest) updates) => super.copyWith((message) => updates(message as ParseContestRequest)) as ParseContestRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ParseContestRequest create() => ParseContestRequest._();
+  ParseContestRequest createEmptyInstance() => create();
+  static $pb.PbList<ParseContestRequest> createRepeated() => $pb.PbList<ParseContestRequest>();
+  @$core.pragma('dart2js:noInline')
+  static ParseContestRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ParseContestRequest>(create);
+  static ParseContestRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get contestDescriptor => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set contestDescriptor($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasContestDescriptor() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearContestDescriptor() => clearField(1);
 }
 

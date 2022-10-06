@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
+import 'package:gui_backend/gui_backend.dart';
 import 'proto/google/protobuf/empty.pb.dart';
 import 'proto/proto/mcl.pbgrpc.dart';
 import 'proto/proto/mclgui.pbgrpc.dart';
@@ -32,7 +33,9 @@ class GuiState {
     for (var val in CallbackKind.values) {
       callbacks[val] = <int, void Function()>{};
     }
+  }
 
+  void startServer() {
     unawaited(_startGuiServer.call());
   }
 
@@ -55,7 +58,7 @@ class GuiState {
   }
 
   Future<void> _startGuiServer() async {
-    await platform.invokeMethod('start', null);
+    await GuiBackend().runServer();
 
     final uri = Uri.parse("tcp://127.0.0.1:62122");
     final channel = ClientChannel(
@@ -69,8 +72,6 @@ class GuiState {
     );
 
     _guiClient = GuiClient(channel);
-
-    refreshQsos();
   }
 
   GuiClient? getGuiClient() {
