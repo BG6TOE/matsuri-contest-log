@@ -39,6 +39,7 @@ dependencies:
   grpc: ^3.0.2
   fixnum: ^1.0.1
   protobuf: ^2.1.0
+  file_selector: ^0.9.2
 
 dev_dependencies:
   flutter_test:

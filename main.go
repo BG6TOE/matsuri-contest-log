@@ -1,18 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"fmt"
-	"net"
-	"net/url"
-	"os"
 
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	binlog "matsu.dev/matsuri-contest-log/binlogserver"
-	gui "matsu.dev/matsuri-contest-log/guiserver"
+	embed "matsu.dev/matsuri-contest-log/embed"
 	"matsu.dev/matsuri-contest-log/version"
 )
 
@@ -29,47 +21,7 @@ func main() {
 	logrus.Infof("Build time: %s", version.BuildTime)
 	logrus.Infof("Commit: %s", version.GitCommit)
 
-	if info, err := os.Stat(*database); os.IsNotExist(err) {
-		manifest := binlog.ContextManifest{}
-		json.Unmarshal([]byte(*contestConfig), &manifest)
-		contestUuid, err := uuid.NewUUID()
-		if err != nil {
-			logrus.Panic(err)
-		}
-		manifest.Uid = contestUuid.String()
-		manifest.Filename = *database
-		binlog.NewContest(manifest)
-	} else if err != nil {
-		logrus.Panic(err)
-	} else if info.IsDir() {
-		logrus.Panic("%s is a dir", *database)
-	}
-
-	url, err := url.Parse(*rpcHost)
-	if err != nil {
-		panic(fmt.Errorf("failed to start server: %v", err))
-	}
-	lis, err := net.Listen(url.Scheme, url.Host)
-	if err != nil {
-		panic(fmt.Errorf("failed to create server: %v", err))
-	}
-	logrus.Infof("Listening at %s", lis.Addr().String())
-	grpcServer := grpc.NewServer()
-
-	binlogServer := binlog.NewServer(&binlog.BinlogServerConfig{GrpcServer: grpcServer, Database: *database})
-	guiServer := gui.NewServer(grpcServer)
-
-	go func() {
-		if err := grpcServer.Serve(lis); err != nil {
-			logrus.Panicf("failed to serve: %v", err)
-		}
-	}()
-
-	binlogServer.Init(&binlog.BinlogServerConfig{Database: *database})
-	err = guiServer.Init(&gui.GuiServerConfig{BinlogServerAddr: *rpcHost})
-	if err != nil {
-		logrus.Panicf("failed to init gui server: %v", err)
-	}
+	embed.Start(&embed.EmbedConfig{RPCHost: "tcp://127.0.0.1:62122"})
 
 	select {}
 }

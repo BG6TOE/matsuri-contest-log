@@ -31,7 +31,7 @@ func main() {
 	}
 }
 
-//  Make sure to use the same channel name as was used on the Flutter client side.
+// Make sure to use the same channel name as was used on the Flutter client side.
 const mclEmbedChannelName = "mcl.matsu.dev/embed"
 
 // MyBatteryPlugin demonstrates how to call a platform-specific API to retrieve
@@ -68,10 +68,9 @@ func (p *MclEmbedPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
 //
 // Supported return types of StandardMethodCodec codec are described in a table:
 // https://godoc.org/github.com/go-flutter-desktop/go-flutter/plugin#StandardMessageCodec
-func handleMclEmbedStart(database interface{}) (reply interface{}, err error) {
+func handleMclEmbedStart(_ interface{}) (reply interface{}, err error) {
 	embed.Start(&embed.EmbedConfig{
-		Database: database.(string),
-		RPCHost:  "tcp://127.0.0.1:62122",
+		RPCHost: "tcp://127.0.0.1:62122",
 	})
 	return nil, nil
 }

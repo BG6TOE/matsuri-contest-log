@@ -13,6 +13,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
+	lua "github.com/yuin/gopher-lua"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -497,6 +498,85 @@ func NewBinlogServer(conf *BinlogServerConfig) (*BinlogServer, error) {
 	mclServ.BuildSnapshot()
 
 	return mclServ, nil
+}
+
+func ParseContestMetadata(s *lua.LState) (*pb.Contest, error) {
+	ret := &pb.Contest{}
+
+	if err := s.CallByParam(lua.P{
+		Fn:      s.GetGlobal("metadata"),
+		NRet:    1,
+		Protect: true,
+	}); err != nil {
+		return nil, status.Errorf(codes.NotFound, "not a valid contest descriptor: %v", err)
+	}
+
+	metadata := s.Get(-1)
+	s.Pop(1)
+
+	if metatable, ok := metadata.(*lua.LTable); !ok {
+		return nil, status.Errorf(codes.NotFound, "unexpected return value of metadata()")
+	} else {
+		if apiVersion, ok := metatable.RawGetString("api_version").(lua.LNumber); !ok {
+			return nil, fmt.Errorf("unexpected api_version")
+		} else {
+			ret.ApiVersion = int32(apiVersion)
+		}
+
+		if version, ok := metatable.RawGetString("version").(lua.LString); !ok {
+			return nil, fmt.Errorf("unexpected version")
+		} else {
+			ret.Version = version.String()
+		}
+
+		if displayname, ok := metatable.RawGetString("display_name").(lua.LString); !ok {
+			return nil, fmt.Errorf("unexpected display_name")
+		} else {
+			ret.Name = displayname.String()
+		}
+
+		if exchange, ok := metatable.RawGetString("exchange_sent").(*lua.LTable); !ok {
+			return nil, fmt.Errorf("unexpected exchange_sent")
+		} else {
+			for i := 1; i <= exchange.Len(); i++ {
+				if exchange_sent, ok := exchange.RawGetInt(i).(lua.LString); !ok {
+					return nil, fmt.Errorf("unexpected exchange_sent[%d]", i)
+				} else {
+					ret.ExchSent = append(ret.ExchSent, exchange_sent.String())
+				}
+			}
+		}
+
+		if exchange, ok := metatable.RawGetString("exchange_rcvd").(*lua.LTable); !ok {
+			return nil, fmt.Errorf("unexpected exchange_rcvd")
+		} else {
+			for i := 1; i <= exchange.Len(); i++ {
+				if exchange_rcvd, ok := exchange.RawGetInt(i).(lua.LString); !ok {
+					return nil, fmt.Errorf("unexpected exchange_rcvd[%d]", i)
+				} else {
+					ret.ExchRcvd = append(ret.ExchRcvd, exchange_rcvd.String())
+				}
+			}
+		}
+	}
+
+	return ret, nil
+}
+
+func ParseContest(ctx context.Context, params *pb.ParseContestRequest) (*pb.Contest, error) {
+	state := lua.NewState()
+	defer state.Close()
+
+	if err := state.DoFile(params.ContestDescriptor); err != nil {
+		return nil, status.Errorf(codes.NotFound, "'%s' is not a valid contest descriptor: %v", params.ContestDescriptor, err)
+	}
+
+	contest, err := ParseContestMetadata(state)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "'%s' is not a valid contest descriptor: %v", params.ContestDescriptor, err)
+	}
+
+	return contest, nil
 }
 
 func (s *BinlogServer) Shutdown() {

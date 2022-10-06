@@ -55,7 +55,7 @@ class GuiState {
   }
 
   Future<void> _startGuiServer() async {
-    await platform.invokeMethod('start', "database.sqlite");
+    await platform.invokeMethod('start', null);
 
     final uri = Uri.parse("tcp://127.0.0.1:62122");
     final channel = ClientChannel(

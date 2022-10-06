@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'load_or_create_contest.dart';
 import 'gui_state.dart';
 import 'proto/proto/mcl.pbenum.dart';
 import 'proto/proto/mclgui.pbgrpc.dart';
@@ -33,8 +34,12 @@ class MyApp extends StatelessWidget {
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
           primarySwatch: Colors.blue,
-          useMaterial3: true),
-      home: const GuiMainPage(title: 'Flutter Demo Home Page'),
+          useMaterial3: false),
+      initialRoute: '/open-contest',
+      routes: {
+        '/contest': (context) => const GuiMainPage(title: 'Flutter Demo Home Page'),
+        '/open-contest':(context) => const LoadOrCreateContestPage(),
+      },
     );
   }
 }

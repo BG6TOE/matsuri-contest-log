@@ -95,3 +95,7 @@ func (s *RpcServer) LoadContest(ctx context.Context, msg *pb.LoadContestRequest)
 		ResultCode: pb.ResultCode_success,
 	}, nil
 }
+
+func (s *RpcServer) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {
+	return ParseContest(ctx, req)
+}

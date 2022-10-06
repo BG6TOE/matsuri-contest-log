@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type GuiClient interface {
 	CreateContest(ctx context.Context, in *CreateContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
 	LoadContest(ctx context.Context, in *LoadContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*Contest, error)
 	LogQSO(ctx context.Context, in *QSOMessage, opts ...grpc.CallOption) (*QSO, error)
 	GetActiveQSOs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error)
 	DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error)
@@ -51,6 +52,15 @@ func (c *guiClient) CreateContest(ctx context.Context, in *CreateContestRequest,
 func (c *guiClient) LoadContest(ctx context.Context, in *LoadContestRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
 	err := c.cc.Invoke(ctx, "/mcl.Gui/LoadContest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *guiClient) ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*Contest, error) {
+	out := new(Contest)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/ParseContest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +109,7 @@ func (c *guiClient) GetScore(ctx context.Context, in *emptypb.Empty, opts ...grp
 type GuiServer interface {
 	CreateContest(context.Context, *CreateContestRequest) (*StandardResponse, error)
 	LoadContest(context.Context, *LoadContestRequest) (*StandardResponse, error)
+	ParseContest(context.Context, *ParseContestRequest) (*Contest, error)
 	LogQSO(context.Context, *QSOMessage) (*QSO, error)
 	GetActiveQSOs(context.Context, *emptypb.Empty) (*SnapshotMessage, error)
 	DeleteQSO(context.Context, *QSO) (*StandardResponse, error)
@@ -115,6 +126,9 @@ func (UnimplementedGuiServer) CreateContest(context.Context, *CreateContestReque
 }
 func (UnimplementedGuiServer) LoadContest(context.Context, *LoadContestRequest) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadContest not implemented")
+}
+func (UnimplementedGuiServer) ParseContest(context.Context, *ParseContestRequest) (*Contest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ParseContest not implemented")
 }
 func (UnimplementedGuiServer) LogQSO(context.Context, *QSOMessage) (*QSO, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogQSO not implemented")
@@ -173,6 +187,24 @@ func _Gui_LoadContest_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GuiServer).LoadContest(ctx, req.(*LoadContestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gui_ParseContest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParseContestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GuiServer).ParseContest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Gui/ParseContest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GuiServer).ParseContest(ctx, req.(*ParseContestRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -263,6 +295,10 @@ var Gui_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoadContest",
 			Handler:    _Gui_LoadContest_Handler,
+		},
+		{
+			MethodName: "ParseContest",
+			Handler:    _Gui_ParseContest_Handler,
 		},
 		{
 			MethodName: "LogQSO",

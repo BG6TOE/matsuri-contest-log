@@ -26,6 +26,7 @@ message ScoreResponse {
 service Gui {
   rpc CreateContest(mcl.CreateContestRequest) returns (mcl.StandardResponse);
   rpc LoadContest(mcl.LoadContestRequest) returns (mcl.StandardResponse);
+  rpc ParseContest(mcl.ParseContestRequest) returns (mcl.Contest);
 
   rpc LogQSO(QSOMessage) returns (mcl.QSO);
   rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);

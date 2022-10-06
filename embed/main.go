@@ -13,9 +13,7 @@ import (
 )
 
 type EmbedConfig struct {
-	Database      string
-	ContestConfig string
-	RPCHost       string
+	RPCHost string
 }
 
 func Start(conf *EmbedConfig) {
@@ -31,7 +29,7 @@ func Start(conf *EmbedConfig) {
 	if err != nil {
 		panic(fmt.Errorf("failed to create server: %v", err))
 	}
-	logrus.Infof("Listening at %s", lis.Addr().String())
+	logrus.Infof("listening at %s", lis.Addr().String())
 	grpcServer := grpc.NewServer()
 
 	binlog.NewRpcServer(grpcServer)

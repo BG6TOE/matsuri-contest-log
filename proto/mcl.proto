@@ -14,12 +14,17 @@ message Station {
 }
 
 message Contest {
-  string name = 1;
-  string uid = 2;
-  string filename = 3;
-  string category = 4;
-  int64 begin_timestamp = 5;
-  int64 end_timestamp = 6;
+  int32 api_version = 1;
+  string version = 2;
+  string name = 16;
+  string uid = 17;
+  string filename = 18;
+  string category = 19;
+  int64 begin_timestamp = 20;
+  int64 end_timestamp = 21;
+  repeated string exch_sent = 22;
+  repeated string exch_rcvd = 23;
+  repeated string custom_fields = 24;
 }
 
 message ContestManifest {
@@ -123,9 +128,14 @@ message CreateContestRequest {
   Contest contest = 2;
 }
 
+message ParseContestRequest {
+  string contest_descriptor = 1;
+}
+
 service Binlog {
   rpc CreateContest(CreateContestRequest) returns (StandardResponse);
   rpc LoadContest(LoadContestRequest) returns (StandardResponse);
+  rpc ParseContest(ParseContestRequest) returns (Contest);
 
   rpc Push(BinlogMessageSet) returns (StandardResponse);
   rpc Retrieve(RetrieveBinlogRequest) returns (BinlogMessageSet);

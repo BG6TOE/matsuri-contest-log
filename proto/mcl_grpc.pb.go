@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BinlogClient interface {
 	CreateContest(ctx context.Context, in *CreateContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
 	LoadContest(ctx context.Context, in *LoadContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*Contest, error)
 	Push(ctx context.Context, in *BinlogMessageSet, opts ...grpc.CallOption) (*StandardResponse, error)
 	Retrieve(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*BinlogMessageSet, error)
 	RetrieveSnapshot(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*SnapshotMessage, error)
@@ -49,6 +50,15 @@ func (c *binlogClient) CreateContest(ctx context.Context, in *CreateContestReque
 func (c *binlogClient) LoadContest(ctx context.Context, in *LoadContestRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
 	err := c.cc.Invoke(ctx, "/mcl.Binlog/LoadContest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *binlogClient) ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*Contest, error) {
+	out := new(Contest)
+	err := c.cc.Invoke(ctx, "/mcl.Binlog/ParseContest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +98,7 @@ func (c *binlogClient) RetrieveSnapshot(ctx context.Context, in *RetrieveBinlogR
 type BinlogServer interface {
 	CreateContest(context.Context, *CreateContestRequest) (*StandardResponse, error)
 	LoadContest(context.Context, *LoadContestRequest) (*StandardResponse, error)
+	ParseContest(context.Context, *ParseContestRequest) (*Contest, error)
 	Push(context.Context, *BinlogMessageSet) (*StandardResponse, error)
 	Retrieve(context.Context, *RetrieveBinlogRequest) (*BinlogMessageSet, error)
 	RetrieveSnapshot(context.Context, *RetrieveBinlogRequest) (*SnapshotMessage, error)
@@ -103,6 +114,9 @@ func (UnimplementedBinlogServer) CreateContest(context.Context, *CreateContestRe
 }
 func (UnimplementedBinlogServer) LoadContest(context.Context, *LoadContestRequest) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadContest not implemented")
+}
+func (UnimplementedBinlogServer) ParseContest(context.Context, *ParseContestRequest) (*Contest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ParseContest not implemented")
 }
 func (UnimplementedBinlogServer) Push(context.Context, *BinlogMessageSet) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Push not implemented")
@@ -158,6 +172,24 @@ func _Binlog_LoadContest_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BinlogServer).LoadContest(ctx, req.(*LoadContestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Binlog_ParseContest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParseContestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinlogServer).ParseContest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Binlog/ParseContest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinlogServer).ParseContest(ctx, req.(*ParseContestRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -230,6 +262,10 @@ var Binlog_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoadContest",
 			Handler:    _Binlog_LoadContest_Handler,
+		},
+		{
+			MethodName: "ParseContest",
+			Handler:    _Binlog_ParseContest_Handler,
 		},
 		{
 			MethodName: "Push",
