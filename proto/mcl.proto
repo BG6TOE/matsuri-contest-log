@@ -25,6 +25,7 @@ message Contest {
   repeated string exch_sent = 22;
   repeated string exch_rcvd = 23;
   repeated string custom_fields = 24;
+  string stationCallsign = 25;
 }
 
 message ContestManifest {

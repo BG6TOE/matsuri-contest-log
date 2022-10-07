@@ -94,11 +94,12 @@ const Contest$json = const {
     const {'1': 'exch_sent', '3': 22, '4': 3, '5': 9, '10': 'exchSent'},
     const {'1': 'exch_rcvd', '3': 23, '4': 3, '5': 9, '10': 'exchRcvd'},
     const {'1': 'custom_fields', '3': 24, '4': 3, '5': 9, '10': 'customFields'},
+    const {'1': 'stationCallsign', '3': 25, '4': 1, '5': 9, '10': 'stationCallsign'},
   ],
 };
 
 /// Descriptor for `Contest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List contestDescriptor = $convert.base64Decode('CgdDb250ZXN0Eh8KC2FwaV92ZXJzaW9uGAEgASgFUgphcGlWZXJzaW9uEhgKB3ZlcnNpb24YAiABKAlSB3ZlcnNpb24SEgoEbmFtZRgQIAEoCVIEbmFtZRIQCgN1aWQYESABKAlSA3VpZBIaCghmaWxlbmFtZRgSIAEoCVIIZmlsZW5hbWUSGgoIY2F0ZWdvcnkYEyABKAlSCGNhdGVnb3J5EicKD2JlZ2luX3RpbWVzdGFtcBgUIAEoA1IOYmVnaW5UaW1lc3RhbXASIwoNZW5kX3RpbWVzdGFtcBgVIAEoA1IMZW5kVGltZXN0YW1wEhsKCWV4Y2hfc2VudBgWIAMoCVIIZXhjaFNlbnQSGwoJZXhjaF9yY3ZkGBcgAygJUghleGNoUmN2ZBIjCg1jdXN0b21fZmllbGRzGBggAygJUgxjdXN0b21GaWVsZHM=');
+final $typed_data.Uint8List contestDescriptor = $convert.base64Decode('CgdDb250ZXN0Eh8KC2FwaV92ZXJzaW9uGAEgASgFUgphcGlWZXJzaW9uEhgKB3ZlcnNpb24YAiABKAlSB3ZlcnNpb24SEgoEbmFtZRgQIAEoCVIEbmFtZRIQCgN1aWQYESABKAlSA3VpZBIaCghmaWxlbmFtZRgSIAEoCVIIZmlsZW5hbWUSGgoIY2F0ZWdvcnkYEyABKAlSCGNhdGVnb3J5EicKD2JlZ2luX3RpbWVzdGFtcBgUIAEoA1IOYmVnaW5UaW1lc3RhbXASIwoNZW5kX3RpbWVzdGFtcBgVIAEoA1IMZW5kVGltZXN0YW1wEhsKCWV4Y2hfc2VudBgWIAMoCVIIZXhjaFNlbnQSGwoJZXhjaF9yY3ZkGBcgAygJUghleGNoUmN2ZBIjCg1jdXN0b21fZmllbGRzGBggAygJUgxjdXN0b21GaWVsZHMSKAoPc3RhdGlvbkNhbGxzaWduGBkgASgJUg9zdGF0aW9uQ2FsbHNpZ24=');
 @$core.Deprecated('Use contestManifestDescriptor instead')
 const ContestManifest$json = const {
   '1': 'ContestManifest',

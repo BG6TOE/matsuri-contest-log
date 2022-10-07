@@ -18,7 +18,7 @@ function metadata()
         -- meta_version: the schema version of the metadata
         api_version = 1,
         -- version: the version of the contest, for display only
-        version = "2022-10-02",
+        version = "2022.1",
 
         -- the name of the contest, for display only
         display_name = "CQWW SSB",
@@ -38,7 +38,7 @@ function metadata()
         multipliers = {"Zone"},
 
         -- The fields in the "exchange_sent" which can be set before the contest
-        const_fields = {"Zone"},
+        custom_fields = {"Zone"},
 
         -- Explain some fields to the user.
         field_description = { Zone = "CQ Zone", }

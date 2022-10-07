@@ -144,6 +144,7 @@ class Contest extends $pb.GeneratedMessage {
     ..pPS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent')
     ..pPS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd')
     ..pPS(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields')
+    ..aOS(25, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'stationCallsign', protoName: 'stationCallsign')
     ..hasRequiredFields = false
   ;
 
@@ -160,6 +161,7 @@ class Contest extends $pb.GeneratedMessage {
     $core.Iterable<$core.String>? exchSent,
     $core.Iterable<$core.String>? exchRcvd,
     $core.Iterable<$core.String>? customFields,
+    $core.String? stationCallsign,
   }) {
     final _result = create();
     if (apiVersion != null) {
@@ -194,6 +196,9 @@ class Contest extends $pb.GeneratedMessage {
     }
     if (customFields != null) {
       _result.customFields.addAll(customFields);
+    }
+    if (stationCallsign != null) {
+      _result.stationCallsign = stationCallsign;
     }
     return _result;
   }
@@ -298,6 +303,15 @@ class Contest extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(24)
   $core.List<$core.String> get customFields => $_getList(10);
+
+  @$pb.TagNumber(25)
+  $core.String get stationCallsign => $_getSZ(11);
+  @$pb.TagNumber(25)
+  set stationCallsign($core.String v) { $_setString(11, v); }
+  @$pb.TagNumber(25)
+  $core.bool hasStationCallsign() => $_has(11);
+  @$pb.TagNumber(25)
+  void clearStationCallsign() => clearField(25);
 }
 
 class ContestManifest extends $pb.GeneratedMessage {

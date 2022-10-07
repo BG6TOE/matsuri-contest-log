@@ -56,6 +56,8 @@ func (s *RpcServer) CreateContest(ctx context.Context, msg *pb.CreateContestRequ
 		}
 		manifest.Uid = contestUuid.String()
 		manifest.Filename = msg.DatabaseName
+		manifest.Contest = msg.Contest
+
 		NewContest(manifest)
 		return &pb.StandardResponse{
 			ResultCode: pb.ResultCode_success,

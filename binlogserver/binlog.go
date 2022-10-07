@@ -17,6 +17,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	pb "matsu.dev/matsuri-contest-log/proto"
 )
@@ -27,14 +28,10 @@ const (
 )
 
 type ContextManifest struct {
-	Uid                string    `json:"uid"`
-	Name               string    `json:"name"`
-	Filename           string    `json:"filename"`
-	Category           string    `json:"catrgory"`
-	BeginTimestamp     time.Time `json:"begin_timestamp"`
-	EndTimestamp       time.Time `json:"end_timestamp"`
-	ContestDisplayName string    `json:"contest_display_name"`
-	DatabaseVersion    int       `json:"database_version"`
+	Uid             string      `json:"uid"`
+	Filename        string      `json:"filename"`
+	Contest         *pb.Contest `json:"contest"`
+	DatabaseVersion int         `json:"database_version"`
 }
 
 type QSO struct {
@@ -353,13 +350,11 @@ func NewContest(manifest ContextManifest) {
 		panic(fmt.Errorf("failed to initialize the database: %v", err))
 	}
 
+	protoString, _ := protojson.Marshal(manifest.Contest)
+
 	values := map[string]string{
 		"uid":                  manifest.Uid,
-		"name":                 manifest.Name,
-		"category":             manifest.Category,
-		"begin":                manifest.BeginTimestamp.Format(time.RFC3339),
-		"end":                  manifest.EndTimestamp.Format(time.RFC3339),
-		"contest_display_name": manifest.ContestDisplayName,
+		"contest":              string(protoString),
 		"database_version":     strconv.Itoa(DatabaseVersion),
 		"min_database_version": strconv.Itoa(MinSupportedDatabaseVersion),
 	}
@@ -391,11 +386,10 @@ func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
 	}
 
 	values := map[string]*string{
-		"uid":                  &manifest.Uid,
-		"name":                 &manifest.Name,
-		"category":             &manifest.Category,
-		"contest_display_name": &manifest.ContestDisplayName,
+		"uid": &manifest.Uid,
 	}
+
+	manifest.Contest = &pb.Contest{}
 
 	for rows.Next() {
 		var (
@@ -409,10 +403,11 @@ func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
 			*vptr = v
 		} else {
 			switch k {
-			case "begin":
-				manifest.BeginTimestamp, err = time.Parse(time.RFC3339, v)
-			case "end":
-				manifest.EndTimestamp, err = time.Parse(time.RFC3339, v)
+			case "contest":
+				err := protojson.Unmarshal([]byte(v), manifest.Contest)
+				if err != nil {
+					return nil, fmt.Errorf("contest is not valid: %v", err)
+				}
 			case "database_version":
 				manifest.DatabaseVersion, err = strconv.Atoi(v)
 
@@ -557,6 +552,18 @@ func ParseContestMetadata(s *lua.LState) (*pb.Contest, error) {
 					return nil, fmt.Errorf("unexpected exchange_rcvd[%d]", i)
 				} else {
 					ret.ExchRcvd = append(ret.ExchRcvd, exchange_rcvd.String())
+				}
+			}
+		}
+
+		if exchange, ok := metatable.RawGetString("custom_fields").(*lua.LTable); !ok {
+			return nil, fmt.Errorf("unexpected exchange_rcvd")
+		} else {
+			for i := 1; i <= exchange.Len(); i++ {
+				if exchange_field, ok := exchange.RawGetInt(i).(lua.LString); !ok {
+					return nil, fmt.Errorf("unexpected exchange_rcvd[%d]", i)
+				} else {
+					ret.CustomFields = append(ret.CustomFields, exchange_field.String())
 				}
 			}
 		}
