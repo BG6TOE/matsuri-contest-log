@@ -72,6 +72,8 @@ class _GuiMainPageState extends State<GuiMainPage> {
   @override
   void initState() {
     super.initState();
+
+    Timer.run(() {state.refreshQsos();});
   }
 
   @override

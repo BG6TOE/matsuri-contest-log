@@ -1,6 +1,8 @@
-
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:mcl_gui/proto/proto/mcl.pbgrpc.dart';
+
+import 'gui_state.dart';
 
 class LoadOrCreateContestPage extends StatefulWidget {
   const LoadOrCreateContestPage({super.key});
@@ -46,19 +48,26 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
         children: <Widget>[
           TextButton(
               onPressed: () async {
-                await openFile(acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
+                final filename = await openFile(
+                    acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
+                if (filename != null) {
+                  await state.getGuiClient()!.loadContest(
+                      LoadContestRequest(databaseName: filename.path));
+                  Navigator.pushReplacementNamed(this.context, '/contest');
+                }
               },
               child: Text("Open an existing contest database")),
-          
           TextButton(
               onPressed: () async {
-                await openFile(acceptedTypeGroups: <XTypeGroup>[contestDescriptor]);
+                await openFile(
+                    acceptedTypeGroups: <XTypeGroup>[contestDescriptor]);
               },
               child: Text("Create an new contest database for a contest")),
-          
           TextButton(
               onPressed: () async {
-                await getSavePath(suggestedName: 'NewContest.mcldb.sqlite3', acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
+                await getSavePath(
+                    suggestedName: 'NewContest.mcldb.sqlite3',
+                    acceptedTypeGroups: <XTypeGroup>[contestDbTypes]);
               },
               child: Text("Create and open contest")),
         ],

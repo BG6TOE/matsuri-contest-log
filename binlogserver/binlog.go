@@ -374,7 +374,9 @@ func NewContest(manifest ContextManifest) {
 
 func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", manifest.Filename)
-	return nil, err
+	if err != nil {
+		return nil, err
+	}
 
 	close_db := db
 	defer func() {

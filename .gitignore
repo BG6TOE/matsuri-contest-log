@@ -102,3 +102,6 @@ out/
 webui/web-dist
 
 build/
+
+*.db
+*.sqlite
