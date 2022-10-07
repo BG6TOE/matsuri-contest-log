@@ -16,7 +16,7 @@ type EmbedConfig struct {
 	RPCHost string
 }
 
-func Start(conf *EmbedConfig) {
+func Run(conf *EmbedConfig) {
 	logrus.Infof("MCL Version %s", version.Version)
 	logrus.Infof("Build time: %s", version.BuildTime)
 	logrus.Infof("Commit: %s", version.GitCommit)

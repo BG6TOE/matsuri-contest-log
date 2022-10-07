@@ -7,10 +7,10 @@ import (
 )
 import "matsu.dev/matsuri-contest-log/embed"
 
-//export run_server
-func run_server(rpcHost *C.char) C.int {
+//export run_mcl_gui_server
+func run_mcl_gui_server(rpcHost *C.char) C.int {
 
-	embed.Start(&embed.EmbedConfig{RPCHost: C.GoString(rpcHost)})
+	embed.Run(&embed.EmbedConfig{RPCHost: C.GoString(rpcHost)})
 
 	return 0
 }

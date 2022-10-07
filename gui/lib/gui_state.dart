@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
-import 'package:gui_backend/gui_backend.dart';
+import 'package:gui_lib/gui_lib.dart';
 import 'proto/google/protobuf/empty.pb.dart';
 import 'proto/proto/mcl.pbgrpc.dart';
 import 'proto/proto/mclgui.pbgrpc.dart';
@@ -58,7 +58,7 @@ class GuiState {
   }
 
   Future<void> _startGuiServer() async {
-    await GuiBackend().runServer();
+    runMclGuiServer("tcp://127.0.0.1:62122");
 
     final uri = Uri.parse("tcp://127.0.0.1:62122");
     final channel = ClientChannel(
