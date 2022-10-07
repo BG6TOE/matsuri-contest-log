@@ -15,6 +15,67 @@ import 'mclgui.pbenum.dart';
 
 export 'mclgui.pbenum.dart';
 
+class QSOField extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'QSOField', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'title')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'value')
+    ..hasRequiredFields = false
+  ;
+
+  QSOField._() : super();
+  factory QSOField({
+    $core.String? title,
+    $core.String? value,
+  }) {
+    final _result = create();
+    if (title != null) {
+      _result.title = title;
+    }
+    if (value != null) {
+      _result.value = value;
+    }
+    return _result;
+  }
+  factory QSOField.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory QSOField.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  QSOField clone() => QSOField()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  QSOField copyWith(void Function(QSOField) updates) => super.copyWith((message) => updates(message as QSOField)) as QSOField; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static QSOField create() => QSOField._();
+  QSOField createEmptyInstance() => create();
+  static $pb.PbList<QSOField> createRepeated() => $pb.PbList<QSOField>();
+  @$core.pragma('dart2js:noInline')
+  static QSOField getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<QSOField>(create);
+  static QSOField? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get title => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set title($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasTitle() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTitle() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get value => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set value($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasValue() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearValue() => clearField(2);
+}
+
 class QSOMessage extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'QSOMessage', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxCallsign')
@@ -22,8 +83,8 @@ class QSOMessage extends $pb.GeneratedMessage {
     ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time')
     ..aInt64(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'freq')
     ..e<$0.Mode>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: $0.Mode.phone, valueOf: $0.Mode.valueOf, enumValues: $0.Mode.values)
-    ..pPS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent')
-    ..pPS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd')
+    ..pc<QSOField>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent', $pb.PbFieldType.PM, subBuilder: QSOField.create)
+    ..pc<QSOField>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd', $pb.PbFieldType.PM, subBuilder: QSOField.create)
     ..hasRequiredFields = false
   ;
 
@@ -34,8 +95,8 @@ class QSOMessage extends $pb.GeneratedMessage {
     $fixnum.Int64? time,
     $fixnum.Int64? freq,
     $0.Mode? mode,
-    $core.Iterable<$core.String>? exchangeSent,
-    $core.Iterable<$core.String>? exchangeRcvd,
+    $core.Iterable<QSOField>? exchangeSent,
+    $core.Iterable<QSOField>? exchangeRcvd,
   }) {
     final _result = create();
     if (dxCallsign != null) {
@@ -128,10 +189,10 @@ class QSOMessage extends $pb.GeneratedMessage {
   void clearMode() => clearField(5);
 
   @$pb.TagNumber(6)
-  $core.List<$core.String> get exchangeSent => $_getList(5);
+  $core.List<QSOField> get exchangeSent => $_getList(5);
 
   @$pb.TagNumber(7)
-  $core.List<$core.String> get exchangeRcvd => $_getList(6);
+  $core.List<QSOField> get exchangeRcvd => $_getList(6);
 }
 
 class DraftQSOMessage extends $pb.GeneratedMessage {
@@ -220,6 +281,55 @@ class ScoreResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $fixnum.Int64> get categoryScore => $_getMap(0);
+}
+
+class QSOFields extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'QSOFields', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..pc<QSOField>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent', $pb.PbFieldType.PM, subBuilder: QSOField.create)
+    ..pc<QSOField>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd', $pb.PbFieldType.PM, subBuilder: QSOField.create)
+    ..hasRequiredFields = false
+  ;
+
+  QSOFields._() : super();
+  factory QSOFields({
+    $core.Iterable<QSOField>? exchangeSent,
+    $core.Iterable<QSOField>? exchangeRcvd,
+  }) {
+    final _result = create();
+    if (exchangeSent != null) {
+      _result.exchangeSent.addAll(exchangeSent);
+    }
+    if (exchangeRcvd != null) {
+      _result.exchangeRcvd.addAll(exchangeRcvd);
+    }
+    return _result;
+  }
+  factory QSOFields.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory QSOFields.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  QSOFields clone() => QSOFields()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  QSOFields copyWith(void Function(QSOFields) updates) => super.copyWith((message) => updates(message as QSOFields)) as QSOFields; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static QSOFields create() => QSOFields._();
+  QSOFields createEmptyInstance() => create();
+  static $pb.PbList<QSOFields> createRepeated() => $pb.PbList<QSOFields>();
+  @$core.pragma('dart2js:noInline')
+  static QSOFields getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<QSOFields>(create);
+  static QSOFields? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<QSOField> get exchangeSent => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.List<QSOField> get exchangeRcvd => $_getList(1);
 }
 
 class Spot extends $pb.GeneratedMessage {

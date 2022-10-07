@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
 import 'package:gui_lib/gui_lib.dart';
@@ -11,15 +12,17 @@ const platform = MethodChannel('mcl.matsu.dev/embed');
 
 class RadioState {}
 
-enum CallbackKind { kOnQsoUpdate }
+enum CallbackKind { kOnQsoUpdate, kOnQsoFieldSetUpdate }
 
 class GuiState {
   final RadioState _radioState;
   GuiClient? _guiClient;
   final bool _guiServerConnected = false;
 
-  var exchangeSentFields = <String>[];
-  var exchangeRcvdFields = <String>[];
+  ActiveContest? activeContest;
+
+  var displayExchangeSentFields = <QSOField>[];
+  var displayExchangeRcvdFields = <QSOField>[];
 
   int callbackIdentifier = 0;
 
@@ -27,9 +30,6 @@ class GuiState {
   List<QSO> activeQsos = [];
 
   GuiState() : _radioState = RadioState() {
-    exchangeSentFields = <String>['RST Snt'];
-    exchangeRcvdFields = <String>['RST Rcv', 'Exch Rcv'];
-
     for (var val in CallbackKind.values) {
       callbacks[val] = <int, void Function()>{};
     }
@@ -78,7 +78,19 @@ class GuiState {
     return _guiClient;
   }
 
-  void refreshQsos() async {
+  Future<void> updateExchangeFields() async {
+    var fields = await _guiClient!.getQSOFields(Empty());
+
+    if (!listEquals(displayExchangeSentFields, fields.exchangeSent) ||
+        !listEquals(displayExchangeRcvdFields, fields.exchangeRcvd)) {
+      displayExchangeSentFields = fields.exchangeSent;
+      displayExchangeRcvdFields = fields.exchangeRcvd;
+
+      invokeCallback(CallbackKind.kOnQsoFieldSetUpdate);
+    }
+  }
+
+  Future<void> refreshQsos() async {
     if (_guiClient == null) {
       return;
     }
@@ -90,6 +102,9 @@ class GuiState {
 
     activeQsos = loadedQsos;
 
+    activeContest = await _guiClient!.getActiveContest(Empty());
+
+    await updateExchangeFields();
     invokeCallback(CallbackKind.kOnQsoUpdate);
   }
 

@@ -11,6 +11,7 @@ import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
 import 'mcl.pb.dart' as $0;
+import '../google/protobuf/empty.pb.dart' as $1;
 export 'mcl.pb.dart';
 
 class BinlogClient extends $grpc.Client {
@@ -31,6 +32,11 @@ class BinlogClient extends $grpc.Client {
           '/mcl.Binlog/ParseContest',
           ($0.ParseContestRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Contest.fromBuffer(value));
+  static final _$getActiveContest =
+      $grpc.ClientMethod<$1.Empty, $0.ActiveContest>(
+          '/mcl.Binlog/GetActiveContest',
+          ($1.Empty value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.ActiveContest.fromBuffer(value));
   static final _$push =
       $grpc.ClientMethod<$0.BinlogMessageSet, $0.StandardResponse>(
           '/mcl.Binlog/Push',
@@ -70,6 +76,11 @@ class BinlogClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Contest> parseContest($0.ParseContestRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$parseContest, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.ActiveContest> getActiveContest($1.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$getActiveContest, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.StandardResponse> push($0.BinlogMessageSet request,
@@ -119,6 +130,13 @@ abstract class BinlogServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.ParseContestRequest.fromBuffer(value),
         ($0.Contest value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$1.Empty, $0.ActiveContest>(
+        'GetActiveContest',
+        getActiveContest_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $1.Empty.fromBuffer(value),
+        ($0.ActiveContest value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.BinlogMessageSet, $0.StandardResponse>(
         'Push',
         push_Pre,
@@ -161,6 +179,11 @@ abstract class BinlogServiceBase extends $grpc.Service {
     return parseContest(call, await request);
   }
 
+  $async.Future<$0.ActiveContest> getActiveContest_Pre(
+      $grpc.ServiceCall call, $async.Future<$1.Empty> request) async {
+    return getActiveContest(call, await request);
+  }
+
   $async.Future<$0.StandardResponse> push_Pre($grpc.ServiceCall call,
       $async.Future<$0.BinlogMessageSet> request) async {
     return push(call, await request);
@@ -182,6 +205,8 @@ abstract class BinlogServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.LoadContestRequest request);
   $async.Future<$0.Contest> parseContest(
       $grpc.ServiceCall call, $0.ParseContestRequest request);
+  $async.Future<$0.ActiveContest> getActiveContest(
+      $grpc.ServiceCall call, $1.Empty request);
   $async.Future<$0.StandardResponse> push(
       $grpc.ServiceCall call, $0.BinlogMessageSet request);
   $async.Future<$0.BinlogMessageSet> retrieve(

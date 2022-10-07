@@ -26,6 +26,17 @@ const RadioMode$json = const {
 
 /// Descriptor for `RadioMode`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List radioModeDescriptor = $convert.base64Decode('CglSYWRpb01vZGUSCwoHVU5LTk9XThAAEgYKAkNXEAESBwoDQ1dSEAISBwoDTFNCEAMSBwoDVVNCEAQSBgoCQU0QBRIGCgJGTRAGEgkKBURBVEFMEAcSCQoFREFUQVUQCA==');
+@$core.Deprecated('Use qSOFieldDescriptor instead')
+const QSOField$json = const {
+  '1': 'QSOField',
+  '2': const [
+    const {'1': 'title', '3': 1, '4': 1, '5': 9, '10': 'title'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+};
+
+/// Descriptor for `QSOField`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List qSOFieldDescriptor = $convert.base64Decode('CghRU09GaWVsZBIUCgV0aXRsZRgBIAEoCVIFdGl0bGUSFAoFdmFsdWUYAiABKAlSBXZhbHVl');
 @$core.Deprecated('Use qSOMessageDescriptor instead')
 const QSOMessage$json = const {
   '1': 'QSOMessage',
@@ -35,13 +46,13 @@ const QSOMessage$json = const {
     const {'1': 'time', '3': 3, '4': 1, '5': 3, '10': 'time'},
     const {'1': 'freq', '3': 4, '4': 1, '5': 3, '10': 'freq'},
     const {'1': 'mode', '3': 5, '4': 1, '5': 14, '6': '.mcl.Mode', '10': 'mode'},
-    const {'1': 'exchange_sent', '3': 6, '4': 3, '5': 9, '10': 'exchangeSent'},
-    const {'1': 'exchange_rcvd', '3': 7, '4': 3, '5': 9, '10': 'exchangeRcvd'},
+    const {'1': 'exchange_sent', '3': 6, '4': 3, '5': 11, '6': '.mcl.QSOField', '10': 'exchangeSent'},
+    const {'1': 'exchange_rcvd', '3': 7, '4': 3, '5': 11, '6': '.mcl.QSOField', '10': 'exchangeRcvd'},
   ],
 };
 
 /// Descriptor for `QSOMessage`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List qSOMessageDescriptor = $convert.base64Decode('CgpRU09NZXNzYWdlEh8KC2R4X2NhbGxzaWduGAEgASgJUgpkeENhbGxzaWduEhoKCG9wZXJhdG9yGAIgASgJUghvcGVyYXRvchISCgR0aW1lGAMgASgDUgR0aW1lEhIKBGZyZXEYBCABKANSBGZyZXESHQoEbW9kZRgFIAEoDjIJLm1jbC5Nb2RlUgRtb2RlEiMKDWV4Y2hhbmdlX3NlbnQYBiADKAlSDGV4Y2hhbmdlU2VudBIjCg1leGNoYW5nZV9yY3ZkGAcgAygJUgxleGNoYW5nZVJjdmQ=');
+final $typed_data.Uint8List qSOMessageDescriptor = $convert.base64Decode('CgpRU09NZXNzYWdlEh8KC2R4X2NhbGxzaWduGAEgASgJUgpkeENhbGxzaWduEhoKCG9wZXJhdG9yGAIgASgJUghvcGVyYXRvchISCgR0aW1lGAMgASgDUgR0aW1lEhIKBGZyZXEYBCABKANSBGZyZXESHQoEbW9kZRgFIAEoDjIJLm1jbC5Nb2RlUgRtb2RlEjIKDWV4Y2hhbmdlX3NlbnQYBiADKAsyDS5tY2wuUVNPRmllbGRSDGV4Y2hhbmdlU2VudBIyCg1leGNoYW5nZV9yY3ZkGAcgAygLMg0ubWNsLlFTT0ZpZWxkUgxleGNoYW5nZVJjdmQ=');
 @$core.Deprecated('Use draftQSOMessageDescriptor instead')
 const DraftQSOMessage$json = const {
   '1': 'DraftQSOMessage',
@@ -73,6 +84,17 @@ const ScoreResponse_CategoryScoreEntry$json = const {
 
 /// Descriptor for `ScoreResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List scoreResponseDescriptor = $convert.base64Decode('Cg1TY29yZVJlc3BvbnNlEkwKDmNhdGVnb3J5X3Njb3JlGAEgAygLMiUubWNsLlNjb3JlUmVzcG9uc2UuQ2F0ZWdvcnlTY29yZUVudHJ5Ug1jYXRlZ29yeVNjb3JlGkAKEkNhdGVnb3J5U2NvcmVFbnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoA1IFdmFsdWU6AjgB');
+@$core.Deprecated('Use qSOFieldsDescriptor instead')
+const QSOFields$json = const {
+  '1': 'QSOFields',
+  '2': const [
+    const {'1': 'exchange_sent', '3': 1, '4': 3, '5': 11, '6': '.mcl.QSOField', '10': 'exchangeSent'},
+    const {'1': 'exchange_rcvd', '3': 2, '4': 3, '5': 11, '6': '.mcl.QSOField', '10': 'exchangeRcvd'},
+  ],
+};
+
+/// Descriptor for `QSOFields`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List qSOFieldsDescriptor = $convert.base64Decode('CglRU09GaWVsZHMSMgoNZXhjaGFuZ2Vfc2VudBgBIAMoCzINLm1jbC5RU09GaWVsZFIMZXhjaGFuZ2VTZW50EjIKDWV4Y2hhbmdlX3JjdmQYAiADKAsyDS5tY2wuUVNPRmllbGRSDGV4Y2hhbmdlUmN2ZA==');
 @$core.Deprecated('Use spotDescriptor instead')
 const Spot$json = const {
   '1': 'Spot',

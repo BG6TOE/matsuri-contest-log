@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,16 +49,8 @@ func (s *RpcServer) RetrieveSnapshot(ctx context.Context, msg *pb.RetrieveBinlog
 
 func (s *RpcServer) CreateContest(ctx context.Context, msg *pb.CreateContestRequest) (*pb.StandardResponse, error) {
 	if info, err := os.Stat(msg.DatabaseName); os.IsNotExist(err) {
-		manifest := ContextManifest{}
-		contestUuid, err := uuid.NewUUID()
-		if err != nil {
-			logrus.Panic(err)
-		}
-		manifest.Uid = contestUuid.String()
-		manifest.Filename = msg.DatabaseName
-		manifest.Contest = msg.Contest
-
-		NewContest(manifest)
+		msg.Contest.Uuid = uuid.NewString()
+		NewContest(msg.DatabaseName, msg.Contest)
 		return &pb.StandardResponse{
 			ResultCode: pb.ResultCode_success,
 		}, nil
@@ -96,6 +88,10 @@ func (s *RpcServer) LoadContest(ctx context.Context, msg *pb.LoadContestRequest)
 	return &pb.StandardResponse{
 		ResultCode: pb.ResultCode_success,
 	}, nil
+}
+
+func (s *RpcServer) GetActiveContest(context.Context, *empty.Empty) (*pb.ActiveContest, error) {
+	return s.server.currentContest, nil
 }
 
 func (s *RpcServer) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {

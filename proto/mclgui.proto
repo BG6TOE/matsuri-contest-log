@@ -7,14 +7,19 @@ option go_package = "proto/.";
 import "proto/mcl.proto";
 import "google/protobuf/empty.proto";
 
+message QSOField {
+  string title = 1;
+  string value = 2;
+}
+
 message QSOMessage {
   string dx_callsign = 1;
   string operator = 2;
   int64 time = 3;
   int64 freq = 4;
   mcl.Mode mode = 5;
-  repeated string exchange_sent = 6;
-  repeated string exchange_rcvd = 7;
+  repeated QSOField exchange_sent = 6;
+  repeated QSOField exchange_rcvd = 7;
 }
 
 message DraftQSOMessage { string dx_callsign = 1; }
@@ -23,10 +28,18 @@ message ScoreResponse {
   map<string, int64> category_score = 1;
 }
 
+message QSOFields {
+  repeated QSOField exchange_sent = 1;
+  repeated QSOField exchange_rcvd = 2;
+}
+
 service Gui {
   rpc CreateContest(mcl.CreateContestRequest) returns (mcl.StandardResponse);
   rpc LoadContest(mcl.LoadContestRequest) returns (mcl.StandardResponse);
   rpc ParseContest(mcl.ParseContestRequest) returns (mcl.Contest);
+  rpc GetActiveContest(google.protobuf.Empty) returns (mcl.ActiveContest);
+
+  rpc GetQSOFields(google.protobuf.Empty) returns (QSOFields);
 
   rpc LogQSO(QSOMessage) returns (mcl.QSO);
   rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);

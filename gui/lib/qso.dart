@@ -50,23 +50,39 @@ class _QSOInputState extends State<QSOInput> {
   var exchangeRcvdControllers = <TextEditingController>[];
   var focuser = <FocusNode>[];
 
-  @override
-  void initState() {
-    super.initState();
+  var _qsoFieldSetUpdateCallbackId = 0;
+
+  void _onQsoFieldSetUpdate() {
     exchangeSentControllers = <TextEditingController>[];
+    focuser = <FocusNode>[];
     focuser.add(FocusNode());
-    for (int i = 0; i < state.exchangeSentFields.length; i++) {
+    for (int i = 0; i < state.displayExchangeSentFields.length; i++) {
       exchangeSentControllers.add(TextEditingController());
       focuser.add(FocusNode());
     }
-    for (int i = 0; i < state.exchangeRcvdFields.length; i++) {
+    for (int i = 0; i < state.displayExchangeRcvdFields.length; i++) {
       exchangeRcvdControllers.add(TextEditingController());
       focuser.add(FocusNode());
     }
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _onQsoFieldSetUpdate();
+
+    _qsoFieldSetUpdateCallbackId = state.registerCallback(
+        CallbackKind.kOnQsoFieldSetUpdate, _onQsoFieldSetUpdate);
   }
 
   @override
   void dispose() {
+    state.deregisterCallback(
+        CallbackKind.kOnQsoFieldSetUpdate, _qsoFieldSetUpdateCallbackId);
+
     // Clean up the controller when the widget is disposed.
     dxCallsignController.dispose();
     for (var element in exchangeSentControllers) {
@@ -103,8 +119,16 @@ class _QSOInputState extends State<QSOInput> {
 
   void submitQso() {
     var dxCallsign = dxCallsignController.text;
-    var exchangeSent = exchangeSentControllers.map((e) => e.text);
-    var exchangeRcvd = exchangeRcvdControllers.map((e) => e.text);
+    var exchangeSent = <QSOField>{};
+    var exchangeRcvd = <QSOField>{};
+
+
+    for (var i = 0; i < state.displayExchangeSentFields.length; i++) {
+      exchangeSent.add(QSOField(title: state.displayExchangeSentFields[i].value, value: exchangeSentControllers[i].text));
+    }
+    for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
+      exchangeRcvd.add(QSOField(title: state.displayExchangeRcvdFields[i].value, value: exchangeRcvdControllers[i].text));
+    }
 
     // TODO: Check response
     unawaited(() async {
@@ -149,23 +173,23 @@ class _QSOInputState extends State<QSOInput> {
         controller: dxCallsignController,
       )),
     ];
-    for (var i = 0; i < state.exchangeSentFields.length; i++) {
+    for (var i = 0; i < state.displayExchangeSentFields.length; i++) {
       qsoInputFields.add(const SizedBox(width: 4, height: 1));
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
-        state.exchangeSentFields[i],
+        "${state.displayExchangeSentFields[i].title} Sent",
         onSubmitted: (value) => onFieldSubmitted("exch_sent", i, value),
         focusNode: focuser[1 + i],
         controller: exchangeSentControllers[i],
       )));
     }
-    for (var i = 0; i < state.exchangeRcvdFields.length; i++) {
+    for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
       qsoInputFields.add(const SizedBox(width: 4, height: 1));
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
-        state.exchangeRcvdFields[i],
+        "${state.displayExchangeRcvdFields[i].title} Rcvd",
         onSubmitted: (value) => onFieldSubmitted("exch_rcvd", i, value),
-        focusNode: focuser[1 + state.exchangeSentFields.length + i],
+        focusNode: focuser[1 + state.displayExchangeSentFields.length + i],
         controller: exchangeRcvdControllers[i],
       )));
     }

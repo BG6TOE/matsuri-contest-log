@@ -8,6 +8,7 @@ package __
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -25,6 +26,7 @@ type BinlogClient interface {
 	CreateContest(ctx context.Context, in *CreateContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
 	LoadContest(ctx context.Context, in *LoadContestRequest, opts ...grpc.CallOption) (*StandardResponse, error)
 	ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*Contest, error)
+	GetActiveContest(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ActiveContest, error)
 	Push(ctx context.Context, in *BinlogMessageSet, opts ...grpc.CallOption) (*StandardResponse, error)
 	Retrieve(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*BinlogMessageSet, error)
 	RetrieveSnapshot(ctx context.Context, in *RetrieveBinlogRequest, opts ...grpc.CallOption) (*SnapshotMessage, error)
@@ -65,6 +67,15 @@ func (c *binlogClient) ParseContest(ctx context.Context, in *ParseContestRequest
 	return out, nil
 }
 
+func (c *binlogClient) GetActiveContest(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ActiveContest, error) {
+	out := new(ActiveContest)
+	err := c.cc.Invoke(ctx, "/mcl.Binlog/GetActiveContest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *binlogClient) Push(ctx context.Context, in *BinlogMessageSet, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
 	err := c.cc.Invoke(ctx, "/mcl.Binlog/Push", in, out, opts...)
@@ -99,6 +110,7 @@ type BinlogServer interface {
 	CreateContest(context.Context, *CreateContestRequest) (*StandardResponse, error)
 	LoadContest(context.Context, *LoadContestRequest) (*StandardResponse, error)
 	ParseContest(context.Context, *ParseContestRequest) (*Contest, error)
+	GetActiveContest(context.Context, *empty.Empty) (*ActiveContest, error)
 	Push(context.Context, *BinlogMessageSet) (*StandardResponse, error)
 	Retrieve(context.Context, *RetrieveBinlogRequest) (*BinlogMessageSet, error)
 	RetrieveSnapshot(context.Context, *RetrieveBinlogRequest) (*SnapshotMessage, error)
@@ -117,6 +129,9 @@ func (UnimplementedBinlogServer) LoadContest(context.Context, *LoadContestReques
 }
 func (UnimplementedBinlogServer) ParseContest(context.Context, *ParseContestRequest) (*Contest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ParseContest not implemented")
+}
+func (UnimplementedBinlogServer) GetActiveContest(context.Context, *empty.Empty) (*ActiveContest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActiveContest not implemented")
 }
 func (UnimplementedBinlogServer) Push(context.Context, *BinlogMessageSet) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Push not implemented")
@@ -194,6 +209,24 @@ func _Binlog_ParseContest_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Binlog_GetActiveContest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinlogServer).GetActiveContest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Binlog/GetActiveContest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinlogServer).GetActiveContest(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Binlog_Push_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BinlogMessageSet)
 	if err := dec(in); err != nil {
@@ -266,6 +299,10 @@ var Binlog_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ParseContest",
 			Handler:    _Binlog_ParseContest_Handler,
+		},
+		{
+			MethodName: "GetActiveContest",
+			Handler:    _Binlog_GetActiveContest_Handler,
 		},
 		{
 			MethodName: "Push",

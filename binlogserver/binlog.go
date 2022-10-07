@@ -27,13 +27,6 @@ const (
 	DatabaseVersion             = 1
 )
 
-type ContextManifest struct {
-	Uid             string      `json:"uid"`
-	Filename        string      `json:"filename"`
-	Contest         *pb.Contest `json:"contest"`
-	DatabaseVersion int         `json:"database_version"`
-}
-
 type QSO struct {
 	Uid           string
 	LocalCallsign string
@@ -42,8 +35,8 @@ type QSO struct {
 	Freq          int64
 	Mode          pb.Mode
 	IsSatellite   bool
-	ExchSent      []string
-	ExchRcvd      []string
+	ExchSent      map[string]string
+	ExchRcvd      map[string]string
 	Type          pb.QSOType
 	Operator      string
 }
@@ -57,7 +50,7 @@ type BinlogServer struct {
 	nextSerialNumber uint64
 	mutex            sync.RWMutex
 
-	currentContest ContextManifest
+	currentContest *pb.ActiveContest
 	db             *sql.DB
 	evaluator      *snapshotEvaluator
 }
@@ -323,14 +316,14 @@ func (e *snapshotEvaluator) Eval(msg *pb.BinlogMessage) error {
 	return nil
 }
 
-func NewContest(manifest ContextManifest) {
-	db, err := sql.Open("sqlite3", manifest.Filename)
+func NewContest(filename string, manifest *pb.ActiveContest) {
+	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	logrus.Infof("opened database: %v", manifest.Filename)
+	logrus.Infof("opened database: %v", filename)
 
 	sqlStmt := `
 	CREATE TABLE binlog (serial INTEGER NOT NULL PRIMARY KEY, content BLOB);
@@ -350,10 +343,9 @@ func NewContest(manifest ContextManifest) {
 		panic(fmt.Errorf("failed to initialize the database: %v", err))
 	}
 
-	protoString, _ := protojson.Marshal(manifest.Contest)
+	protoString, _ := protojson.Marshal(manifest)
 
 	values := map[string]string{
-		"uid":                  manifest.Uid,
 		"contest":              string(protoString),
 		"database_version":     strconv.Itoa(DatabaseVersion),
 		"min_database_version": strconv.Itoa(MinSupportedDatabaseVersion),
@@ -367,10 +359,11 @@ func NewContest(manifest ContextManifest) {
 	}
 }
 
-func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", manifest.Filename)
+func LoadContest(filename string) (*sql.DB, *pb.ActiveContest, error) {
+	manifest := &pb.ActiveContest{}
+	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	close_db := db
@@ -382,14 +375,8 @@ func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
 
 	rows, err := db.Query(`SELECT key, value FROM kvstorage`)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize the database: %v", err)
+		return nil, nil, fmt.Errorf("failed to initialize the database: %v", err)
 	}
-
-	values := map[string]*string{
-		"uid": &manifest.Uid,
-	}
-
-	manifest.Contest = &pb.Contest{}
 
 	for rows.Next() {
 		var (
@@ -399,38 +386,33 @@ func (manifest *ContextManifest) LoadContest() (*sql.DB, error) {
 
 		rows.Scan(&k, &v)
 
-		if vptr, ok := values[k]; ok {
-			*vptr = v
-		} else {
-			switch k {
-			case "contest":
-				err := protojson.Unmarshal([]byte(v), manifest.Contest)
-				if err != nil {
-					return nil, fmt.Errorf("contest is not valid: %v", err)
-				}
-			case "database_version":
-				manifest.DatabaseVersion, err = strconv.Atoi(v)
-
-				if manifest.DatabaseVersion > DatabaseVersion {
-					logrus.Warnf("database contains data of newer schema version (version %d), some features might be unsupported by this version (version %d), please consider upgrade your MCL", manifest.DatabaseVersion, DatabaseVersion)
-				}
-			case "min_database_version":
-				var min_version int
-				min_version, err = strconv.Atoi(v)
-
-				if min_version > DatabaseVersion {
-					return nil, fmt.Errorf("database is not supported by this version of MCL (schema version %d, the database requires minimal version of %d), please upgrade your MCL", DatabaseVersion, min_version)
-				}
+		switch k {
+		case "contest":
+			err := protojson.Unmarshal([]byte(v), manifest)
+			if err != nil {
+				return nil, nil, fmt.Errorf("contest is not valid: %v", err)
 			}
-		}
-		if err != nil {
-			return nil, err
+		case "database_version":
+			if databaseVersion, err := strconv.Atoi(v); databaseVersion > DatabaseVersion {
+				logrus.Warnf("database contains data of newer schema version (version %d), some features might be unsupported by this version (version %d), please consider upgrade your MCL", databaseVersion, DatabaseVersion)
+			} else if err != nil {
+				return nil, nil, fmt.Errorf("cannot load contest: invalid version: %v", err)
+			}
+		case "min_database_version":
+			var min_version int
+			min_version, err = strconv.Atoi(v)
+
+			if min_version > DatabaseVersion {
+				return nil, nil, fmt.Errorf("database is not supported by this version of MCL (schema version %d, the database requires minimal version of %d), please upgrade your MCL", DatabaseVersion, min_version)
+			} else if err != nil {
+				return nil, nil, fmt.Errorf("cannot load contest: invalid version: %v", err)
+			}
 		}
 	}
 
 	close_db = nil
 
-	return db, nil
+	return db, manifest, nil
 }
 
 func (s *BinlogServer) RecoverFromBinlog() error {
@@ -473,15 +455,13 @@ type BinlogServerConfig struct {
 
 func NewBinlogServer(conf *BinlogServerConfig) (*BinlogServer, error) {
 	mclServ := &BinlogServer{
-		evaluator: NewSnapshotEvaluator(),
-		currentContest: ContextManifest{
-			Filename: conf.Database,
-		},
+		evaluator:      NewSnapshotEvaluator(),
+		currentContest: &pb.ActiveContest{},
 	}
 
 	var err error
 
-	mclServ.db, err = mclServ.currentContest.LoadContest()
+	mclServ.db, mclServ.currentContest, err = LoadContest(conf.Database)
 	if err != nil {
 		return nil, err
 	}

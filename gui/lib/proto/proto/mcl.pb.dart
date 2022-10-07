@@ -22,6 +22,7 @@ class Station extends $pb.GeneratedMessage {
     ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cqZone', $pb.PbFieldType.O3)
     ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ituZone', $pb.PbFieldType.O3)
     ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxccId', $pb.PbFieldType.O3)
+    ..m<$core.String, $core.String>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields', entryClassName: 'Station.CustomFieldsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
     ..hasRequiredFields = false
   ;
 
@@ -33,6 +34,7 @@ class Station extends $pb.GeneratedMessage {
     $core.int? cqZone,
     $core.int? ituZone,
     $core.int? dxccId,
+    $core.Map<$core.String, $core.String>? customFields,
   }) {
     final _result = create();
     if (callsign != null) {
@@ -52,6 +54,9 @@ class Station extends $pb.GeneratedMessage {
     }
     if (dxccId != null) {
       _result.dxccId = dxccId;
+    }
+    if (customFields != null) {
+      _result.customFields.addAll(customFields);
     }
     return _result;
   }
@@ -129,6 +134,9 @@ class Station extends $pb.GeneratedMessage {
   $core.bool hasDxccId() => $_has(5);
   @$pb.TagNumber(6)
   void clearDxccId() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.Map<$core.String, $core.String> get customFields => $_getMap(6);
 }
 
 class Contest extends $pb.GeneratedMessage {
@@ -139,12 +147,9 @@ class Contest extends $pb.GeneratedMessage {
     ..aOS(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uid')
     ..aOS(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'filename')
     ..aOS(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'category')
-    ..aInt64(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'beginTimestamp')
-    ..aInt64(21, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endTimestamp')
     ..pPS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent')
     ..pPS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd')
     ..pPS(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields')
-    ..aOS(25, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'stationCallsign', protoName: 'stationCallsign')
     ..hasRequiredFields = false
   ;
 
@@ -156,12 +161,9 @@ class Contest extends $pb.GeneratedMessage {
     $core.String? uid,
     $core.String? filename,
     $core.String? category,
-    $fixnum.Int64? beginTimestamp,
-    $fixnum.Int64? endTimestamp,
     $core.Iterable<$core.String>? exchSent,
     $core.Iterable<$core.String>? exchRcvd,
     $core.Iterable<$core.String>? customFields,
-    $core.String? stationCallsign,
   }) {
     final _result = create();
     if (apiVersion != null) {
@@ -182,12 +184,6 @@ class Contest extends $pb.GeneratedMessage {
     if (category != null) {
       _result.category = category;
     }
-    if (beginTimestamp != null) {
-      _result.beginTimestamp = beginTimestamp;
-    }
-    if (endTimestamp != null) {
-      _result.endTimestamp = endTimestamp;
-    }
     if (exchSent != null) {
       _result.exchSent.addAll(exchSent);
     }
@@ -196,9 +192,6 @@ class Contest extends $pb.GeneratedMessage {
     }
     if (customFields != null) {
       _result.customFields.addAll(customFields);
-    }
-    if (stationCallsign != null) {
-      _result.stationCallsign = stationCallsign;
     }
     return _result;
   }
@@ -277,110 +270,149 @@ class Contest extends $pb.GeneratedMessage {
   @$pb.TagNumber(19)
   void clearCategory() => clearField(19);
 
-  @$pb.TagNumber(20)
-  $fixnum.Int64 get beginTimestamp => $_getI64(6);
-  @$pb.TagNumber(20)
-  set beginTimestamp($fixnum.Int64 v) { $_setInt64(6, v); }
-  @$pb.TagNumber(20)
-  $core.bool hasBeginTimestamp() => $_has(6);
-  @$pb.TagNumber(20)
-  void clearBeginTimestamp() => clearField(20);
-
-  @$pb.TagNumber(21)
-  $fixnum.Int64 get endTimestamp => $_getI64(7);
-  @$pb.TagNumber(21)
-  set endTimestamp($fixnum.Int64 v) { $_setInt64(7, v); }
-  @$pb.TagNumber(21)
-  $core.bool hasEndTimestamp() => $_has(7);
-  @$pb.TagNumber(21)
-  void clearEndTimestamp() => clearField(21);
-
   @$pb.TagNumber(22)
-  $core.List<$core.String> get exchSent => $_getList(8);
+  $core.List<$core.String> get exchSent => $_getList(6);
 
   @$pb.TagNumber(23)
-  $core.List<$core.String> get exchRcvd => $_getList(9);
+  $core.List<$core.String> get exchRcvd => $_getList(7);
 
   @$pb.TagNumber(24)
-  $core.List<$core.String> get customFields => $_getList(10);
-
-  @$pb.TagNumber(25)
-  $core.String get stationCallsign => $_getSZ(11);
-  @$pb.TagNumber(25)
-  set stationCallsign($core.String v) { $_setString(11, v); }
-  @$pb.TagNumber(25)
-  $core.bool hasStationCallsign() => $_has(11);
-  @$pb.TagNumber(25)
-  void clearStationCallsign() => clearField(25);
+  $core.List<$core.String> get customFields => $_getList(8);
 }
 
-class ContestManifest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ContestManifest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'displayName')
-    ..pPS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeData')
+class ActiveContest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ActiveContest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uuid')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..aOM<Contest>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: Contest.create)
+    ..aOM<Station>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'station', subBuilder: Station.create)
+    ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'beginTimestamp')
+    ..aInt64(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endTimestamp')
+    ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contestScript')
     ..hasRequiredFields = false
   ;
 
-  ContestManifest._() : super();
-  factory ContestManifest({
+  ActiveContest._() : super();
+  factory ActiveContest({
+    $core.String? uuid,
     $core.String? name,
-    $core.String? displayName,
-    $core.Iterable<$core.String>? exchangeData,
+    Contest? contest,
+    Station? station,
+    $fixnum.Int64? beginTimestamp,
+    $fixnum.Int64? endTimestamp,
+    $core.String? contestScript,
   }) {
     final _result = create();
+    if (uuid != null) {
+      _result.uuid = uuid;
+    }
     if (name != null) {
       _result.name = name;
     }
-    if (displayName != null) {
-      _result.displayName = displayName;
+    if (contest != null) {
+      _result.contest = contest;
     }
-    if (exchangeData != null) {
-      _result.exchangeData.addAll(exchangeData);
+    if (station != null) {
+      _result.station = station;
+    }
+    if (beginTimestamp != null) {
+      _result.beginTimestamp = beginTimestamp;
+    }
+    if (endTimestamp != null) {
+      _result.endTimestamp = endTimestamp;
+    }
+    if (contestScript != null) {
+      _result.contestScript = contestScript;
     }
     return _result;
   }
-  factory ContestManifest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory ContestManifest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  factory ActiveContest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ActiveContest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  ContestManifest clone() => ContestManifest()..mergeFromMessage(this);
+  ActiveContest clone() => ActiveContest()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ContestManifest copyWith(void Function(ContestManifest) updates) => super.copyWith((message) => updates(message as ContestManifest)) as ContestManifest; // ignore: deprecated_member_use
+  ActiveContest copyWith(void Function(ActiveContest) updates) => super.copyWith((message) => updates(message as ActiveContest)) as ActiveContest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static ContestManifest create() => ContestManifest._();
-  ContestManifest createEmptyInstance() => create();
-  static $pb.PbList<ContestManifest> createRepeated() => $pb.PbList<ContestManifest>();
+  static ActiveContest create() => ActiveContest._();
+  ActiveContest createEmptyInstance() => create();
+  static $pb.PbList<ActiveContest> createRepeated() => $pb.PbList<ActiveContest>();
   @$core.pragma('dart2js:noInline')
-  static ContestManifest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ContestManifest>(create);
-  static ContestManifest? _defaultInstance;
+  static ActiveContest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ActiveContest>(create);
+  static ActiveContest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get name => $_getSZ(0);
+  $core.String get uuid => $_getSZ(0);
   @$pb.TagNumber(1)
-  set name($core.String v) { $_setString(0, v); }
+  set uuid($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasName() => $_has(0);
+  $core.bool hasUuid() => $_has(0);
   @$pb.TagNumber(1)
-  void clearName() => clearField(1);
+  void clearUuid() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get displayName => $_getSZ(1);
+  $core.String get name => $_getSZ(1);
   @$pb.TagNumber(2)
-  set displayName($core.String v) { $_setString(1, v); }
+  set name($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasDisplayName() => $_has(1);
+  $core.bool hasName() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDisplayName() => clearField(2);
+  void clearName() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.List<$core.String> get exchangeData => $_getList(2);
+  Contest get contest => $_getN(2);
+  @$pb.TagNumber(3)
+  set contest(Contest v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasContest() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearContest() => clearField(3);
+  @$pb.TagNumber(3)
+  Contest ensureContest() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  Station get station => $_getN(3);
+  @$pb.TagNumber(4)
+  set station(Station v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasStation() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearStation() => clearField(4);
+  @$pb.TagNumber(4)
+  Station ensureStation() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $fixnum.Int64 get beginTimestamp => $_getI64(4);
+  @$pb.TagNumber(5)
+  set beginTimestamp($fixnum.Int64 v) { $_setInt64(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasBeginTimestamp() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearBeginTimestamp() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $fixnum.Int64 get endTimestamp => $_getI64(5);
+  @$pb.TagNumber(6)
+  set endTimestamp($fixnum.Int64 v) { $_setInt64(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasEndTimestamp() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearEndTimestamp() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.String get contestScript => $_getSZ(6);
+  @$pb.TagNumber(7)
+  set contestScript($core.String v) { $_setString(6, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasContestScript() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearContestScript() => clearField(7);
 }
 
 class QSO extends $pb.GeneratedMessage {
@@ -392,8 +424,8 @@ class QSO extends $pb.GeneratedMessage {
     ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'freq')
     ..e<Mode>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: Mode.phone, valueOf: Mode.valueOf, enumValues: Mode.values)
     ..aOB(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'isSatellite')
-    ..pPS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent')
-    ..pPS(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd')
+    ..m<$core.String, $core.String>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent', entryClassName: 'QSO.ExchSentEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..m<$core.String, $core.String>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd', entryClassName: 'QSO.ExchRcvdEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
     ..e<QSOType>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: QSOType.qso, valueOf: QSOType.valueOf, enumValues: QSOType.values)
     ..aOS(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operator')
     ..hasRequiredFields = false
@@ -408,8 +440,8 @@ class QSO extends $pb.GeneratedMessage {
     $fixnum.Int64? freq,
     Mode? mode,
     $core.bool? isSatellite,
-    $core.Iterable<$core.String>? exchSent,
-    $core.Iterable<$core.String>? exchRcvd,
+    $core.Map<$core.String, $core.String>? exchSent,
+    $core.Map<$core.String, $core.String>? exchRcvd,
     QSOType? type,
     $core.String? operator,
   }) {
@@ -534,10 +566,10 @@ class QSO extends $pb.GeneratedMessage {
   void clearIsSatellite() => clearField(7);
 
   @$pb.TagNumber(8)
-  $core.List<$core.String> get exchSent => $_getList(7);
+  $core.Map<$core.String, $core.String> get exchSent => $_getMap(7);
 
   @$pb.TagNumber(9)
-  $core.List<$core.String> get exchRcvd => $_getList(8);
+  $core.Map<$core.String, $core.String> get exchRcvd => $_getMap(8);
 
   @$pb.TagNumber(10)
   QSOType get type => $_getN(9);
@@ -981,14 +1013,14 @@ class LoadContestRequest extends $pb.GeneratedMessage {
 class CreateContestRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'CreateContestRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'databaseName')
-    ..aOM<Contest>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: Contest.create)
+    ..aOM<ActiveContest>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: ActiveContest.create)
     ..hasRequiredFields = false
   ;
 
   CreateContestRequest._() : super();
   factory CreateContestRequest({
     $core.String? databaseName,
-    Contest? contest,
+    ActiveContest? contest,
   }) {
     final _result = create();
     if (databaseName != null) {
@@ -1030,15 +1062,15 @@ class CreateContestRequest extends $pb.GeneratedMessage {
   void clearDatabaseName() => clearField(1);
 
   @$pb.TagNumber(2)
-  Contest get contest => $_getN(1);
+  ActiveContest get contest => $_getN(1);
   @$pb.TagNumber(2)
-  set contest(Contest v) { setField(2, v); }
+  set contest(ActiveContest v) { setField(2, v); }
   @$pb.TagNumber(2)
   $core.bool hasContest() => $_has(1);
   @$pb.TagNumber(2)
   void clearContest() => clearField(2);
   @$pb.TagNumber(2)
-  Contest ensureContest() => $_ensure(1);
+  ActiveContest ensureContest() => $_ensure(1);
 }
 
 class ParseContestRequest extends $pb.GeneratedMessage {

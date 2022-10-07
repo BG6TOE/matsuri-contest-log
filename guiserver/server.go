@@ -20,6 +20,11 @@ import (
 type Server struct {
 	pb.UnimplementedGuiServer
 
+	activeContest *pb.ActiveContest
+
+	exchangeRecvFields []*pb.QSOField
+	exchangeSentFields []*pb.QSOField
+
 	binlog               pb.BinlogClient
 	binlogSequenceNumber uint64
 }
@@ -61,8 +66,20 @@ func (s *Server) LogQSO(ctx context.Context, msg *pb.QSOMessage) (*pb.QSO, error
 	qso.Uid = uuid.NewString()
 	qso.Time = msg.GetTime()
 	qso.Freq = msg.GetFreq()
-	qso.ExchSent = msg.GetExchangeSent()
-	qso.ExchRcvd = msg.GetExchangeRcvd()
+
+	qso.ExchSent = make(map[string]string)
+	for k, v := range s.activeContest.Station.CustomFields {
+		qso.ExchSent[k] = v
+	}
+	for _, v := range msg.GetExchangeSent() {
+		qso.ExchSent[v.Title] = v.Value
+	}
+
+	qso.ExchRcvd = make(map[string]string)
+	for _, v := range msg.GetExchangeRcvd() {
+		qso.ExchRcvd[v.Title] = v.Value
+	}
+
 	qso.Mode = msg.GetMode()
 	qso.Type = pb.QSOType_qso
 	qso.Operator = msg.GetOperator()
@@ -122,6 +139,14 @@ func (s *Server) CreateContest(ctx context.Context, msg *pb.CreateContestRequest
 	return s.binlog.CreateContest(ctx, msg)
 }
 
+func fieldTitleOverride(name string) string {
+	switch name {
+	case "_rst":
+		return "RST"
+	}
+	return name
+}
+
 func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*pb.StandardResponse, error) {
 	resp, err := s.binlog.LoadContest(ctx, msg)
 	if resp.ResultCode != pb.ResultCode_success || err != nil {
@@ -141,11 +166,48 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 	s.binlogSequenceNumber = snapshot.GetSerial()
 	logrus.Infof("get snapshot #%d from binlog server", s.binlogSequenceNumber)
 
+	s.activeContest, _ = s.binlog.GetActiveContest(ctx, &empty.Empty{})
+	constFields := make(map[string]struct{}, 0)
+	for _, v := range s.activeContest.Contest.CustomFields {
+		constFields[v] = struct{}{}
+	}
+
+	for _, v := range s.activeContest.Contest.ExchSent {
+		if _, ok := constFields[v]; ok {
+			continue
+		}
+		s.exchangeSentFields = append(s.exchangeSentFields, &pb.QSOField{
+			Title: fieldTitleOverride(v),
+			Value: v,
+		})
+	}
+	for _, v := range s.activeContest.Contest.ExchRcvd {
+		s.exchangeRecvFields = append(s.exchangeRecvFields, &pb.QSOField{
+			Title: fieldTitleOverride(v),
+			Value: v,
+		})
+	}
+
 	return &pb.StandardResponse{
 		ResultCode: pb.ResultCode_success,
 	}, nil
 }
 
+func (s *Server) GetQSOFields(context.Context, *empty.Empty) (*pb.QSOFields, error) {
+	if s.activeContest == nil {
+		return nil, status.Errorf(codes.Unavailable, "no active contest")
+	}
+
+	return &pb.QSOFields{
+		ExchangeSent: s.exchangeSentFields,
+		ExchangeRcvd: s.exchangeRecvFields,
+	}, nil
+}
+
 func (s *Server) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {
 	return s.binlog.ParseContest(ctx, req)
+}
+
+func (s *Server) GetActiveContest(context.Context, *empty.Empty) (*pb.ActiveContest, error) {
+	return s.activeContest, nil
 }

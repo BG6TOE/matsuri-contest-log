@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mcl_gui/support.dart';
 
 import 'gui_state.dart';
 
@@ -21,8 +22,8 @@ class _LastQsoTableState extends State<LastQsoTable> {
     super.initState();
     callbackId =
         state.registerCallback(CallbackKind.kOnQsoUpdate, _updateQsoList);
-
-    _updateQsoList();
+    
+    state.refreshQsos();
   }
 
   @override
@@ -35,11 +36,11 @@ class _LastQsoTableState extends State<LastQsoTable> {
   void _updateQsoList() {
     setState(() {
       titles = ['Call', 'Date', 'Time', 'Freq'];
-      titles.addAll(state.exchangeSentFields);
-      titles.addAll(state.exchangeRcvdFields);
+      titles.addAll(state.activeContest!.contest.exchSent.map((e) => '${overrideQsoFieldTitle(e)} Sent'));
+      titles.addAll(state.activeContest!.contest.exchRcvd.map((e) => '${overrideQsoFieldTitle(e)} Rcvd'));
       var lastQsos = state.activeQsos.sublist(
           max(state.activeQsos.length - 10, 0), state.activeQsos.length);
-        
+
       qsos.clear();
       for (var i = 0; i < lastQsos.length; i++) {
         var qsoTime =
@@ -52,23 +53,20 @@ class _LastQsoTableState extends State<LastQsoTable> {
           '${lastQsos[i].freq.toInt() ~/ 1000}',
         ];
 
-        for (var j = 0;
-            j < lastQsos[i].exchSent.length &&
-                j < state.exchangeSentFields.length;
-            j++) {
-          qsoStr.add(lastQsos[i].exchSent[j]);
+        for (var exchSentField in state.activeContest!.contest.exchSent) {
+          var exchSentVal = lastQsos[i].exchSent[exchSentField];
+          exchSentVal ??= "";
+          qsoStr.add(exchSentVal!);
         }
-        for (var j = 0;
-            j < lastQsos[i].exchRcvd.length &&
-                j < state.exchangeRcvdFields.length;
-            j++) {
-          qsoStr.add(lastQsos[i].exchRcvd[j]);
+        
+        for (var exchRcvdField in state.activeContest!.contest.exchRcvd) {
+          var exchRcvdVal = lastQsos[i].exchRcvd[exchRcvdField];
+          exchRcvdVal ??= "";
+          qsoStr.add(exchRcvdVal!);
         }
 
         qsos.add(qsoStr);
       }
-
-      print(qsos);
     });
   }
 

@@ -126,17 +126,18 @@ class _CreateContestFormState extends State<CreateContestForm> {
             )
           ]);
 
-          var contest = Contest.fromBuffer(widget.info.writeToBuffer());
-          contest.stationCallsign = callsignController.text;
+          var customFieldsMap = Map<String, String>();
+          for (int i = 0; i < customFieldsController.length; i++) {
+            customFieldsMap[widget.info.customFields[i]] = customFieldsController[i].text;
+          }
+
+          ActiveContest contest = ActiveContest(contest: widget.info, station: Station(callsign: callsignController.text, customFields: customFieldsMap));
           if (contestStartEndTime != null) {
             contest.beginTimestamp = Int64(
                 contestStartEndTime![0].toUtc().millisecondsSinceEpoch ~/ 1000);
             contest.endTimestamp = Int64(
                 contestStartEndTime![1].toUtc().millisecondsSinceEpoch ~/ 1000);
           }
-          contest.customFields.clear();
-          contest.customFields
-              .addAll(customFieldsController.map((e) => e.text));
           if (filename != null) {
             await state.getGuiClient()!.createContest(
                 CreateContestRequest(databaseName: filename, contest: contest));
