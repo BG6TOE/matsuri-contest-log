@@ -3,11 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  file_selector_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  gui_lib
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

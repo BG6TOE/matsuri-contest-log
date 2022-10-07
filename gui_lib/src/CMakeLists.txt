@@ -8,17 +8,23 @@ project(gui_lib_library VERSION 0.0.1 LANGUAGES C)
 set(TARGET gui_lib_go)
 
 file(GLOB_RECURSE SRCS ${CMAKE_CURRENT_SOURCE_DIR}/go_lib/*.go)
-set(LIB libgui_lib.so)
 
-find_package(Git REQUIRED)
-execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD OUTPUT_VARIABLE COMMIT_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
+if (UNIX)
+set(LIB libgui_lib.so)
+endif (UNIX)
+
+if (WIN32)
+set(LIB gui_lib.dll)
+endif (WIN32)
+
+# find_package(Git REQUIRED)
+# execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD OUTPUT_VARIABLE COMMIT_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
 project(ProjectName VERSION 1.0 DESCRIPTION "${COMMIT_ID}")
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${LIB}"
   DEPENDS ${SRCS}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/go_lib/shared
-  COMMAND env GOPATH=${GOPATH} go build -buildmode=c-shared
-  -o "${CMAKE_CURRENT_BINARY_DIR}/${LIB}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMAND go build -buildmode=c-shared -o "${CMAKE_CURRENT_BINARY_DIR}/${LIB}"
   ${CMAKE_GO_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/go_lib/shared/shared.go
   COMMENT "Building Go library")
 
