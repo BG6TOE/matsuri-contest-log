@@ -6,7 +6,7 @@ OS="$(uname)"
 
 COMMITID=$(git rev-parse HEAD)
 BUILDTIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-VERSION=$(git describe)
+VERSION=$(git describe --tags)
 
 GOLDFLAGS="-X version.GitCommit=$COMMITID -X version.BuildTime=$BUILDTIME -X version.Version=$VERSION"
 

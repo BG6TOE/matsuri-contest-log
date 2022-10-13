@@ -101,3 +101,51 @@ class _GuiTitleState extends State<GuiTitle> {
         ));
   }
 }
+
+class ClockText extends StatefulWidget {
+  const ClockText({super.key});
+
+  @override
+  State<ClockText> createState() => _ClockTextState();
+}
+
+class _ClockTextState extends State<ClockText> {
+  DateTime _current = DateTime.now();
+
+  void refreshTime() {
+    _current = DateTime.now();
+    Timer(Duration(milliseconds: 1000 - _current.millisecond), () {
+      if (mounted) {
+        setState(() {
+          refreshTime();
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    refreshTime();
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    String hour = dateTime.hour.toString().padLeft(2, '0');
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+
+    if (dateTime.second % 2 == 0) {
+    return "$hour $minute";
+    } else {
+    return "$hour:$minute";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String currentUtc = formatDateTime(_current.toUtc());
+
+    return Container(
+        height: 20,
+        child: Text(currentUtc));
+  }
+}

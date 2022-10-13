@@ -122,12 +122,15 @@ class _QSOInputState extends State<QSOInput> {
     var exchangeSent = <QSOField>{};
     var exchangeRcvd = <QSOField>{};
 
-
     for (var i = 0; i < state.displayExchangeSentFields.length; i++) {
-      exchangeSent.add(QSOField(title: state.displayExchangeSentFields[i].value, value: exchangeSentControllers[i].text));
+      exchangeSent.add(QSOField(
+          title: state.displayExchangeSentFields[i].value,
+          value: exchangeSentControllers[i].text));
     }
     for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
-      exchangeRcvd.add(QSOField(title: state.displayExchangeRcvdFields[i].value, value: exchangeRcvdControllers[i].text));
+      exchangeRcvd.add(QSOField(
+          title: state.displayExchangeRcvdFields[i].value,
+          value: exchangeRcvdControllers[i].text));
     }
 
     // TODO: Check response
@@ -292,7 +295,7 @@ class _QsoPanelState extends State<QsoPanel> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          LastQsoTable(),
+          SizedBox(height: 220, child: LastQsoTable()),
           const SizedBox(width: 1, height: 8),
           const QSOInput(),
           const SizedBox(width: 1, height: 4),

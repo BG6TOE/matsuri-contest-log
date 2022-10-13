@@ -2,18 +2,41 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mcl_gui/proto/proto/mcl.pbgrpc.dart';
 import 'package:mcl_gui/support.dart';
 
 import 'gui_state.dart';
 
-class LastQsoTable extends StatefulWidget {
+class QsoTable extends StatefulWidget {
   @override
-  State<LastQsoTable> createState() => _LastQsoTableState();
+  State<QsoTable> createState() => _QsoTableState();
 }
 
-class _LastQsoTableState extends State<LastQsoTable> {
+class QSODataTableSource extends DataTableSource {
+  List<List<String>> qsos;
+
+  QSODataTableSource(this.qsos);
+
+  @override
+  DataRow getRow(int index) {
+    return DataRow(
+      cells: qsos[index].map((e) => DataCell(Text(e))).toList(),
+    );
+  }
+
+  @override
+  int get rowCount => qsos.length;
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class _QsoTableState extends State<QsoTable> {
   List<List<String>> qsos = [];
-  List<String> titles = ['', 'Call', 'Date', 'Time', 'Freq'];
+  List<String> titles = ['Call', 'Date', 'Time', 'Freq'];
 
   int callbackId = 0;
 
@@ -22,7 +45,7 @@ class _LastQsoTableState extends State<LastQsoTable> {
     super.initState();
     callbackId =
         state.registerCallback(CallbackKind.kOnQsoUpdate, _updateQsoList);
-    
+
     state.refreshQsos();
   }
 
@@ -35,11 +58,12 @@ class _LastQsoTableState extends State<LastQsoTable> {
 
   void _updateQsoList() {
     setState(() {
-      titles = ['', 'Call', 'Date', 'Time', 'Freq'];
-      titles.addAll(state.activeContest!.contest.exchSent.map((e) => '${overrideQsoFieldTitle(e)} Sent'));
-      titles.addAll(state.activeContest!.contest.exchRcvd.map((e) => '${overrideQsoFieldTitle(e)} Rcvd'));
-      var lastQsos = state.activeQsos.sublist(
-          max(state.activeQsos.length - 10, 0), state.activeQsos.length);
+      titles = ['Call', 'Date / Time', 'Freq'];
+      titles.addAll(state.activeContest!.contest.exchSent
+          .map((e) => '${overrideQsoFieldTitle(e)} Sent'));
+      titles.addAll(state.activeContest!.contest.exchRcvd
+          .map((e) => '${overrideQsoFieldTitle(e)} Rcvd'));
+      var lastQsos = state.activeQsos;
 
       qsos.clear();
       for (var i = 0; i < lastQsos.length; i++) {
@@ -47,10 +71,8 @@ class _LastQsoTableState extends State<LastQsoTable> {
             DateTime.fromMillisecondsSinceEpoch(lastQsos[i].time.toInt() * 1000)
                 .toUtc();
         List<String> qsoStr = [
-          'Alt-${(lastQsos.length - i) % 10}',
           lastQsos[i].dxCallsign,
-          '${qsoTime.month.toString().padLeft(2, "0")}-${qsoTime.day.toString().padLeft(2, "0")}',
-          '${qsoTime.hour.toString().padLeft(2, "0")}:${qsoTime.minute.toString().padLeft(2, "0")}',
+          '${qsoTime.year.toString().padLeft(4, "0")}-${qsoTime.month.toString().padLeft(2, "0")}-${qsoTime.day.toString().padLeft(2, "0")} ${qsoTime.hour.toString().padLeft(2, "0")}:${qsoTime.minute.toString().padLeft(2, "0")}',
           '${lastQsos[i].freq.toInt() ~/ 1000}',
         ];
 
@@ -59,7 +81,7 @@ class _LastQsoTableState extends State<LastQsoTable> {
           exchSentVal ??= "";
           qsoStr.add(exchSentVal);
         }
-        
+
         for (var exchRcvdField in state.activeContest!.contest.exchRcvd) {
           var exchRcvdVal = lastQsos[i].exchRcvd[exchRcvdField];
           exchRcvdVal ??= "";
@@ -73,16 +95,11 @@ class _LastQsoTableState extends State<LastQsoTable> {
 
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      columnSpacing: 32,
-      dataRowHeight: 20,
-      headingRowHeight: 20,
+    return PaginatedDataTable(
       columns: titles
           .map((e) => DataColumn(label: Expanded(child: Text(e))))
           .toList(),
-      rows: qsos
-          .map((e) => DataRow(cells: e.map((e) => DataCell(Text(e))).toList()))
-          .toList(),
+      source: QSODataTableSource(qsos),
     );
   }
 }

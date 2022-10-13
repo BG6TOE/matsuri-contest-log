@@ -17,14 +17,14 @@ if (WIN32)
 set(LIB gui_lib.dll)
 endif (WIN32)
 
-# find_package(Git REQUIRED)
-# execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD OUTPUT_VARIABLE COMMIT_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
-project(ProjectName VERSION 1.0 DESCRIPTION "${COMMIT_ID}")
+execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE COMMITID OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND git describe --tags OUTPUT_VARIABLE VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+project(ProjectName VERSION 1.0 DESCRIPTION "${COMMITID}")
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${LIB}"
   DEPENDS ${SRCS}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMAND go build -buildmode=c-shared -o "${CMAKE_CURRENT_BINARY_DIR}/${LIB}"
+  COMMAND go build -buildmode=c-shared -o "${CMAKE_CURRENT_BINARY_DIR}/${LIB}" -ldflags "-X version.GitCommit=${COMMITID} -X version.Version=${VERSION}"
   ${CMAKE_GO_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/go_lib/shared/shared.go
   COMMENT "Building Go library")
 

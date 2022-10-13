@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mcl_gui/log.dart';
 import 'package:mcl_gui/proto/proto/mcl.pb.dart';
 import 'package:mcl_gui/proto/proto/mcl.pbjson.dart';
 import 'load_or_create_contest.dart';
@@ -38,11 +39,12 @@ class MyApp extends StatelessWidget {
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
           primarySwatch: Colors.blue,
-          useMaterial3: false),
+          useMaterial3: true),
       initialRoute: '/open-contest',
       routes: {
-        '/contest': (context) => const GuiMainPage(title: 'Flutter Demo Home Page'),
-        '/open-contest':(context) => const LoadOrCreateContestPage(),
+        '/contest': (context) =>
+            const GuiMainPage(title: 'Flutter Demo Home Page'),
+        '/open-contest': (context) => const LoadOrCreateContestPage(),
       },
     );
   }
@@ -68,12 +70,43 @@ class GuiMainPage extends StatefulWidget {
 
 class _GuiMainPageState extends State<GuiMainPage> {
   int _currentPage = 3;
+  QsoTable _qsoTable = QsoTable();
+  QsoPanel _qsoPanel = QsoPanel();
 
   @override
   void initState() {
     super.initState();
 
-    Timer.run(() {state.refreshQsos();});
+    Timer.run(() {
+      state.refreshQsos();
+    });
+  }
+
+  MainAxisAlignment currentAlignMain() {
+    switch (_currentPage) {
+      case 3:
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
+    }
+  }
+
+  CrossAxisAlignment currentAlignCross() {
+    switch (_currentPage) {
+      default:
+        return CrossAxisAlignment.start;
+    }
+  }
+
+  Widget currentWidget() {
+    switch (_currentPage) {
+      case 3:
+        return _qsoPanel;
+      case 2:
+        return _qsoTable;
+      default:
+        return Text("Select a tab on the left");
+    }
   }
 
   @override
@@ -89,30 +122,14 @@ class _GuiMainPageState extends State<GuiMainPage> {
         children: <Widget>[
           NavigationRail(
             selectedIndex: _currentPage,
+            leading: ClockText(),
             groupAlignment: 1.0,
             onDestinationSelected: (int index) {
               setState(() {
                 _currentPage = index;
               });
             },
-            labelType: NavigationRailLabelType.selected,
-            // leading: showLeading
-            //     ? FloatingActionButton(
-            //         elevation: 0,
-            //         onPressed: () {
-            //           // Add your onPressed code here!
-            //         },
-            //         child: const Icon(Icons.add),
-            //       )
-            //     : const SizedBox(),
-            // trailing: showTrailing
-            //     ? IconButton(
-            //         onPressed: () {
-            //           // Add your onPressed code here!
-            //         },
-            //         icon: const Icon(Icons.more_horiz_rounded),
-            //       )
-            //     : const SizedBox(),
+            labelType: NavigationRailLabelType.all,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.settings),
@@ -139,7 +156,6 @@ class _GuiMainPageState extends State<GuiMainPage> {
           const VerticalDivider(thickness: 1, width: 1),
           Expanded(
             child: Column(children: <Widget>[
-              Spacer(),
               Row(
                   // Column is also a layout widget. It takes a list of children and
                   // arranges them vertically. By default, it sizes itself to fit its
@@ -159,11 +175,10 @@ class _GuiMainPageState extends State<GuiMainPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(width: 8, height: 1),
-                    Expanded(child: QsoPanel()),
+                    Expanded(child: currentWidget()),
                     const SizedBox(width: 8, height: 1),
                   ]),
               const SizedBox(width: 1, height: 8),
-              GuiTitle(),
             ]),
           ),
         ],
