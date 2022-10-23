@@ -61,30 +61,31 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 	return nil
 }
 
-func (s *Server) LogQSO(ctx context.Context, msg *pb.QSOMessage) (*pb.QSO, error) {
+func (s *Server) LogQSO(ctx context.Context, msg *pb.QSO) (*pb.QSO, error) {
 	qso := &pb.QSO{}
 	qso.Uid = uuid.NewString()
 	qso.Time = msg.GetTime()
 	qso.Freq = msg.GetFreq()
 
-	qso.ExchSent = make(map[string]string)
-	for k, v := range s.activeContest.Station.CustomFields {
-		qso.ExchSent[k] = v
+	qso.ExchangeSent = make(map[string]string)
+	for k, v := range s.activeContest.Contest.FieldInfos {
+		if v.FieldType == "tx_const" {
+			qso.ExchangeSent[k] = s.activeContest.Station.CustomFields[k]
+		}
 	}
-	for _, v := range msg.GetExchangeSent() {
-		qso.ExchSent[v.Title] = v.Value
+	for k, v := range msg.GetExchangeSent() {
+		qso.ExchangeSent[k] = v
 	}
 
-	qso.ExchRcvd = make(map[string]string)
-	for _, v := range msg.GetExchangeRcvd() {
-		qso.ExchRcvd[v.Title] = v.Value
+	qso.ExchangeRcvd = make(map[string]string)
+	for k, v := range msg.GetExchangeRcvd() {
+		qso.ExchangeRcvd[k] = v
 	}
 
 	qso.Mode = msg.GetMode()
 	qso.Type = pb.QSOType_qso
 	qso.Operator = msg.GetOperator()
 	qso.DxCallsign = msg.GetDxCallsign()
-	qso.IsSatellite = false
 
 	binlog :=
 		&pb.BinlogMessageSet{
@@ -139,10 +140,16 @@ func (s *Server) CreateContest(ctx context.Context, msg *pb.CreateContestRequest
 	return s.binlog.CreateContest(ctx, msg)
 }
 
-func fieldTitleOverride(name string) string {
+func fieldTitleOverride(name string, ContestFieldInfos map[string]*pb.ContestFieldInfo) string {
 	switch name {
-	case "_rst":
-		return "RST"
+	case "rst_sent_":
+		return "RST Tx"
+	case "rst_rcvd_":
+		return "RST Rx"
+	}
+
+	if info, ok := ContestFieldInfos[name]; ok {
+		return info.DisplayName
 	}
 	return name
 }
@@ -150,6 +157,7 @@ func fieldTitleOverride(name string) string {
 func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*pb.StandardResponse, error) {
 	resp, err := s.binlog.LoadContest(ctx, msg)
 	if resp.ResultCode != pb.ResultCode_success || err != nil {
+		logrus.Infof("Field to load contest: %v %v", resp, err)
 		return resp, err
 	}
 
@@ -167,23 +175,26 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 	logrus.Infof("get snapshot #%d from binlog server", s.binlogSequenceNumber)
 
 	s.activeContest, _ = s.binlog.GetActiveContest(ctx, &empty.Empty{})
-	constFields := make(map[string]struct{}, 0)
-	for _, v := range s.activeContest.Contest.CustomFields {
-		constFields[v] = struct{}{}
+
+	constFields := make(map[string]interface{}, 0)
+	for k, v := range s.activeContest.Contest.FieldInfos {
+		if v.FieldType == "tx_const" {
+			constFields[k] = nil
+		}
 	}
 
-	for _, v := range s.activeContest.Contest.ExchSent {
+	for _, v := range s.activeContest.Contest.ExchangeSent {
 		if _, ok := constFields[v]; ok {
 			continue
 		}
 		s.exchangeSentFields = append(s.exchangeSentFields, &pb.QSOField{
-			Title: fieldTitleOverride(v),
+			Title: fieldTitleOverride(v, s.activeContest.Contest.FieldInfos),
 			Value: v,
 		})
 	}
-	for _, v := range s.activeContest.Contest.ExchRcvd {
+	for _, v := range s.activeContest.Contest.ExchangeRcvd {
 		s.exchangeRecvFields = append(s.exchangeRecvFields, &pb.QSOField{
-			Title: fieldTitleOverride(v),
+			Title: fieldTitleOverride(v, s.activeContest.Contest.FieldInfos),
 			Value: v,
 		})
 	}
@@ -204,8 +215,8 @@ func (s *Server) GetQSOFields(context.Context, *empty.Empty) (*pb.QSOFields, err
 	}, nil
 }
 
-func (s *Server) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {
-	return s.binlog.ParseContest(ctx, req)
+func (s *Server) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.ContestMetadata, error) {
+	return ParseContest(ctx, req)
 }
 
 func (s *Server) GetActiveContest(context.Context, *empty.Empty) (*pb.ActiveContest, error) {

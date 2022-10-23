@@ -14,4 +14,5 @@ require (
 	google.golang.org/genproto v0.0.0-20220930163606-c98284e70a91 // indirect
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
+	layeh.com/gopher-luar v1.0.10
 )

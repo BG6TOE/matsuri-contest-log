@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package mcl;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "proto/.";
+
+message ContestFieldInfo {
+  string DisplayName = 1;
+  string Description = 2;
+  string FieldType = 3;
+  string AdifName = 4;
+  string ValueRegex = 5;
+  repeated string ValidValues = 6;
+}
+
+message ContestMetadata {
+  string ApiVersion = 1;
+  string Version = 2;
+  string ContestName = 3;
+  repeated string AvailableModes = 4;
+  repeated string AvailableBands = 5;
+  repeated string ExchangeSent = 6;
+  repeated string ExchangeRcvd = 7;
+  repeated string Multipliers = 8;
+  map<string, ContestFieldInfo> FieldInfos = 10;
+}
+
+enum Continent {
+    unknown = 0;
+    Africa = 1;
+    Antarctica = 2;
+    Asia = 3;
+    Europe = 4;
+    NorthAmerica = 5;
+    Oceania = 6;
+    SouthAmerica = 7;
+}

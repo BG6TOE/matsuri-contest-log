@@ -93,7 +93,3 @@ func (s *RpcServer) LoadContest(ctx context.Context, msg *pb.LoadContestRequest)
 func (s *RpcServer) GetActiveContest(context.Context, *empty.Empty) (*pb.ActiveContest, error) {
 	return s.server.currentContest, nil
 }
-
-func (s *RpcServer) ParseContest(ctx context.Context, req *pb.ParseContestRequest) (*pb.Contest, error) {
-	return ParseContest(ctx, req)
-}

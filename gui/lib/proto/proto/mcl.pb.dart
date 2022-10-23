@@ -10,6 +10,8 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'common.pb.dart' as $2;
+
 import 'mcl.pbenum.dart';
 
 export 'mcl.pbenum.dart';
@@ -19,10 +21,7 @@ class Station extends $pb.GeneratedMessage {
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'callsign')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'grid')
     ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'region', $pb.PbFieldType.O3)
-    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cqZone', $pb.PbFieldType.O3)
-    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ituZone', $pb.PbFieldType.O3)
-    ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxccId', $pb.PbFieldType.O3)
-    ..m<$core.String, $core.String>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields', entryClassName: 'Station.CustomFieldsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..m<$core.String, $core.String>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields', entryClassName: 'Station.CustomFieldsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
     ..hasRequiredFields = false
   ;
 
@@ -31,9 +30,6 @@ class Station extends $pb.GeneratedMessage {
     $core.String? callsign,
     $core.String? grid,
     $core.int? region,
-    $core.int? cqZone,
-    $core.int? ituZone,
-    $core.int? dxccId,
     $core.Map<$core.String, $core.String>? customFields,
   }) {
     final _result = create();
@@ -45,15 +41,6 @@ class Station extends $pb.GeneratedMessage {
     }
     if (region != null) {
       _result.region = region;
-    }
-    if (cqZone != null) {
-      _result.cqZone = cqZone;
-    }
-    if (ituZone != null) {
-      _result.ituZone = ituZone;
-    }
-    if (dxccId != null) {
-      _result.dxccId = dxccId;
     }
     if (customFields != null) {
       _result.customFields.addAll(customFields);
@@ -109,182 +96,14 @@ class Station extends $pb.GeneratedMessage {
   void clearRegion() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.int get cqZone => $_getIZ(3);
-  @$pb.TagNumber(4)
-  set cqZone($core.int v) { $_setSignedInt32(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasCqZone() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearCqZone() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $core.int get ituZone => $_getIZ(4);
-  @$pb.TagNumber(5)
-  set ituZone($core.int v) { $_setSignedInt32(4, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasItuZone() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearItuZone() => clearField(5);
-
-  @$pb.TagNumber(6)
-  $core.int get dxccId => $_getIZ(5);
-  @$pb.TagNumber(6)
-  set dxccId($core.int v) { $_setSignedInt32(5, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasDxccId() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearDxccId() => clearField(6);
-
-  @$pb.TagNumber(7)
-  $core.Map<$core.String, $core.String> get customFields => $_getMap(6);
-}
-
-class Contest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Contest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'apiVersion', $pb.PbFieldType.O3)
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'version')
-    ..aOS(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
-    ..aOS(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uid')
-    ..aOS(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'filename')
-    ..aOS(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'category')
-    ..pPS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent')
-    ..pPS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd')
-    ..pPS(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'customFields')
-    ..hasRequiredFields = false
-  ;
-
-  Contest._() : super();
-  factory Contest({
-    $core.int? apiVersion,
-    $core.String? version,
-    $core.String? name,
-    $core.String? uid,
-    $core.String? filename,
-    $core.String? category,
-    $core.Iterable<$core.String>? exchSent,
-    $core.Iterable<$core.String>? exchRcvd,
-    $core.Iterable<$core.String>? customFields,
-  }) {
-    final _result = create();
-    if (apiVersion != null) {
-      _result.apiVersion = apiVersion;
-    }
-    if (version != null) {
-      _result.version = version;
-    }
-    if (name != null) {
-      _result.name = name;
-    }
-    if (uid != null) {
-      _result.uid = uid;
-    }
-    if (filename != null) {
-      _result.filename = filename;
-    }
-    if (category != null) {
-      _result.category = category;
-    }
-    if (exchSent != null) {
-      _result.exchSent.addAll(exchSent);
-    }
-    if (exchRcvd != null) {
-      _result.exchRcvd.addAll(exchRcvd);
-    }
-    if (customFields != null) {
-      _result.customFields.addAll(customFields);
-    }
-    return _result;
-  }
-  factory Contest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Contest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  Contest clone() => Contest()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  Contest copyWith(void Function(Contest) updates) => super.copyWith((message) => updates(message as Contest)) as Contest; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static Contest create() => Contest._();
-  Contest createEmptyInstance() => create();
-  static $pb.PbList<Contest> createRepeated() => $pb.PbList<Contest>();
-  @$core.pragma('dart2js:noInline')
-  static Contest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Contest>(create);
-  static Contest? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.int get apiVersion => $_getIZ(0);
-  @$pb.TagNumber(1)
-  set apiVersion($core.int v) { $_setSignedInt32(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasApiVersion() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearApiVersion() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get version => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set version($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasVersion() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearVersion() => clearField(2);
-
-  @$pb.TagNumber(16)
-  $core.String get name => $_getSZ(2);
-  @$pb.TagNumber(16)
-  set name($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(16)
-  $core.bool hasName() => $_has(2);
-  @$pb.TagNumber(16)
-  void clearName() => clearField(16);
-
-  @$pb.TagNumber(17)
-  $core.String get uid => $_getSZ(3);
-  @$pb.TagNumber(17)
-  set uid($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(17)
-  $core.bool hasUid() => $_has(3);
-  @$pb.TagNumber(17)
-  void clearUid() => clearField(17);
-
-  @$pb.TagNumber(18)
-  $core.String get filename => $_getSZ(4);
-  @$pb.TagNumber(18)
-  set filename($core.String v) { $_setString(4, v); }
-  @$pb.TagNumber(18)
-  $core.bool hasFilename() => $_has(4);
-  @$pb.TagNumber(18)
-  void clearFilename() => clearField(18);
-
-  @$pb.TagNumber(19)
-  $core.String get category => $_getSZ(5);
-  @$pb.TagNumber(19)
-  set category($core.String v) { $_setString(5, v); }
-  @$pb.TagNumber(19)
-  $core.bool hasCategory() => $_has(5);
-  @$pb.TagNumber(19)
-  void clearCategory() => clearField(19);
-
-  @$pb.TagNumber(22)
-  $core.List<$core.String> get exchSent => $_getList(6);
-
-  @$pb.TagNumber(23)
-  $core.List<$core.String> get exchRcvd => $_getList(7);
-
-  @$pb.TagNumber(24)
-  $core.List<$core.String> get customFields => $_getList(8);
+  $core.Map<$core.String, $core.String> get customFields => $_getMap(3);
 }
 
 class ActiveContest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ActiveContest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uuid')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
-    ..aOM<Contest>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: Contest.create)
+    ..aOM<$2.ContestMetadata>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contest', subBuilder: $2.ContestMetadata.create)
     ..aOM<Station>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'station', subBuilder: Station.create)
     ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'beginTimestamp')
     ..aInt64(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endTimestamp')
@@ -296,7 +115,7 @@ class ActiveContest extends $pb.GeneratedMessage {
   factory ActiveContest({
     $core.String? uuid,
     $core.String? name,
-    Contest? contest,
+    $2.ContestMetadata? contest,
     Station? station,
     $fixnum.Int64? beginTimestamp,
     $fixnum.Int64? endTimestamp,
@@ -366,15 +185,15 @@ class ActiveContest extends $pb.GeneratedMessage {
   void clearName() => clearField(2);
 
   @$pb.TagNumber(3)
-  Contest get contest => $_getN(2);
+  $2.ContestMetadata get contest => $_getN(2);
   @$pb.TagNumber(3)
-  set contest(Contest v) { setField(3, v); }
+  set contest($2.ContestMetadata v) { setField(3, v); }
   @$pb.TagNumber(3)
   $core.bool hasContest() => $_has(2);
   @$pb.TagNumber(3)
   void clearContest() => clearField(3);
   @$pb.TagNumber(3)
-  Contest ensureContest() => $_ensure(2);
+  $2.ContestMetadata ensureContest() => $_ensure(2);
 
   @$pb.TagNumber(4)
   Station get station => $_getN(3);
@@ -422,12 +241,11 @@ class QSO extends $pb.GeneratedMessage {
     ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxCallsign')
     ..aInt64(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time')
     ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'freq')
-    ..e<Mode>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: Mode.phone, valueOf: Mode.valueOf, enumValues: Mode.values)
-    ..aOB(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'isSatellite')
-    ..m<$core.String, $core.String>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchSent', entryClassName: 'QSO.ExchSentEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
-    ..m<$core.String, $core.String>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchRcvd', entryClassName: 'QSO.ExchRcvdEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
-    ..e<QSOType>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: QSOType.qso, valueOf: QSOType.valueOf, enumValues: QSOType.values)
-    ..aOS(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operator')
+    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode')
+    ..m<$core.String, $core.String>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent', entryClassName: 'QSO.ExchangeSentEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..m<$core.String, $core.String>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd', entryClassName: 'QSO.ExchangeRcvdEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..e<QSOType>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: QSOType.qso, valueOf: QSOType.valueOf, enumValues: QSOType.values)
+    ..aOS(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operator')
     ..hasRequiredFields = false
   ;
 
@@ -438,10 +256,9 @@ class QSO extends $pb.GeneratedMessage {
     $core.String? dxCallsign,
     $fixnum.Int64? time,
     $fixnum.Int64? freq,
-    Mode? mode,
-    $core.bool? isSatellite,
-    $core.Map<$core.String, $core.String>? exchSent,
-    $core.Map<$core.String, $core.String>? exchRcvd,
+    $core.String? mode,
+    $core.Map<$core.String, $core.String>? exchangeSent,
+    $core.Map<$core.String, $core.String>? exchangeRcvd,
     QSOType? type,
     $core.String? operator,
   }) {
@@ -464,14 +281,11 @@ class QSO extends $pb.GeneratedMessage {
     if (mode != null) {
       _result.mode = mode;
     }
-    if (isSatellite != null) {
-      _result.isSatellite = isSatellite;
+    if (exchangeSent != null) {
+      _result.exchangeSent.addAll(exchangeSent);
     }
-    if (exchSent != null) {
-      _result.exchSent.addAll(exchSent);
-    }
-    if (exchRcvd != null) {
-      _result.exchRcvd.addAll(exchRcvd);
+    if (exchangeRcvd != null) {
+      _result.exchangeRcvd.addAll(exchangeRcvd);
     }
     if (type != null) {
       _result.type = type;
@@ -548,46 +362,37 @@ class QSO extends $pb.GeneratedMessage {
   void clearFreq() => clearField(5);
 
   @$pb.TagNumber(6)
-  Mode get mode => $_getN(5);
+  $core.String get mode => $_getSZ(5);
   @$pb.TagNumber(6)
-  set mode(Mode v) { setField(6, v); }
+  set mode($core.String v) { $_setString(5, v); }
   @$pb.TagNumber(6)
   $core.bool hasMode() => $_has(5);
   @$pb.TagNumber(6)
   void clearMode() => clearField(6);
 
   @$pb.TagNumber(7)
-  $core.bool get isSatellite => $_getBF(6);
-  @$pb.TagNumber(7)
-  set isSatellite($core.bool v) { $_setBool(6, v); }
-  @$pb.TagNumber(7)
-  $core.bool hasIsSatellite() => $_has(6);
-  @$pb.TagNumber(7)
-  void clearIsSatellite() => clearField(7);
+  $core.Map<$core.String, $core.String> get exchangeSent => $_getMap(6);
 
   @$pb.TagNumber(8)
-  $core.Map<$core.String, $core.String> get exchSent => $_getMap(7);
+  $core.Map<$core.String, $core.String> get exchangeRcvd => $_getMap(7);
 
   @$pb.TagNumber(9)
-  $core.Map<$core.String, $core.String> get exchRcvd => $_getMap(8);
+  QSOType get type => $_getN(8);
+  @$pb.TagNumber(9)
+  set type(QSOType v) { setField(9, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasType() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearType() => clearField(9);
 
   @$pb.TagNumber(10)
-  QSOType get type => $_getN(9);
+  $core.String get operator => $_getSZ(9);
   @$pb.TagNumber(10)
-  set type(QSOType v) { setField(10, v); }
+  set operator($core.String v) { $_setString(9, v); }
   @$pb.TagNumber(10)
-  $core.bool hasType() => $_has(9);
+  $core.bool hasOperator() => $_has(9);
   @$pb.TagNumber(10)
-  void clearType() => clearField(10);
-
-  @$pb.TagNumber(11)
-  $core.String get operator => $_getSZ(10);
-  @$pb.TagNumber(11)
-  set operator($core.String v) { $_setString(10, v); }
-  @$pb.TagNumber(11)
-  $core.bool hasOperator() => $_has(10);
-  @$pb.TagNumber(11)
-  void clearOperator() => clearField(11);
+  void clearOperator() => clearField(10);
 }
 
 class QSOOp extends $pb.GeneratedMessage {

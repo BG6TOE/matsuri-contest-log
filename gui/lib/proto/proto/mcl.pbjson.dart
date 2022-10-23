@@ -8,26 +8,6 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
-@$core.Deprecated('Use modeDescriptor instead')
-const Mode$json = const {
-  '1': 'Mode',
-  '2': const [
-    const {'1': 'phone', '2': 0},
-    const {'1': 'phone_lsb', '2': 1},
-    const {'1': 'phone_usb', '2': 2},
-    const {'1': 'phone_am', '2': 3},
-    const {'1': 'phone_fm', '2': 4},
-    const {'1': 'cw', '2': 128},
-    const {'1': 'data', '2': 129},
-    const {'1': 'data_rtty', '2': 130},
-    const {'1': 'data_psk', '2': 131},
-    const {'1': 'data_ft8', '2': 132},
-    const {'1': 'data_jt65', '2': 133},
-  ],
-};
-
-/// Descriptor for `Mode`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List modeDescriptor = $convert.base64Decode('CgRNb2RlEgkKBXBob25lEAASDQoJcGhvbmVfbHNiEAESDQoJcGhvbmVfdXNiEAISDAoIcGhvbmVfYW0QAxIMCghwaG9uZV9mbRAEEgcKAmN3EIABEgkKBGRhdGEQgQESDgoJZGF0YV9ydHR5EIIBEg0KCGRhdGFfcHNrEIMBEg0KCGRhdGFfZnQ4EIQBEg4KCWRhdGFfanQ2NRCFAQ==');
 @$core.Deprecated('Use qSOTypeDescriptor instead')
 const QSOType$json = const {
   '1': 'QSOType',
@@ -71,10 +51,7 @@ const Station$json = const {
     const {'1': 'callsign', '3': 1, '4': 1, '5': 9, '10': 'callsign'},
     const {'1': 'grid', '3': 2, '4': 1, '5': 9, '10': 'grid'},
     const {'1': 'region', '3': 3, '4': 1, '5': 5, '10': 'region'},
-    const {'1': 'cq_zone', '3': 4, '4': 1, '5': 5, '10': 'cqZone'},
-    const {'1': 'itu_zone', '3': 5, '4': 1, '5': 5, '10': 'ituZone'},
-    const {'1': 'dxcc_id', '3': 6, '4': 1, '5': 5, '10': 'dxccId'},
-    const {'1': 'custom_fields', '3': 7, '4': 3, '5': 11, '6': '.mcl.Station.CustomFieldsEntry', '10': 'customFields'},
+    const {'1': 'custom_fields', '3': 4, '4': 3, '5': 11, '6': '.mcl.Station.CustomFieldsEntry', '10': 'customFields'},
   ],
   '3': const [Station_CustomFieldsEntry$json],
 };
@@ -90,32 +67,14 @@ const Station_CustomFieldsEntry$json = const {
 };
 
 /// Descriptor for `Station`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List stationDescriptor = $convert.base64Decode('CgdTdGF0aW9uEhoKCGNhbGxzaWduGAEgASgJUghjYWxsc2lnbhISCgRncmlkGAIgASgJUgRncmlkEhYKBnJlZ2lvbhgDIAEoBVIGcmVnaW9uEhcKB2NxX3pvbmUYBCABKAVSBmNxWm9uZRIZCghpdHVfem9uZRgFIAEoBVIHaXR1Wm9uZRIXCgdkeGNjX2lkGAYgASgFUgZkeGNjSWQSQwoNY3VzdG9tX2ZpZWxkcxgHIAMoCzIeLm1jbC5TdGF0aW9uLkN1c3RvbUZpZWxkc0VudHJ5UgxjdXN0b21GaWVsZHMaPwoRQ3VzdG9tRmllbGRzRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');
-@$core.Deprecated('Use contestDescriptor instead')
-const Contest$json = const {
-  '1': 'Contest',
-  '2': const [
-    const {'1': 'api_version', '3': 1, '4': 1, '5': 5, '10': 'apiVersion'},
-    const {'1': 'version', '3': 2, '4': 1, '5': 9, '10': 'version'},
-    const {'1': 'name', '3': 16, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'uid', '3': 17, '4': 1, '5': 9, '10': 'uid'},
-    const {'1': 'filename', '3': 18, '4': 1, '5': 9, '10': 'filename'},
-    const {'1': 'category', '3': 19, '4': 1, '5': 9, '10': 'category'},
-    const {'1': 'exch_sent', '3': 22, '4': 3, '5': 9, '10': 'exchSent'},
-    const {'1': 'exch_rcvd', '3': 23, '4': 3, '5': 9, '10': 'exchRcvd'},
-    const {'1': 'custom_fields', '3': 24, '4': 3, '5': 9, '10': 'customFields'},
-  ],
-};
-
-/// Descriptor for `Contest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List contestDescriptor = $convert.base64Decode('CgdDb250ZXN0Eh8KC2FwaV92ZXJzaW9uGAEgASgFUgphcGlWZXJzaW9uEhgKB3ZlcnNpb24YAiABKAlSB3ZlcnNpb24SEgoEbmFtZRgQIAEoCVIEbmFtZRIQCgN1aWQYESABKAlSA3VpZBIaCghmaWxlbmFtZRgSIAEoCVIIZmlsZW5hbWUSGgoIY2F0ZWdvcnkYEyABKAlSCGNhdGVnb3J5EhsKCWV4Y2hfc2VudBgWIAMoCVIIZXhjaFNlbnQSGwoJZXhjaF9yY3ZkGBcgAygJUghleGNoUmN2ZBIjCg1jdXN0b21fZmllbGRzGBggAygJUgxjdXN0b21GaWVsZHM=');
+final $typed_data.Uint8List stationDescriptor = $convert.base64Decode('CgdTdGF0aW9uEhoKCGNhbGxzaWduGAEgASgJUghjYWxsc2lnbhISCgRncmlkGAIgASgJUgRncmlkEhYKBnJlZ2lvbhgDIAEoBVIGcmVnaW9uEkMKDWN1c3RvbV9maWVsZHMYBCADKAsyHi5tY2wuU3RhdGlvbi5DdXN0b21GaWVsZHNFbnRyeVIMY3VzdG9tRmllbGRzGj8KEUN1c3RvbUZpZWxkc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
 @$core.Deprecated('Use activeContestDescriptor instead')
 const ActiveContest$json = const {
   '1': 'ActiveContest',
   '2': const [
     const {'1': 'uuid', '3': 1, '4': 1, '5': 9, '10': 'uuid'},
     const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'contest', '3': 3, '4': 1, '5': 11, '6': '.mcl.Contest', '10': 'contest'},
+    const {'1': 'contest', '3': 3, '4': 1, '5': 11, '6': '.mcl.ContestMetadata', '10': 'contest'},
     const {'1': 'station', '3': 4, '4': 1, '5': 11, '6': '.mcl.Station', '10': 'station'},
     const {'1': 'begin_timestamp', '3': 5, '4': 1, '5': 3, '10': 'beginTimestamp'},
     const {'1': 'end_timestamp', '3': 6, '4': 1, '5': 3, '10': 'endTimestamp'},
@@ -124,7 +83,7 @@ const ActiveContest$json = const {
 };
 
 /// Descriptor for `ActiveContest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List activeContestDescriptor = $convert.base64Decode('Cg1BY3RpdmVDb250ZXN0EhIKBHV1aWQYASABKAlSBHV1aWQSEgoEbmFtZRgCIAEoCVIEbmFtZRImCgdjb250ZXN0GAMgASgLMgwubWNsLkNvbnRlc3RSB2NvbnRlc3QSJgoHc3RhdGlvbhgEIAEoCzIMLm1jbC5TdGF0aW9uUgdzdGF0aW9uEicKD2JlZ2luX3RpbWVzdGFtcBgFIAEoA1IOYmVnaW5UaW1lc3RhbXASIwoNZW5kX3RpbWVzdGFtcBgGIAEoA1IMZW5kVGltZXN0YW1wEiUKDmNvbnRlc3Rfc2NyaXB0GAcgASgJUg1jb250ZXN0U2NyaXB0');
+final $typed_data.Uint8List activeContestDescriptor = $convert.base64Decode('Cg1BY3RpdmVDb250ZXN0EhIKBHV1aWQYASABKAlSBHV1aWQSEgoEbmFtZRgCIAEoCVIEbmFtZRIuCgdjb250ZXN0GAMgASgLMhQubWNsLkNvbnRlc3RNZXRhZGF0YVIHY29udGVzdBImCgdzdGF0aW9uGAQgASgLMgwubWNsLlN0YXRpb25SB3N0YXRpb24SJwoPYmVnaW5fdGltZXN0YW1wGAUgASgDUg5iZWdpblRpbWVzdGFtcBIjCg1lbmRfdGltZXN0YW1wGAYgASgDUgxlbmRUaW1lc3RhbXASJQoOY29udGVzdF9zY3JpcHQYByABKAlSDWNvbnRlc3RTY3JpcHQ=');
 @$core.Deprecated('Use qSODescriptor instead')
 const QSO$json = const {
   '1': 'QSO',
@@ -134,19 +93,18 @@ const QSO$json = const {
     const {'1': 'dx_callsign', '3': 3, '4': 1, '5': 9, '10': 'dxCallsign'},
     const {'1': 'time', '3': 4, '4': 1, '5': 3, '10': 'time'},
     const {'1': 'freq', '3': 5, '4': 1, '5': 3, '10': 'freq'},
-    const {'1': 'mode', '3': 6, '4': 1, '5': 14, '6': '.mcl.Mode', '10': 'mode'},
-    const {'1': 'is_satellite', '3': 7, '4': 1, '5': 8, '10': 'isSatellite'},
-    const {'1': 'exch_sent', '3': 8, '4': 3, '5': 11, '6': '.mcl.QSO.ExchSentEntry', '10': 'exchSent'},
-    const {'1': 'exch_rcvd', '3': 9, '4': 3, '5': 11, '6': '.mcl.QSO.ExchRcvdEntry', '10': 'exchRcvd'},
-    const {'1': 'type', '3': 10, '4': 1, '5': 14, '6': '.mcl.QSOType', '10': 'type'},
-    const {'1': 'operator', '3': 11, '4': 1, '5': 9, '10': 'operator'},
+    const {'1': 'mode', '3': 6, '4': 1, '5': 9, '10': 'mode'},
+    const {'1': 'exchange_sent', '3': 7, '4': 3, '5': 11, '6': '.mcl.QSO.ExchangeSentEntry', '10': 'exchangeSent'},
+    const {'1': 'exchange_rcvd', '3': 8, '4': 3, '5': 11, '6': '.mcl.QSO.ExchangeRcvdEntry', '10': 'exchangeRcvd'},
+    const {'1': 'type', '3': 9, '4': 1, '5': 14, '6': '.mcl.QSOType', '10': 'type'},
+    const {'1': 'operator', '3': 10, '4': 1, '5': 9, '10': 'operator'},
   ],
-  '3': const [QSO_ExchSentEntry$json, QSO_ExchRcvdEntry$json],
+  '3': const [QSO_ExchangeSentEntry$json, QSO_ExchangeRcvdEntry$json],
 };
 
 @$core.Deprecated('Use qSODescriptor instead')
-const QSO_ExchSentEntry$json = const {
-  '1': 'ExchSentEntry',
+const QSO_ExchangeSentEntry$json = const {
+  '1': 'ExchangeSentEntry',
   '2': const [
     const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
     const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
@@ -155,8 +113,8 @@ const QSO_ExchSentEntry$json = const {
 };
 
 @$core.Deprecated('Use qSODescriptor instead')
-const QSO_ExchRcvdEntry$json = const {
-  '1': 'ExchRcvdEntry',
+const QSO_ExchangeRcvdEntry$json = const {
+  '1': 'ExchangeRcvdEntry',
   '2': const [
     const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
     const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
@@ -165,7 +123,7 @@ const QSO_ExchRcvdEntry$json = const {
 };
 
 /// Descriptor for `QSO`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List qSODescriptor = $convert.base64Decode('CgNRU08SEAoDdWlkGAEgASgJUgN1aWQSJQoObG9jYWxfY2FsbHNpZ24YAiABKAlSDWxvY2FsQ2FsbHNpZ24SHwoLZHhfY2FsbHNpZ24YAyABKAlSCmR4Q2FsbHNpZ24SEgoEdGltZRgEIAEoA1IEdGltZRISCgRmcmVxGAUgASgDUgRmcmVxEh0KBG1vZGUYBiABKA4yCS5tY2wuTW9kZVIEbW9kZRIhCgxpc19zYXRlbGxpdGUYByABKAhSC2lzU2F0ZWxsaXRlEjMKCWV4Y2hfc2VudBgIIAMoCzIWLm1jbC5RU08uRXhjaFNlbnRFbnRyeVIIZXhjaFNlbnQSMwoJZXhjaF9yY3ZkGAkgAygLMhYubWNsLlFTTy5FeGNoUmN2ZEVudHJ5UghleGNoUmN2ZBIgCgR0eXBlGAogASgOMgwubWNsLlFTT1R5cGVSBHR5cGUSGgoIb3BlcmF0b3IYCyABKAlSCG9wZXJhdG9yGjsKDUV4Y2hTZW50RW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4ARo7Cg1FeGNoUmN2ZEVudHJ5EhAKA2tleRgBIAEoCVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+final $typed_data.Uint8List qSODescriptor = $convert.base64Decode('CgNRU08SEAoDdWlkGAEgASgJUgN1aWQSJQoObG9jYWxfY2FsbHNpZ24YAiABKAlSDWxvY2FsQ2FsbHNpZ24SHwoLZHhfY2FsbHNpZ24YAyABKAlSCmR4Q2FsbHNpZ24SEgoEdGltZRgEIAEoA1IEdGltZRISCgRmcmVxGAUgASgDUgRmcmVxEhIKBG1vZGUYBiABKAlSBG1vZGUSPwoNZXhjaGFuZ2Vfc2VudBgHIAMoCzIaLm1jbC5RU08uRXhjaGFuZ2VTZW50RW50cnlSDGV4Y2hhbmdlU2VudBI/Cg1leGNoYW5nZV9yY3ZkGAggAygLMhoubWNsLlFTTy5FeGNoYW5nZVJjdmRFbnRyeVIMZXhjaGFuZ2VSY3ZkEiAKBHR5cGUYCSABKA4yDC5tY2wuUVNPVHlwZVIEdHlwZRIaCghvcGVyYXRvchgKIAEoCVIIb3BlcmF0b3IaPwoRRXhjaGFuZ2VTZW50RW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4ARo/ChFFeGNoYW5nZVJjdmRFbnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');
 @$core.Deprecated('Use qSOOpDescriptor instead')
 const QSOOp$json = const {
   '1': 'QSOOp',

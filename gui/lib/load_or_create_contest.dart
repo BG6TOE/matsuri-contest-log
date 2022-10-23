@@ -2,13 +2,16 @@ import 'package:file_selector/file_selector.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:mcl_gui/proto/proto/mcl.pbgrpc.dart';
+import 'package:mcl_gui/proto/proto/common.pb.dart';
 import 'package:mcl_gui/qso.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:protobuf/protobuf.dart';
+import 'package:tuple/tuple.dart';
 
 import 'gui_state.dart';
 
 class CreateContestForm extends StatefulWidget {
-  final Contest info;
+  final ContestMetadata info;
 
   const CreateContestForm({super.key, required this.info});
 
@@ -21,6 +24,7 @@ class _CreateContestFormState extends State<CreateContestForm> {
   List<TextEditingController> customFieldsController =
       <TextEditingController>[];
   List<DateTime>? contestStartEndTime;
+  List<Tuple2<String, ContestFieldInfo>> customFields = [];
 
   _CreateContestFormState();
 
@@ -57,13 +61,16 @@ class _CreateContestFormState extends State<CreateContestForm> {
   Widget build(BuildContext context) {
     final List<Widget> fields = <Widget>[];
 
-    if (customFieldsController.length != widget.info.customFields.length) {
-      customFieldsController =
-          widget.info.customFields.map((e) => TextEditingController()).toList();
+    if (customFieldsController.length == 0) {
+      for (var info in widget.info.fieldInfos.entries) {
+        if (info.value.fieldType == "tx_const" || info.value.fieldType == "info") {
+          customFields.add(Tuple2<String, ContestFieldInfo>(info.key, info.value));
+        }
+      }
+      customFieldsController = customFields.map((e) => TextEditingController()).toList();
     }
 
-    fields.add(Text("Filename: ${widget.info.filename}"));
-    fields.add(Text("Contest: ${widget.info.name}"));
+    fields.add(Text("Contest: ${widget.info.contestName}"));
     fields.add(Text("Version: ${widget.info.version}"));
 
     fields.add(QSOExchTextField(
@@ -71,9 +78,10 @@ class _CreateContestFormState extends State<CreateContestForm> {
       controller: callsignController,
     ));
 
-    for (int i = 0; i < widget.info.customFields.length; i++) {
+    for (int i = 0; i < customFields.length; i++) {
+      fields.add(const SizedBox(width: 1, height: 8));
       fields.add(QSOExchTextField(
-        widget.info.customFields[i],
+        customFields[i].item2.displayName,
         controller: customFieldsController[i],
       ));
     }
@@ -126,9 +134,9 @@ class _CreateContestFormState extends State<CreateContestForm> {
             )
           ]);
 
-          var customFieldsMap = Map<String, String>();
-          for (int i = 0; i < customFieldsController.length; i++) {
-            customFieldsMap[widget.info.customFields[i]] = customFieldsController[i].text;
+          var customFieldsMap = <String, String>{};
+          for (int i = 0; i < customFields.length; i++) {
+            customFieldsMap[customFields[i].item1] = customFieldsController[i].text;
           }
 
           ActiveContest contest = ActiveContest(contest: widget.info, station: Station(callsign: callsignController.text, customFields: customFieldsMap));
@@ -171,7 +179,7 @@ class LoadOrCreateContestPage extends StatefulWidget {
 }
 
 class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
-  Contest? contestInfo;
+  ContestMetadata? contestInfo;
 
   @override
   void initState() {
@@ -233,7 +241,7 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
                           acceptedTypeGroups: <XTypeGroup>[contestDescriptor]);
                       if (file != null) {
                         contestInfo = await state.getGuiClient()!.parseContest(
-                            ParseContestRequest(contestDescriptor: file.path));
+                            ParseContestRequest(contestDescriptor: await file.readAsString()));
                         setState(() {});
                       }
                     },
@@ -242,7 +250,7 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
                   height: 8,
                   width: 1,
                 ),
-                CreateContestForm(info: contestInfo ?? Contest()),
+                contestInfo != null ? CreateContestForm(info: contestInfo!) : Text(""),
               ],
             ),
           ),

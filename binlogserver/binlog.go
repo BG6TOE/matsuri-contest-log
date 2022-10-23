@@ -13,7 +13,6 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
-	lua "github.com/yuin/gopher-lua"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -33,10 +32,9 @@ type QSO struct {
 	DXCallsign    string
 	Time          int64
 	Freq          int64
-	Mode          pb.Mode
-	IsSatellite   bool
-	ExchSent      map[string]string
-	ExchRcvd      map[string]string
+	Mode          string
+	ExchangeSent  map[string]string
+	ExchangeRcvd  map[string]string
 	Type          pb.QSOType
 	Operator      string
 }
@@ -79,9 +77,8 @@ func FromProtobufQso(v *pb.QSO) QSO {
 		Time:          v.Time,
 		Freq:          v.Freq,
 		Mode:          v.Mode,
-		IsSatellite:   v.IsSatellite,
-		ExchSent:      v.ExchSent,
-		ExchRcvd:      v.ExchRcvd,
+		ExchangeSent:  v.ExchangeSent,
+		ExchangeRcvd:  v.ExchangeRcvd,
 		Type:          v.Type,
 		Operator:      v.Operator,
 	}
@@ -95,9 +92,8 @@ func (q *QSO) ToProtobufQso() *pb.QSO {
 		Time:          q.Time,
 		Freq:          q.Freq,
 		Mode:          q.Mode,
-		IsSatellite:   q.IsSatellite,
-		ExchSent:      q.ExchSent,
-		ExchRcvd:      q.ExchRcvd,
+		ExchangeSent:  q.ExchangeSent,
+		ExchangeRcvd:  q.ExchangeRcvd,
 		Type:          q.Type,
 		Operator:      q.Operator,
 	}
@@ -475,97 +471,6 @@ func NewBinlogServer(conf *BinlogServerConfig) (*BinlogServer, error) {
 	mclServ.BuildSnapshot()
 
 	return mclServ, nil
-}
-
-func ParseContestMetadata(s *lua.LState) (*pb.Contest, error) {
-	ret := &pb.Contest{}
-
-	if err := s.CallByParam(lua.P{
-		Fn:      s.GetGlobal("metadata"),
-		NRet:    1,
-		Protect: true,
-	}); err != nil {
-		return nil, status.Errorf(codes.NotFound, "not a valid contest descriptor: %v", err)
-	}
-
-	metadata := s.Get(-1)
-	s.Pop(1)
-
-	if metatable, ok := metadata.(*lua.LTable); !ok {
-		return nil, status.Errorf(codes.NotFound, "unexpected return value of metadata()")
-	} else {
-		if apiVersion, ok := metatable.RawGetString("api_version").(lua.LNumber); !ok {
-			return nil, fmt.Errorf("unexpected api_version")
-		} else {
-			ret.ApiVersion = int32(apiVersion)
-		}
-
-		if version, ok := metatable.RawGetString("version").(lua.LString); !ok {
-			return nil, fmt.Errorf("unexpected version")
-		} else {
-			ret.Version = version.String()
-		}
-
-		if displayname, ok := metatable.RawGetString("display_name").(lua.LString); !ok {
-			return nil, fmt.Errorf("unexpected display_name")
-		} else {
-			ret.Name = displayname.String()
-		}
-
-		if exchange, ok := metatable.RawGetString("exchange_sent").(*lua.LTable); !ok {
-			return nil, fmt.Errorf("unexpected exchange_sent")
-		} else {
-			for i := 1; i <= exchange.Len(); i++ {
-				if exchange_sent, ok := exchange.RawGetInt(i).(lua.LString); !ok {
-					return nil, fmt.Errorf("unexpected exchange_sent[%d]", i)
-				} else {
-					ret.ExchSent = append(ret.ExchSent, exchange_sent.String())
-				}
-			}
-		}
-
-		if exchange, ok := metatable.RawGetString("exchange_rcvd").(*lua.LTable); !ok {
-			return nil, fmt.Errorf("unexpected exchange_rcvd")
-		} else {
-			for i := 1; i <= exchange.Len(); i++ {
-				if exchange_rcvd, ok := exchange.RawGetInt(i).(lua.LString); !ok {
-					return nil, fmt.Errorf("unexpected exchange_rcvd[%d]", i)
-				} else {
-					ret.ExchRcvd = append(ret.ExchRcvd, exchange_rcvd.String())
-				}
-			}
-		}
-
-		if exchange, ok := metatable.RawGetString("custom_fields").(*lua.LTable); !ok {
-			return nil, fmt.Errorf("unexpected exchange_rcvd")
-		} else {
-			for i := 1; i <= exchange.Len(); i++ {
-				if exchange_field, ok := exchange.RawGetInt(i).(lua.LString); !ok {
-					return nil, fmt.Errorf("unexpected exchange_rcvd[%d]", i)
-				} else {
-					ret.CustomFields = append(ret.CustomFields, exchange_field.String())
-				}
-			}
-		}
-	}
-
-	return ret, nil
-}
-
-func ParseContest(ctx context.Context, params *pb.ParseContestRequest) (*pb.Contest, error) {
-	state := lua.NewState()
-	defer state.Close()
-
-	if err := state.DoFile(params.ContestDescriptor); err != nil {
-		return nil, status.Errorf(codes.NotFound, "'%s' is not a valid contest descriptor: %v", params.ContestDescriptor, err)
-	}
-
-	contest, err := ParseContestMetadata(state)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "'%s' is not a valid contest descriptor: %v", params.ContestDescriptor, err)
-	}
-
-	return contest, nil
 }
 
 func (s *BinlogServer) Shutdown() {

@@ -1,50 +1,65 @@
--- 
+--
 -- Note: The contest descriptor should not use any global variables.
 -- Functions will be provided with a "state" for saving the state
--- 
+--
 
--- 
+--
 -- MCL runtime provides the following lookup function:
 -- callsign_cq_zone()   -- Return the inferred CQ zone of the callsign, 0 for unknown
 -- callsign_itu_zone()  -- Return the inferred ITU zone of the callsign, 0 for unknown
 -- callsign_continent() -- Return the inferred continent of the callsign, "" for unknown
 -- callsign_dxcc()      -- Return the inferred DXCC of the callsign, 0 for unknown
--- 
+--
 
 -- Basic functions for getting contest metadata
-function metadata()
-    local meta = {
-        -- basic metadata of the contest
-        -- meta_version: the schema version of the metadata
-        api_version = 1,
-        -- version: the version of the contest, for display only
-        version = "2022.1",
+function LoadMetadata(meta)
+    -- basic metadata of the contest
+    -- meta_version: the schema version of the metadata
+    meta.ApiVersion = "1"
+    -- version: the version of the contest, for identifying other hosts on the network and display.
+    meta.Version = "2022.01"
 
-        -- the name of the contest, for display only
-        display_name = "CQWW SSB",
+    -- the name of the contest, for identifying other hosts on the network and display.
+    meta.ContestName = "CQWW SSB"
 
-        -- the modes of the contest
-        available_modes = {"SSB"},
+    -- the modes of the contest
+    meta.AvailableModes = { "SSB" }
 
-        -- the bands of the contest
-        available_bands = {"160", "80", "40", "20", "15", "10"},
+    -- the bands of the contest
+    meta.AvailableBands = { "160", "80", "40", "20", "15", "10" }
 
-        -- the sent exchange data of the contest, for display only
-        exchange_sent = {"_rst", "Zone"},
-        -- the received exchange data of the contest, for display only
-        exchange_rcvd = {"_rst", "Zone"},
+    -- the sent exchange data of the contest
+    meta.ExchangeSent = { "rst_sent_", "zone_sent" }
+    -- the received exchange data of the contest
+    meta.ExchangeRcvd = { "rst_rcvd_", "zone_rcvd" }
 
-        -- multipliers are only used for display, score calculation is fully handled in the script
-        multipliers = {"Zone"},
+    -- multipliers are only used for display, score calculation is fully handled in the script
+    meta.Multipliers = { "Zone" }
 
-        -- The fields in the "exchange_sent" which can be set before the contest
-        custom_fields = {"Zone"},
-
-        -- Explain some fields to the user.
-        field_description = { Zone = "CQ Zone", }
+    meta.FieldInfos = {
+        zone_sent = {
+            DisplayName = "TxZone",
+            Description = "CQ Zone Sent",
+            FieldType = "tx_const",
+            AdifName = "MY_CQ_ZONE",
+            ValueRegex = "^\\d{1,2}$",
+        },
+        zone_rcvd = {
+            DisplayName = "RxZone",
+            Description = "CQ Zone Rcvd",
+            FieldType = "rx",
+            AdifName = "CQZ",
+            ValueRegex = "^\\d{1,2}$",
+        },
+        continent_ = {
+            DisplayName = "Continent",
+            Description = "Continent",
+            FieldType = "info",
+            AdifName = "",
+            ValueRegex = "",
+            ValidValues = { "N/A", "AF", "AN", "AS", "EU", "NA", "OC", "SA" },
+        }
     }
-
-    return meta
 end
 
 -- Create a new state of the contest
@@ -64,9 +79,9 @@ end
 -- TODO Score Calculator
 function add_qso(state, qso)
     local score = {
-        title = {"Band", "QSO", "Zone", "Score", "Score/Q"},
+        title = { "Band", "QSO", "Zone", "Score", "Score/Q" },
         fields = {
-            {"80", 0, 0, 0, 0},
+            { "80", 0, 0, 0, 0 },
         },
     }
     return state, score

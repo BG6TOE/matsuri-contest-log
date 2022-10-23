@@ -10,7 +10,6 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'mcl.pbenum.dart' as $0;
 import 'mclgui.pbenum.dart';
 
 export 'mclgui.pbenum.dart';
@@ -74,125 +73,6 @@ class QSOField extends $pb.GeneratedMessage {
   $core.bool hasValue() => $_has(1);
   @$pb.TagNumber(2)
   void clearValue() => clearField(2);
-}
-
-class QSOMessage extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'QSOMessage', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxCallsign')
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operator')
-    ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'time')
-    ..aInt64(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'freq')
-    ..e<$0.Mode>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: $0.Mode.phone, valueOf: $0.Mode.valueOf, enumValues: $0.Mode.values)
-    ..pc<QSOField>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent', $pb.PbFieldType.PM, subBuilder: QSOField.create)
-    ..pc<QSOField>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd', $pb.PbFieldType.PM, subBuilder: QSOField.create)
-    ..hasRequiredFields = false
-  ;
-
-  QSOMessage._() : super();
-  factory QSOMessage({
-    $core.String? dxCallsign,
-    $core.String? operator,
-    $fixnum.Int64? time,
-    $fixnum.Int64? freq,
-    $0.Mode? mode,
-    $core.Iterable<QSOField>? exchangeSent,
-    $core.Iterable<QSOField>? exchangeRcvd,
-  }) {
-    final _result = create();
-    if (dxCallsign != null) {
-      _result.dxCallsign = dxCallsign;
-    }
-    if (operator != null) {
-      _result.operator = operator;
-    }
-    if (time != null) {
-      _result.time = time;
-    }
-    if (freq != null) {
-      _result.freq = freq;
-    }
-    if (mode != null) {
-      _result.mode = mode;
-    }
-    if (exchangeSent != null) {
-      _result.exchangeSent.addAll(exchangeSent);
-    }
-    if (exchangeRcvd != null) {
-      _result.exchangeRcvd.addAll(exchangeRcvd);
-    }
-    return _result;
-  }
-  factory QSOMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory QSOMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  QSOMessage clone() => QSOMessage()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  QSOMessage copyWith(void Function(QSOMessage) updates) => super.copyWith((message) => updates(message as QSOMessage)) as QSOMessage; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static QSOMessage create() => QSOMessage._();
-  QSOMessage createEmptyInstance() => create();
-  static $pb.PbList<QSOMessage> createRepeated() => $pb.PbList<QSOMessage>();
-  @$core.pragma('dart2js:noInline')
-  static QSOMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<QSOMessage>(create);
-  static QSOMessage? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get dxCallsign => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set dxCallsign($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasDxCallsign() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearDxCallsign() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get operator => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set operator($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasOperator() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearOperator() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $fixnum.Int64 get time => $_getI64(2);
-  @$pb.TagNumber(3)
-  set time($fixnum.Int64 v) { $_setInt64(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasTime() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearTime() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $fixnum.Int64 get freq => $_getI64(3);
-  @$pb.TagNumber(4)
-  set freq($fixnum.Int64 v) { $_setInt64(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasFreq() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearFreq() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $0.Mode get mode => $_getN(4);
-  @$pb.TagNumber(5)
-  set mode($0.Mode v) { setField(5, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasMode() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearMode() => clearField(5);
-
-  @$pb.TagNumber(6)
-  $core.List<QSOField> get exchangeSent => $_getList(5);
-
-  @$pb.TagNumber(7)
-  $core.List<QSOField> get exchangeRcvd => $_getList(6);
 }
 
 class DraftQSOMessage extends $pb.GeneratedMessage {

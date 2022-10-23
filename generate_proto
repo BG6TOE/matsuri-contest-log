@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+protoc --dart_out='grpc:/home/matsu/matsuri-contest-log/gui/lib/proto' proto/*.proto
+protoc --go_out=. --go-grpc_out=. proto/*.proto

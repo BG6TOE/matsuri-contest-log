@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'gui_state.dart';
 import 'last_qso_table.dart';
 import 'proto/proto/mcl.pbenum.dart';
+import 'proto/proto/mcl.pb.dart';
 import 'proto/proto/mclgui.pb.dart';
 
 class QSOInput extends StatefulWidget {
@@ -119,30 +120,26 @@ class _QSOInputState extends State<QSOInput> {
 
   void submitQso() {
     var dxCallsign = dxCallsignController.text;
-    var exchangeSent = <QSOField>{};
-    var exchangeRcvd = <QSOField>{};
+    var exchangeSent = <String, String>{};
+    var exchangeRcvd = <String, String>{};
 
     for (var i = 0; i < state.displayExchangeSentFields.length; i++) {
-      exchangeSent.add(QSOField(
-          title: state.displayExchangeSentFields[i].value,
-          value: exchangeSentControllers[i].text));
+      exchangeSent[state.displayExchangeSentFields[i].value]=exchangeSentControllers[i].text;
     }
     for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
-      exchangeRcvd.add(QSOField(
-          title: state.displayExchangeRcvdFields[i].value,
-          value: exchangeRcvdControllers[i].text));
+      exchangeRcvd[state.displayExchangeRcvdFields[i].value] = exchangeRcvdControllers[i].text;
     }
 
     // TODO: Check response
     unawaited(() async {
-      await state.getGuiClient()!.logQSO(QSOMessage(
+      await state.getGuiClient()!.logQSO(QSO(
             dxCallsign: dxCallsign,
             exchangeSent: exchangeSent,
             exchangeRcvd: exchangeRcvd,
             time: $fixnum.Int64(
                 DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000),
             freq: $fixnum.Int64(14000000),
-            mode: Mode.phone_lsb,
+            mode: "LSB",
           ));
       state.refreshQsos();
     }());
@@ -180,7 +177,7 @@ class _QSOInputState extends State<QSOInput> {
       qsoInputFields.add(const SizedBox(width: 4, height: 1));
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
-        "${state.displayExchangeSentFields[i].title} Sent",
+        state.displayExchangeSentFields[i].title,
         onSubmitted: (value) => onFieldSubmitted("exch_sent", i, value),
         focusNode: focuser[1 + i],
         controller: exchangeSentControllers[i],
@@ -190,7 +187,7 @@ class _QSOInputState extends State<QSOInput> {
       qsoInputFields.add(const SizedBox(width: 4, height: 1));
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
-        "${state.displayExchangeRcvdFields[i].title} Rcvd",
+        state.displayExchangeRcvdFields[i].title,
         onSubmitted: (value) => onFieldSubmitted("exch_rcvd", i, value),
         focusNode: focuser[1 + state.displayExchangeSentFields.length + i],
         controller: exchangeRcvdControllers[i],

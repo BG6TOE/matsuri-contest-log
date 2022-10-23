@@ -4,22 +4,13 @@ package mcl;
 
 option go_package = "proto/.";
 
+import "proto/common.proto";
 import "proto/mcl.proto";
 import "google/protobuf/empty.proto";
 
 message QSOField {
   string title = 1;
   string value = 2;
-}
-
-message QSOMessage {
-  string dx_callsign = 1;
-  string operator = 2;
-  int64 time = 3;
-  int64 freq = 4;
-  mcl.Mode mode = 5;
-  repeated QSOField exchange_sent = 6;
-  repeated QSOField exchange_rcvd = 7;
 }
 
 message DraftQSOMessage { string dx_callsign = 1; }
@@ -36,12 +27,12 @@ message QSOFields {
 service Gui {
   rpc CreateContest(mcl.CreateContestRequest) returns (mcl.StandardResponse);
   rpc LoadContest(mcl.LoadContestRequest) returns (mcl.StandardResponse);
-  rpc ParseContest(mcl.ParseContestRequest) returns (mcl.Contest);
+  rpc ParseContest(mcl.ParseContestRequest) returns (mcl.ContestMetadata);
   rpc GetActiveContest(google.protobuf.Empty) returns (mcl.ActiveContest);
 
   rpc GetQSOFields(google.protobuf.Empty) returns (QSOFields);
 
-  rpc LogQSO(QSOMessage) returns (mcl.QSO);
+  rpc LogQSO(mcl.QSO) returns (mcl.QSO);
   rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);
   rpc DeleteQSO(mcl.QSO) returns (mcl.StandardResponse);
 
@@ -71,7 +62,7 @@ service RealtimeGuiServer {
   // Prepares a QSO, used to generate default QSO content for a specific DX
   // station. e.g. The server will generate exchange message to be sent (like
   // serial number) and expected message from the DX station (like zone)
-  rpc DraftQSO(DraftQSOMessage) returns (QSOMessage);
+  rpc DraftQSO(DraftQSOMessage) returns (mcl.QSO);
 
   // Retrieves raw binlog messages from the backend.
   rpc RetrieveQSOUpdates(google.protobuf.Empty) returns (stream BinlogMessage);

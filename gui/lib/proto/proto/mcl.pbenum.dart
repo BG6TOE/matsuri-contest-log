@@ -9,39 +9,6 @@
 import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-class Mode extends $pb.ProtobufEnum {
-  static const Mode phone = Mode._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'phone');
-  static const Mode phone_lsb = Mode._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'phone_lsb');
-  static const Mode phone_usb = Mode._(2, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'phone_usb');
-  static const Mode phone_am = Mode._(3, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'phone_am');
-  static const Mode phone_fm = Mode._(4, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'phone_fm');
-  static const Mode cw = Mode._(128, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'cw');
-  static const Mode data = Mode._(129, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'data');
-  static const Mode data_rtty = Mode._(130, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'data_rtty');
-  static const Mode data_psk = Mode._(131, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'data_psk');
-  static const Mode data_ft8 = Mode._(132, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'data_ft8');
-  static const Mode data_jt65 = Mode._(133, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'data_jt65');
-
-  static const $core.List<Mode> values = <Mode> [
-    phone,
-    phone_lsb,
-    phone_usb,
-    phone_am,
-    phone_fm,
-    cw,
-    data,
-    data_rtty,
-    data_psk,
-    data_ft8,
-    data_jt65,
-  ];
-
-  static final $core.Map<$core.int, Mode> _byValue = $pb.ProtobufEnum.initByValue(values);
-  static Mode? valueOf($core.int value) => _byValue[value];
-
-  const Mode._($core.int v, $core.String n) : super(v, n);
-}
-
 class QSOType extends $pb.ProtobufEnum {
   static const QSOType qso = QSOType._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'qso');
   static const QSOType xqso = QSOType._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'xqso');

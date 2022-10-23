@@ -36,8 +36,8 @@ class _LastQsoTableState extends State<LastQsoTable> {
   void _updateQsoList() {
     setState(() {
       titles = ['', 'Call', 'Date', 'Time', 'Freq'];
-      titles.addAll(state.activeContest!.contest.exchSent.map((e) => '${overrideQsoFieldTitle(e)} Sent'));
-      titles.addAll(state.activeContest!.contest.exchRcvd.map((e) => '${overrideQsoFieldTitle(e)} Rcvd'));
+      titles.addAll(state.activeContest!.contest.exchangeSent.map((e) => overrideQsoFieldTitle(e, state.activeContest!.contest.fieldInfos)));
+      titles.addAll(state.activeContest!.contest.exchangeRcvd.map((e) => overrideQsoFieldTitle(e, state.activeContest!.contest.fieldInfos)));
       var lastQsos = state.activeQsos.sublist(
           max(state.activeQsos.length - 10, 0), state.activeQsos.length);
 
@@ -54,14 +54,14 @@ class _LastQsoTableState extends State<LastQsoTable> {
           '${lastQsos[i].freq.toInt() ~/ 1000}',
         ];
 
-        for (var exchSentField in state.activeContest!.contest.exchSent) {
-          var exchSentVal = lastQsos[i].exchSent[exchSentField];
+        for (var exchSentField in state.activeContest!.contest.exchangeSent) {
+          var exchSentVal = lastQsos[i].exchangeSent[exchSentField];
           exchSentVal ??= "";
           qsoStr.add(exchSentVal);
         }
         
-        for (var exchRcvdField in state.activeContest!.contest.exchRcvd) {
-          var exchRcvdVal = lastQsos[i].exchRcvd[exchRcvdField];
+        for (var exchRcvdField in state.activeContest!.contest.exchangeRcvd) {
+          var exchRcvdVal = lastQsos[i].exchangeRcvd[exchRcvdField];
           exchRcvdVal ??= "";
           qsoStr.add(exchRcvdVal);
         }
