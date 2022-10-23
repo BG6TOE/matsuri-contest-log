@@ -6,6 +6,7 @@ import 'package:mcl_gui/proto/proto/mcl.pbgrpc.dart';
 import 'package:mcl_gui/support.dart';
 
 import 'gui_state.dart';
+import 'theme.dart';
 
 class QsoTable extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class QSODataTableSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     return DataRow(
-      cells: qsos[index].map((e) => DataCell(Text(e))).toList(),
+      cells: qsos[index].map((e) => DataCell(Text(e, style: FontConfigs.monospaceFont))).toList(),
     );
   }
 
@@ -98,7 +99,7 @@ class _QsoTableState extends State<QsoTable> {
   Widget build(BuildContext context) {
     return PaginatedDataTable(
       columns: titles
-          .map((e) => DataColumn(label: Expanded(child: Text(e))))
+          .map((e) => DataColumn(label: Expanded(child: Text(e, style: FontConfigs.monospaceFont))))
           .toList(),
       source: QSODataTableSource(qsos),
     );

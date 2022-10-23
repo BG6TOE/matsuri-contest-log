@@ -9,6 +9,7 @@ import 'last_qso_table.dart';
 import 'proto/proto/mcl.pbenum.dart';
 import 'proto/proto/mcl.pb.dart';
 import 'proto/proto/mclgui.pb.dart';
+import 'theme.dart';
 
 class QSOInput extends StatefulWidget {
   const QSOInput({super.key});
@@ -32,10 +33,10 @@ class QSOExchTextField extends TextField {
   QSOExchTextField(String title,
       {super.key, super.onSubmitted, super.focusNode, super.controller})
       : super(
-          style: const TextStyle(fontFamily: "monospace"),
+          style: FontConfigs.monospaceFont,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            labelStyle: const TextStyle(fontFamily: "serif"),
+            labelStyle: FontConfigs.sansFont,
             labelText: title,
           ),
           inputFormatters: <TextInputFormatter>[

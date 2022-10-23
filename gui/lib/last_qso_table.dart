@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mcl_gui/support.dart';
+import 'package:mcl_gui/theme.dart';
 
 import 'gui_state.dart';
 
@@ -78,10 +79,10 @@ class _LastQsoTableState extends State<LastQsoTable> {
       dataRowHeight: 20,
       headingRowHeight: 20,
       columns: titles
-          .map((e) => DataColumn(label: Expanded(child: Text(e))))
+          .map((e) => DataColumn(label: Expanded(child: Text(e, style: FontConfigs.monospaceFont,))))
           .toList(),
       rows: qsos
-          .map((e) => DataRow(cells: e.map((e) => DataCell(Text(e))).toList()))
+          .map((e) => DataRow(cells: e.map((e) => DataCell(Text(e, style: FontConfigs.monospaceFont))).toList()))
           .toList(),
     );
   }
