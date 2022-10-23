@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -14,6 +16,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"matsu.dev/matsuri-contest-log/adif"
 	pb "matsu.dev/matsuri-contest-log/proto"
 )
 
@@ -221,4 +224,59 @@ func (s *Server) ParseContest(ctx context.Context, req *pb.ParseContestRequest) 
 
 func (s *Server) GetActiveContest(context.Context, *empty.Empty) (*pb.ActiveContest, error) {
 	return s.activeContest, nil
+}
+
+func (s *Server) ExportToAdif(ctx context.Context, req *pb.OpenFileRequest) (*pb.StandardResponse, error) {
+	qsos, err := s.binlog.RetrieveSnapshot(ctx, &pb.RetrieveBinlogRequest{SerialStart: 0, SerialEnd: 0x7fff_ffff_ffff_ffff})
+	if err != nil {
+		return nil, err
+	}
+	var exported adif.ADIFFile
+	exported.Header = make(adif.ADIFItem)
+	exported.Header["APPLICATION"] = "Matsuri Contest Log"
+	exported.Header["EXPORT_TIMESTAMP"] = time.Now().Format(time.RFC3339)
+	exported.Header["EXPORT_BINLOG_SERIAL"] = strconv.FormatInt(int64(qsos.Serial), 10)
+
+	for _, q := range qsos.Qso {
+		item := adif.CookedQSOItem{
+			BaseQSOItem: adif.BaseQSOItem{
+				DXCall: q.DxCallsign,
+				Band:   adif.BandToName(uint64(q.Freq)),
+				Mode:   q.Mode,
+			},
+			QSOTimestamp: time.Unix(q.Time, 0),
+			FreqHz:       uint64(q.Freq),
+			RSTSent:      q.ExchangeSent["rst_sent_"],
+			RSTRcvd:      q.ExchangeRcvd["rst_rcvd_"],
+			ExtraFields:  make(map[string]string),
+		}
+		for k, v := range s.activeContest.Contest.FieldInfos {
+			if v.AdifName != "" {
+				if v.FieldType == "tx_const" || v.FieldType == "tx" {
+					item.ExtraFields[v.AdifName] = q.ExchangeSent[k]
+				} else if v.FieldType == "rx" {
+					item.ExtraFields[v.AdifName] = q.ExchangeRcvd[k]
+				}
+			}
+		}
+		exported.Record = append(exported.Record, item.ToADIF())
+	}
+
+	fp, err := os.OpenFile(req.Name, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
+		return &pb.StandardResponse{
+			ResultCode:   pb.ResultCode_internal,
+			ErrorMessage: fmt.Sprintf("failed to open %s: %v", req.Name, err),
+		}, nil
+	}
+	defer fp.Close()
+
+	if err := exported.Write(fp); err != nil {
+		return &pb.StandardResponse{
+			ResultCode:   pb.ResultCode_internal,
+			ErrorMessage: fmt.Sprintf("failed to write %s: %v", req.Name, err),
+		}, nil
+	}
+
+	return &pb.StandardResponse{ResultCode: pb.ResultCode_success}, nil
 }

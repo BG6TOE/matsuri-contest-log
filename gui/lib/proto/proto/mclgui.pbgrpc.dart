@@ -58,6 +58,12 @@ class GuiClient extends $grpc.Client {
       '/mcl.Gui/DeleteQSO',
       ($0.QSO value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.StandardResponse.fromBuffer(value));
+  static final _$exportToAdif =
+      $grpc.ClientMethod<$3.OpenFileRequest, $0.StandardResponse>(
+          '/mcl.Gui/ExportToAdif',
+          ($3.OpenFileRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.StandardResponse.fromBuffer(value));
   static final _$getScore = $grpc.ClientMethod<$1.Empty, $3.ScoreResponse>(
       '/mcl.Gui/GetScore',
       ($1.Empty value) => value.writeToBuffer(),
@@ -109,6 +115,12 @@ class GuiClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.StandardResponse> deleteQSO($0.QSO request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$deleteQSO, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.StandardResponse> exportToAdif(
+      $3.OpenFileRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$exportToAdif, request, options: options);
   }
 
   $grpc.ResponseFuture<$3.ScoreResponse> getScore($1.Empty request,
@@ -181,6 +193,13 @@ abstract class GuiServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.QSO.fromBuffer(value),
         ($0.StandardResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$3.OpenFileRequest, $0.StandardResponse>(
+        'ExportToAdif',
+        exportToAdif_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $3.OpenFileRequest.fromBuffer(value),
+        ($0.StandardResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.Empty, $3.ScoreResponse>(
         'GetScore',
         getScore_Pre,
@@ -230,6 +249,11 @@ abstract class GuiServiceBase extends $grpc.Service {
     return deleteQSO(call, await request);
   }
 
+  $async.Future<$0.StandardResponse> exportToAdif_Pre(
+      $grpc.ServiceCall call, $async.Future<$3.OpenFileRequest> request) async {
+    return exportToAdif(call, await request);
+  }
+
   $async.Future<$3.ScoreResponse> getScore_Pre(
       $grpc.ServiceCall call, $async.Future<$1.Empty> request) async {
     return getScore(call, await request);
@@ -250,6 +274,8 @@ abstract class GuiServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $1.Empty request);
   $async.Future<$0.StandardResponse> deleteQSO(
       $grpc.ServiceCall call, $0.QSO request);
+  $async.Future<$0.StandardResponse> exportToAdif(
+      $grpc.ServiceCall call, $3.OpenFileRequest request);
   $async.Future<$3.ScoreResponse> getScore(
       $grpc.ServiceCall call, $1.Empty request);
 }

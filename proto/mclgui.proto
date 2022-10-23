@@ -24,6 +24,10 @@ message QSOFields {
   repeated QSOField exchange_rcvd = 2;
 }
 
+message OpenFileRequest {
+  string name = 1;
+}
+
 service Gui {
   rpc CreateContest(mcl.CreateContestRequest) returns (mcl.StandardResponse);
   rpc LoadContest(mcl.LoadContestRequest) returns (mcl.StandardResponse);
@@ -35,6 +39,8 @@ service Gui {
   rpc LogQSO(mcl.QSO) returns (mcl.QSO);
   rpc GetActiveQSOs(google.protobuf.Empty) returns (mcl.SnapshotMessage);
   rpc DeleteQSO(mcl.QSO) returns (mcl.StandardResponse);
+
+  rpc ExportToAdif(OpenFileRequest) returns (mcl.StandardResponse);
 
   rpc GetScore(google.protobuf.Empty) returns (ScoreResponse);
 }

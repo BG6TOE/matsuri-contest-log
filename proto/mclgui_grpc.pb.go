@@ -31,6 +31,7 @@ type GuiClient interface {
 	LogQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*QSO, error)
 	GetActiveQSOs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error)
 	DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error)
+	ExportToAdif(ctx context.Context, in *OpenFileRequest, opts ...grpc.CallOption) (*StandardResponse, error)
 	GetScore(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ScoreResponse, error)
 }
 
@@ -114,6 +115,15 @@ func (c *guiClient) DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOpt
 	return out, nil
 }
 
+func (c *guiClient) ExportToAdif(ctx context.Context, in *OpenFileRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+	out := new(StandardResponse)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/ExportToAdif", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *guiClient) GetScore(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ScoreResponse, error) {
 	out := new(ScoreResponse)
 	err := c.cc.Invoke(ctx, "/mcl.Gui/GetScore", in, out, opts...)
@@ -135,6 +145,7 @@ type GuiServer interface {
 	LogQSO(context.Context, *QSO) (*QSO, error)
 	GetActiveQSOs(context.Context, *emptypb.Empty) (*SnapshotMessage, error)
 	DeleteQSO(context.Context, *QSO) (*StandardResponse, error)
+	ExportToAdif(context.Context, *OpenFileRequest) (*StandardResponse, error)
 	GetScore(context.Context, *emptypb.Empty) (*ScoreResponse, error)
 	mustEmbedUnimplementedGuiServer()
 }
@@ -166,6 +177,9 @@ func (UnimplementedGuiServer) GetActiveQSOs(context.Context, *emptypb.Empty) (*S
 }
 func (UnimplementedGuiServer) DeleteQSO(context.Context, *QSO) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteQSO not implemented")
+}
+func (UnimplementedGuiServer) ExportToAdif(context.Context, *OpenFileRequest) (*StandardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportToAdif not implemented")
 }
 func (UnimplementedGuiServer) GetScore(context.Context, *emptypb.Empty) (*ScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScore not implemented")
@@ -327,6 +341,24 @@ func _Gui_DeleteQSO_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gui_ExportToAdif_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OpenFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GuiServer).ExportToAdif(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Gui/ExportToAdif",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GuiServer).ExportToAdif(ctx, req.(*OpenFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gui_GetScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -383,6 +415,10 @@ var Gui_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteQSO",
 			Handler:    _Gui_DeleteQSO_Handler,
+		},
+		{
+			MethodName: "ExportToAdif",
+			Handler:    _Gui_ExportToAdif_Handler,
 		},
 		{
 			MethodName: "GetScore",

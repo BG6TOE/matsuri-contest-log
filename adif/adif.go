@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -122,24 +123,50 @@ func ParseADIF(v []byte) (ADIFFile, error) {
 	}
 }
 
-func (item *ADIFItem) write(w io.Writer) {
-	for k, v := range *item {
+func (item *ADIFItem) write(w io.Writer) error {
+	keys := make([]string, 0, len(*item))
+
+	for k := range *item {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := (*item)[k]
 		if len(v) != 0 {
-			fmt.Fprintf(w, "<%s:%d>%s", k, len(v), v)
+			_, err := fmt.Fprintf(w, "<%s:%d>%s", k, len(v), v)
+			if err != nil {
+				return err
+			}
 		} else {
-			fmt.Fprintf(w, "<%s>", k)
+			_, err := fmt.Fprintf(w, "<%s>", k)
+			if err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
-func (f *ADIFFile) Write(w io.Writer) {
-	fmt.Fprintln(w, "ADIF File Written by matsu-radio-log.adif")
+func (f *ADIFFile) Write(w io.Writer) error {
+	if _, err := fmt.Fprintln(w, "ADIF File Written by matsu-radio-log.adif"); err != nil {
+		return err
+	}
 	if len(f.Header) != 0 {
-		f.Header.write(w)
-		fmt.Fprintln(w, "<eoh>")
+		if err := f.Header.write(w); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(w, "<eoh>"); err != nil {
+			return err
+		}
 	}
 	for _, vi := range f.Record {
-		vi.write(w)
-		fmt.Fprintln(w, "<eor>")
+		if err := vi.write(w); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(w, "<eor>"); err != nil {
+			return err
+		}
 	}
+	return nil
 }

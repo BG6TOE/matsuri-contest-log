@@ -79,6 +79,16 @@ const QSOFields$json = const {
 
 /// Descriptor for `QSOFields`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List qSOFieldsDescriptor = $convert.base64Decode('CglRU09GaWVsZHMSMgoNZXhjaGFuZ2Vfc2VudBgBIAMoCzINLm1jbC5RU09GaWVsZFIMZXhjaGFuZ2VTZW50EjIKDWV4Y2hhbmdlX3JjdmQYAiADKAsyDS5tY2wuUVNPRmllbGRSDGV4Y2hhbmdlUmN2ZA==');
+@$core.Deprecated('Use openFileRequestDescriptor instead')
+const OpenFileRequest$json = const {
+  '1': 'OpenFileRequest',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+  ],
+};
+
+/// Descriptor for `OpenFileRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List openFileRequestDescriptor = $convert.base64Decode('Cg9PcGVuRmlsZVJlcXVlc3QSEgoEbmFtZRgBIAEoCVIEbmFtZQ==');
 @$core.Deprecated('Use spotDescriptor instead')
 const Spot$json = const {
   '1': 'Spot',

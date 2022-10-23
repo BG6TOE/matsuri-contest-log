@@ -12,6 +12,7 @@ import 'gui_state.dart';
 import 'proto/proto/mcl.pbenum.dart';
 import 'proto/proto/mclgui.pbgrpc.dart';
 import 'qso.dart';
+import 'settings.dart';
 import 'title.dart';
 
 void main() {
@@ -104,6 +105,8 @@ class _GuiMainPageState extends State<GuiMainPage> {
         return _qsoPanel;
       case 2:
         return _qsoTable;
+      case 0:
+        return Settings();
       default:
         return Text("Select a tab on the left");
     }
