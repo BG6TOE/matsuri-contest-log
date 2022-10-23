@@ -44,6 +44,10 @@ class GuiClient extends $grpc.Client {
       '/mcl.Gui/GetQSOFields',
       ($1.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $3.QSOFields.fromBuffer(value));
+  static final _$stagingQSO = $grpc.ClientMethod<$0.QSO, $0.QSO>(
+      '/mcl.Gui/StagingQSO',
+      ($0.QSO value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.QSO.fromBuffer(value));
   static final _$logQSO = $grpc.ClientMethod<$0.QSO, $0.QSO>(
       '/mcl.Gui/LogQSO',
       ($0.QSO value) => value.writeToBuffer(),
@@ -100,6 +104,11 @@ class GuiClient extends $grpc.Client {
   $grpc.ResponseFuture<$3.QSOFields> getQSOFields($1.Empty request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$getQSOFields, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.QSO> stagingQSO($0.QSO request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$stagingQSO, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.QSO> logQSO($0.QSO request,
@@ -173,6 +182,13 @@ abstract class GuiServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) => $1.Empty.fromBuffer(value),
         ($3.QSOFields value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.QSO, $0.QSO>(
+        'StagingQSO',
+        stagingQSO_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.QSO.fromBuffer(value),
+        ($0.QSO value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.QSO, $0.QSO>(
         'LogQSO',
         logQSO_Pre,
         false,
@@ -234,6 +250,11 @@ abstract class GuiServiceBase extends $grpc.Service {
     return getQSOFields(call, await request);
   }
 
+  $async.Future<$0.QSO> stagingQSO_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.QSO> request) async {
+    return stagingQSO(call, await request);
+  }
+
   $async.Future<$0.QSO> logQSO_Pre(
       $grpc.ServiceCall call, $async.Future<$0.QSO> request) async {
     return logQSO(call, await request);
@@ -269,6 +290,7 @@ abstract class GuiServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $1.Empty request);
   $async.Future<$3.QSOFields> getQSOFields(
       $grpc.ServiceCall call, $1.Empty request);
+  $async.Future<$0.QSO> stagingQSO($grpc.ServiceCall call, $0.QSO request);
   $async.Future<$0.QSO> logQSO($grpc.ServiceCall call, $0.QSO request);
   $async.Future<$0.SnapshotMessage> getActiveQSOs(
       $grpc.ServiceCall call, $1.Empty request);
@@ -280,33 +302,35 @@ abstract class GuiServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $1.Empty request);
 }
 
-class RealtimeGuiServerClient extends $grpc.Client {
-  static final _$draftQSO = $grpc.ClientMethod<$3.DraftQSOMessage, $0.QSO>(
-      '/mcl.RealtimeGuiServer/DraftQSO',
-      ($3.DraftQSOMessage value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.QSO.fromBuffer(value));
+class RealtimeGuiClient extends $grpc.Client {
+  static final _$draftQSO =
+      $grpc.ClientMethod<$3.DraftQSOMessage, $3.DraftQSOMessage>(
+          '/mcl.RealtimeGui/DraftQSO',
+          ($3.DraftQSOMessage value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $3.DraftQSOMessage.fromBuffer(value));
   static final _$retrieveQSOUpdates =
       $grpc.ClientMethod<$1.Empty, $0.BinlogMessage>(
-          '/mcl.RealtimeGuiServer/RetrieveQSOUpdates',
+          '/mcl.RealtimeGui/RetrieveQSOUpdates',
           ($1.Empty value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.BinlogMessage.fromBuffer(value));
   static final _$retrieveTelnet = $grpc.ClientMethod<$1.Empty, $3.Spot>(
-      '/mcl.RealtimeGuiServer/RetrieveTelnet',
+      '/mcl.RealtimeGui/RetrieveTelnet',
       ($1.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $3.Spot.fromBuffer(value));
   static final _$sendSpotToTelnet =
       $grpc.ClientMethod<$3.Spot, $0.StandardResponse>(
-          '/mcl.RealtimeGuiServer/SendSpotToTelnet',
+          '/mcl.RealtimeGui/SendSpotToTelnet',
           ($3.Spot value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $0.StandardResponse.fromBuffer(value));
 
-  RealtimeGuiServerClient($grpc.ClientChannel channel,
+  RealtimeGuiClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
 
-  $grpc.ResponseFuture<$0.QSO> draftQSO($3.DraftQSOMessage request,
+  $grpc.ResponseFuture<$3.DraftQSOMessage> draftQSO($3.DraftQSOMessage request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$draftQSO, request, options: options);
   }
@@ -331,17 +355,17 @@ class RealtimeGuiServerClient extends $grpc.Client {
   }
 }
 
-abstract class RealtimeGuiServerServiceBase extends $grpc.Service {
-  $core.String get $name => 'mcl.RealtimeGuiServer';
+abstract class RealtimeGuiServiceBase extends $grpc.Service {
+  $core.String get $name => 'mcl.RealtimeGui';
 
-  RealtimeGuiServerServiceBase() {
-    $addMethod($grpc.ServiceMethod<$3.DraftQSOMessage, $0.QSO>(
+  RealtimeGuiServiceBase() {
+    $addMethod($grpc.ServiceMethod<$3.DraftQSOMessage, $3.DraftQSOMessage>(
         'DraftQSO',
         draftQSO_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $3.DraftQSOMessage.fromBuffer(value),
-        ($0.QSO value) => value.writeToBuffer()));
+        ($3.DraftQSOMessage value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$1.Empty, $0.BinlogMessage>(
         'RetrieveQSOUpdates',
         retrieveQSOUpdates_Pre,
@@ -365,7 +389,7 @@ abstract class RealtimeGuiServerServiceBase extends $grpc.Service {
         ($0.StandardResponse value) => value.writeToBuffer()));
   }
 
-  $async.Future<$0.QSO> draftQSO_Pre(
+  $async.Future<$3.DraftQSOMessage> draftQSO_Pre(
       $grpc.ServiceCall call, $async.Future<$3.DraftQSOMessage> request) async {
     return draftQSO(call, await request);
   }
@@ -385,7 +409,7 @@ abstract class RealtimeGuiServerServiceBase extends $grpc.Service {
     return sendSpotToTelnet(call, await request);
   }
 
-  $async.Future<$0.QSO> draftQSO(
+  $async.Future<$3.DraftQSOMessage> draftQSO(
       $grpc.ServiceCall call, $3.DraftQSOMessage request);
   $async.Stream<$0.BinlogMessage> retrieveQSOUpdates(
       $grpc.ServiceCall call, $1.Empty request);

@@ -3,6 +3,7 @@ package guiserver
 import (
 	"context"
 
+	"github.com/sirupsen/logrus"
 	lua "github.com/yuin/gopher-lua"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -38,4 +39,34 @@ func ParseContest(ctx context.Context, params *pb.ParseContestRequest) (*pb.Cont
 	}
 
 	return contest, nil
+}
+
+type LuaFunctionMap struct {
+	state    *lua.LState
+	draftQso lua.LValue
+}
+
+func (s *Server) InitLuaMap() *LuaFunctionMap {
+	return &LuaFunctionMap{
+		state:    s.contestScript,
+		draftQso: s.contestScript.GetGlobal("DraftQSO"),
+	}
+}
+
+func (m *LuaFunctionMap) DraftQSO(q *pb.DraftQSOMessage) error {
+	if m.draftQso.Type() == lua.LTNil {
+		return nil
+	}
+	if err := m.state.CallByParam(
+		lua.P{
+			Fn:      m.draftQso,
+			NRet:    1,
+			Protect: true,
+		}, luar.New(m.state, q),
+	); err != nil {
+		logrus.Infof("Failed to call DraftQSO: %v", err)
+		return err
+	}
+	logrus.Infof("Draft QSO: %v", q)
+	return nil
 }

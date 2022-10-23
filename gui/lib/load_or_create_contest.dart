@@ -12,8 +12,9 @@ import 'gui_state.dart';
 
 class CreateContestForm extends StatefulWidget {
   final ContestMetadata info;
+  final String contestScript;
 
-  const CreateContestForm({super.key, required this.info});
+  const CreateContestForm({super.key, required this.info, required this.contestScript});
 
   @override
   State<CreateContestForm> createState() => _CreateContestFormState();
@@ -139,7 +140,7 @@ class _CreateContestFormState extends State<CreateContestForm> {
             customFieldsMap[customFields[i].item1] = customFieldsController[i].text;
           }
 
-          ActiveContest contest = ActiveContest(contest: widget.info, station: Station(callsign: callsignController.text, customFields: customFieldsMap));
+          ActiveContest contest = ActiveContest(contest: widget.info, station: Station(callsign: callsignController.text, customFields: customFieldsMap), contestScript: widget.contestScript);
           if (contestStartEndTime != null) {
             contest.beginTimestamp = Int64(
                 contestStartEndTime![0].toUtc().millisecondsSinceEpoch ~/ 1000);
@@ -180,6 +181,7 @@ class LoadOrCreateContestPage extends StatefulWidget {
 
 class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
   ContestMetadata? contestInfo;
+  String? contestScript;
 
   @override
   void initState() {
@@ -241,7 +243,7 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
                           acceptedTypeGroups: <XTypeGroup>[contestDescriptor]);
                       if (file != null) {
                         contestInfo = await state.getGuiClient()!.parseContest(
-                            ParseContestRequest(contestDescriptor: await file.readAsString()));
+                            ParseContestRequest(contestDescriptor: (contestScript = await file.readAsString())));
                         setState(() {});
                       }
                     },
@@ -250,7 +252,7 @@ class _LoadOrCreateContestPageState extends State<LoadOrCreateContestPage> {
                   height: 8,
                   width: 1,
                 ),
-                contestInfo != null ? CreateContestForm(info: contestInfo!) : Text(""),
+                contestInfo != null ? CreateContestForm(info: contestInfo!, contestScript: contestScript!) : Text(""),
               ],
             ),
           ),

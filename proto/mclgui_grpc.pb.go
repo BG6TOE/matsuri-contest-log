@@ -28,6 +28,7 @@ type GuiClient interface {
 	ParseContest(ctx context.Context, in *ParseContestRequest, opts ...grpc.CallOption) (*ContestMetadata, error)
 	GetActiveContest(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveContest, error)
 	GetQSOFields(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*QSOFields, error)
+	StagingQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*QSO, error)
 	LogQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*QSO, error)
 	GetActiveQSOs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SnapshotMessage, error)
 	DeleteQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*StandardResponse, error)
@@ -88,6 +89,15 @@ func (c *guiClient) GetQSOFields(ctx context.Context, in *emptypb.Empty, opts ..
 	return out, nil
 }
 
+func (c *guiClient) StagingQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*QSO, error) {
+	out := new(QSO)
+	err := c.cc.Invoke(ctx, "/mcl.Gui/StagingQSO", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *guiClient) LogQSO(ctx context.Context, in *QSO, opts ...grpc.CallOption) (*QSO, error) {
 	out := new(QSO)
 	err := c.cc.Invoke(ctx, "/mcl.Gui/LogQSO", in, out, opts...)
@@ -142,6 +152,7 @@ type GuiServer interface {
 	ParseContest(context.Context, *ParseContestRequest) (*ContestMetadata, error)
 	GetActiveContest(context.Context, *emptypb.Empty) (*ActiveContest, error)
 	GetQSOFields(context.Context, *emptypb.Empty) (*QSOFields, error)
+	StagingQSO(context.Context, *QSO) (*QSO, error)
 	LogQSO(context.Context, *QSO) (*QSO, error)
 	GetActiveQSOs(context.Context, *emptypb.Empty) (*SnapshotMessage, error)
 	DeleteQSO(context.Context, *QSO) (*StandardResponse, error)
@@ -168,6 +179,9 @@ func (UnimplementedGuiServer) GetActiveContest(context.Context, *emptypb.Empty) 
 }
 func (UnimplementedGuiServer) GetQSOFields(context.Context, *emptypb.Empty) (*QSOFields, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQSOFields not implemented")
+}
+func (UnimplementedGuiServer) StagingQSO(context.Context, *QSO) (*QSO, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StagingQSO not implemented")
 }
 func (UnimplementedGuiServer) LogQSO(context.Context, *QSO) (*QSO, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogQSO not implemented")
@@ -283,6 +297,24 @@ func _Gui_GetQSOFields_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GuiServer).GetQSOFields(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gui_StagingQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QSO)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GuiServer).StagingQSO(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Gui/StagingQSO",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GuiServer).StagingQSO(ctx, req.(*QSO))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -405,6 +437,10 @@ var Gui_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Gui_GetQSOFields_Handler,
 		},
 		{
+			MethodName: "StagingQSO",
+			Handler:    _Gui_StagingQSO_Handler,
+		},
+		{
 			MethodName: "LogQSO",
 			Handler:    _Gui_LogQSO_Handler,
 		},
@@ -429,44 +465,44 @@ var Gui_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "proto/mclgui.proto",
 }
 
-// RealtimeGuiServerClient is the client API for RealtimeGuiServer service.
+// RealtimeGuiClient is the client API for RealtimeGui service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RealtimeGuiServerClient interface {
+type RealtimeGuiClient interface {
 	// Prepares a QSO, used to generate default QSO content for a specific DX
 	// station. e.g. The server will generate exchange message to be sent (like
 	// serial number) and expected message from the DX station (like zone)
-	DraftQSO(ctx context.Context, in *DraftQSOMessage, opts ...grpc.CallOption) (*QSO, error)
+	DraftQSO(ctx context.Context, in *DraftQSOMessage, opts ...grpc.CallOption) (*DraftQSOMessage, error)
 	// Retrieves raw binlog messages from the backend.
-	RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error)
+	RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGui_RetrieveQSOUpdatesClient, error)
 	// Connects to and waiting for cooked spots.
-	RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error)
+	RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGui_RetrieveTelnetClient, error)
 	SendSpotToTelnet(ctx context.Context, in *Spot, opts ...grpc.CallOption) (*StandardResponse, error)
 }
 
-type realtimeGuiServerClient struct {
+type realtimeGuiClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRealtimeGuiServerClient(cc grpc.ClientConnInterface) RealtimeGuiServerClient {
-	return &realtimeGuiServerClient{cc}
+func NewRealtimeGuiClient(cc grpc.ClientConnInterface) RealtimeGuiClient {
+	return &realtimeGuiClient{cc}
 }
 
-func (c *realtimeGuiServerClient) DraftQSO(ctx context.Context, in *DraftQSOMessage, opts ...grpc.CallOption) (*QSO, error) {
-	out := new(QSO)
-	err := c.cc.Invoke(ctx, "/mcl.RealtimeGuiServer/DraftQSO", in, out, opts...)
+func (c *realtimeGuiClient) DraftQSO(ctx context.Context, in *DraftQSOMessage, opts ...grpc.CallOption) (*DraftQSOMessage, error) {
+	out := new(DraftQSOMessage)
+	err := c.cc.Invoke(ctx, "/mcl.RealtimeGui/DraftQSO", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *realtimeGuiServerClient) RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveQSOUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RealtimeGuiServer_ServiceDesc.Streams[0], "/mcl.RealtimeGuiServer/RetrieveQSOUpdates", opts...)
+func (c *realtimeGuiClient) RetrieveQSOUpdates(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGui_RetrieveQSOUpdatesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &RealtimeGui_ServiceDesc.Streams[0], "/mcl.RealtimeGui/RetrieveQSOUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &realtimeGuiServerRetrieveQSOUpdatesClient{stream}
+	x := &realtimeGuiRetrieveQSOUpdatesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -476,16 +512,16 @@ func (c *realtimeGuiServerClient) RetrieveQSOUpdates(ctx context.Context, in *em
 	return x, nil
 }
 
-type RealtimeGuiServer_RetrieveQSOUpdatesClient interface {
+type RealtimeGui_RetrieveQSOUpdatesClient interface {
 	Recv() (*BinlogMessage, error)
 	grpc.ClientStream
 }
 
-type realtimeGuiServerRetrieveQSOUpdatesClient struct {
+type realtimeGuiRetrieveQSOUpdatesClient struct {
 	grpc.ClientStream
 }
 
-func (x *realtimeGuiServerRetrieveQSOUpdatesClient) Recv() (*BinlogMessage, error) {
+func (x *realtimeGuiRetrieveQSOUpdatesClient) Recv() (*BinlogMessage, error) {
 	m := new(BinlogMessage)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -493,12 +529,12 @@ func (x *realtimeGuiServerRetrieveQSOUpdatesClient) Recv() (*BinlogMessage, erro
 	return m, nil
 }
 
-func (c *realtimeGuiServerClient) RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGuiServer_RetrieveTelnetClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RealtimeGuiServer_ServiceDesc.Streams[1], "/mcl.RealtimeGuiServer/RetrieveTelnet", opts...)
+func (c *realtimeGuiClient) RetrieveTelnet(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (RealtimeGui_RetrieveTelnetClient, error) {
+	stream, err := c.cc.NewStream(ctx, &RealtimeGui_ServiceDesc.Streams[1], "/mcl.RealtimeGui/RetrieveTelnet", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &realtimeGuiServerRetrieveTelnetClient{stream}
+	x := &realtimeGuiRetrieveTelnetClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -508,16 +544,16 @@ func (c *realtimeGuiServerClient) RetrieveTelnet(ctx context.Context, in *emptyp
 	return x, nil
 }
 
-type RealtimeGuiServer_RetrieveTelnetClient interface {
+type RealtimeGui_RetrieveTelnetClient interface {
 	Recv() (*Spot, error)
 	grpc.ClientStream
 }
 
-type realtimeGuiServerRetrieveTelnetClient struct {
+type realtimeGuiRetrieveTelnetClient struct {
 	grpc.ClientStream
 }
 
-func (x *realtimeGuiServerRetrieveTelnetClient) Recv() (*Spot, error) {
+func (x *realtimeGuiRetrieveTelnetClient) Recv() (*Spot, error) {
 	m := new(Spot)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -525,163 +561,163 @@ func (x *realtimeGuiServerRetrieveTelnetClient) Recv() (*Spot, error) {
 	return m, nil
 }
 
-func (c *realtimeGuiServerClient) SendSpotToTelnet(ctx context.Context, in *Spot, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *realtimeGuiClient) SendSpotToTelnet(ctx context.Context, in *Spot, opts ...grpc.CallOption) (*StandardResponse, error) {
 	out := new(StandardResponse)
-	err := c.cc.Invoke(ctx, "/mcl.RealtimeGuiServer/SendSpotToTelnet", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mcl.RealtimeGui/SendSpotToTelnet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RealtimeGuiServerServer is the server API for RealtimeGuiServer service.
-// All implementations must embed UnimplementedRealtimeGuiServerServer
+// RealtimeGuiServer is the server API for RealtimeGui service.
+// All implementations must embed UnimplementedRealtimeGuiServer
 // for forward compatibility
-type RealtimeGuiServerServer interface {
+type RealtimeGuiServer interface {
 	// Prepares a QSO, used to generate default QSO content for a specific DX
 	// station. e.g. The server will generate exchange message to be sent (like
 	// serial number) and expected message from the DX station (like zone)
-	DraftQSO(context.Context, *DraftQSOMessage) (*QSO, error)
+	DraftQSO(context.Context, *DraftQSOMessage) (*DraftQSOMessage, error)
 	// Retrieves raw binlog messages from the backend.
-	RetrieveQSOUpdates(*emptypb.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error
+	RetrieveQSOUpdates(*emptypb.Empty, RealtimeGui_RetrieveQSOUpdatesServer) error
 	// Connects to and waiting for cooked spots.
-	RetrieveTelnet(*emptypb.Empty, RealtimeGuiServer_RetrieveTelnetServer) error
+	RetrieveTelnet(*emptypb.Empty, RealtimeGui_RetrieveTelnetServer) error
 	SendSpotToTelnet(context.Context, *Spot) (*StandardResponse, error)
-	mustEmbedUnimplementedRealtimeGuiServerServer()
+	mustEmbedUnimplementedRealtimeGuiServer()
 }
 
-// UnimplementedRealtimeGuiServerServer must be embedded to have forward compatible implementations.
-type UnimplementedRealtimeGuiServerServer struct {
+// UnimplementedRealtimeGuiServer must be embedded to have forward compatible implementations.
+type UnimplementedRealtimeGuiServer struct {
 }
 
-func (UnimplementedRealtimeGuiServerServer) DraftQSO(context.Context, *DraftQSOMessage) (*QSO, error) {
+func (UnimplementedRealtimeGuiServer) DraftQSO(context.Context, *DraftQSOMessage) (*DraftQSOMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DraftQSO not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) RetrieveQSOUpdates(*emptypb.Empty, RealtimeGuiServer_RetrieveQSOUpdatesServer) error {
+func (UnimplementedRealtimeGuiServer) RetrieveQSOUpdates(*emptypb.Empty, RealtimeGui_RetrieveQSOUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method RetrieveQSOUpdates not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) RetrieveTelnet(*emptypb.Empty, RealtimeGuiServer_RetrieveTelnetServer) error {
+func (UnimplementedRealtimeGuiServer) RetrieveTelnet(*emptypb.Empty, RealtimeGui_RetrieveTelnetServer) error {
 	return status.Errorf(codes.Unimplemented, "method RetrieveTelnet not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) SendSpotToTelnet(context.Context, *Spot) (*StandardResponse, error) {
+func (UnimplementedRealtimeGuiServer) SendSpotToTelnet(context.Context, *Spot) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendSpotToTelnet not implemented")
 }
-func (UnimplementedRealtimeGuiServerServer) mustEmbedUnimplementedRealtimeGuiServerServer() {}
+func (UnimplementedRealtimeGuiServer) mustEmbedUnimplementedRealtimeGuiServer() {}
 
-// UnsafeRealtimeGuiServerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RealtimeGuiServerServer will
+// UnsafeRealtimeGuiServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RealtimeGuiServer will
 // result in compilation errors.
-type UnsafeRealtimeGuiServerServer interface {
-	mustEmbedUnimplementedRealtimeGuiServerServer()
+type UnsafeRealtimeGuiServer interface {
+	mustEmbedUnimplementedRealtimeGuiServer()
 }
 
-func RegisterRealtimeGuiServerServer(s grpc.ServiceRegistrar, srv RealtimeGuiServerServer) {
-	s.RegisterService(&RealtimeGuiServer_ServiceDesc, srv)
+func RegisterRealtimeGuiServer(s grpc.ServiceRegistrar, srv RealtimeGuiServer) {
+	s.RegisterService(&RealtimeGui_ServiceDesc, srv)
 }
 
-func _RealtimeGuiServer_DraftQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RealtimeGui_DraftQSO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DraftQSOMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RealtimeGuiServerServer).DraftQSO(ctx, in)
+		return srv.(RealtimeGuiServer).DraftQSO(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.RealtimeGuiServer/DraftQSO",
+		FullMethod: "/mcl.RealtimeGui/DraftQSO",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RealtimeGuiServerServer).DraftQSO(ctx, req.(*DraftQSOMessage))
+		return srv.(RealtimeGuiServer).DraftQSO(ctx, req.(*DraftQSOMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RealtimeGuiServer_RetrieveQSOUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _RealtimeGui_RetrieveQSOUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RealtimeGuiServerServer).RetrieveQSOUpdates(m, &realtimeGuiServerRetrieveQSOUpdatesServer{stream})
+	return srv.(RealtimeGuiServer).RetrieveQSOUpdates(m, &realtimeGuiRetrieveQSOUpdatesServer{stream})
 }
 
-type RealtimeGuiServer_RetrieveQSOUpdatesServer interface {
+type RealtimeGui_RetrieveQSOUpdatesServer interface {
 	Send(*BinlogMessage) error
 	grpc.ServerStream
 }
 
-type realtimeGuiServerRetrieveQSOUpdatesServer struct {
+type realtimeGuiRetrieveQSOUpdatesServer struct {
 	grpc.ServerStream
 }
 
-func (x *realtimeGuiServerRetrieveQSOUpdatesServer) Send(m *BinlogMessage) error {
+func (x *realtimeGuiRetrieveQSOUpdatesServer) Send(m *BinlogMessage) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _RealtimeGuiServer_RetrieveTelnet_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _RealtimeGui_RetrieveTelnet_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RealtimeGuiServerServer).RetrieveTelnet(m, &realtimeGuiServerRetrieveTelnetServer{stream})
+	return srv.(RealtimeGuiServer).RetrieveTelnet(m, &realtimeGuiRetrieveTelnetServer{stream})
 }
 
-type RealtimeGuiServer_RetrieveTelnetServer interface {
+type RealtimeGui_RetrieveTelnetServer interface {
 	Send(*Spot) error
 	grpc.ServerStream
 }
 
-type realtimeGuiServerRetrieveTelnetServer struct {
+type realtimeGuiRetrieveTelnetServer struct {
 	grpc.ServerStream
 }
 
-func (x *realtimeGuiServerRetrieveTelnetServer) Send(m *Spot) error {
+func (x *realtimeGuiRetrieveTelnetServer) Send(m *Spot) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _RealtimeGuiServer_SendSpotToTelnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RealtimeGui_SendSpotToTelnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Spot)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RealtimeGuiServerServer).SendSpotToTelnet(ctx, in)
+		return srv.(RealtimeGuiServer).SendSpotToTelnet(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mcl.RealtimeGuiServer/SendSpotToTelnet",
+		FullMethod: "/mcl.RealtimeGui/SendSpotToTelnet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RealtimeGuiServerServer).SendSpotToTelnet(ctx, req.(*Spot))
+		return srv.(RealtimeGuiServer).SendSpotToTelnet(ctx, req.(*Spot))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RealtimeGuiServer_ServiceDesc is the grpc.ServiceDesc for RealtimeGuiServer service.
+// RealtimeGui_ServiceDesc is the grpc.ServiceDesc for RealtimeGui service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RealtimeGuiServer_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcl.RealtimeGuiServer",
-	HandlerType: (*RealtimeGuiServerServer)(nil),
+var RealtimeGui_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mcl.RealtimeGui",
+	HandlerType: (*RealtimeGuiServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "DraftQSO",
-			Handler:    _RealtimeGuiServer_DraftQSO_Handler,
+			Handler:    _RealtimeGui_DraftQSO_Handler,
 		},
 		{
 			MethodName: "SendSpotToTelnet",
-			Handler:    _RealtimeGuiServer_SendSpotToTelnet_Handler,
+			Handler:    _RealtimeGui_SendSpotToTelnet_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "RetrieveQSOUpdates",
-			Handler:       _RealtimeGuiServer_RetrieveQSOUpdates_Handler,
+			Handler:       _RealtimeGui_RetrieveQSOUpdates_Handler,
 			ServerStreams: true,
 		},
 		{
 			StreamName:    "RetrieveTelnet",
-			Handler:       _RealtimeGuiServer_RetrieveTelnet_Handler,
+			Handler:       _RealtimeGui_RetrieveTelnet_Handler,
 			ServerStreams: true,
 		},
 	},

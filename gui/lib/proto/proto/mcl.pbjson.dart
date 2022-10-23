@@ -14,11 +14,12 @@ const QSOType$json = const {
   '2': const [
     const {'1': 'qso', '2': 0},
     const {'1': 'xqso', '2': 1},
+    const {'1': 'draft', '2': 2},
   ],
 };
 
 /// Descriptor for `QSOType`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List qSOTypeDescriptor = $convert.base64Decode('CgdRU09UeXBlEgcKA3FzbxAAEggKBHhxc28QAQ==');
+final $typed_data.Uint8List qSOTypeDescriptor = $convert.base64Decode('CgdRU09UeXBlEgcKA3FzbxAAEggKBHhxc28QARIJCgVkcmFmdBAC');
 @$core.Deprecated('Use qSOOperationTypeDescriptor instead')
 const QSOOperationType$json = const {
   '1': 'QSOOperationType',

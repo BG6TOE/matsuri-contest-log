@@ -29,14 +29,28 @@ function LoadMetadata(meta)
     meta.AvailableBands = { "160", "80", "40", "20", "15", "10" }
 
     -- the sent exchange data of the contest
-    meta.ExchangeSent = { "rst_sent_", "zone_sent" }
+    meta.ExchangeSent = { "rst_sent", "zone_sent" }
     -- the received exchange data of the contest
-    meta.ExchangeRcvd = { "rst_rcvd_", "zone_rcvd" }
+    meta.ExchangeRcvd = { "rst_rcvd", "zone_rcvd" }
 
     -- multipliers are only used for display, score calculation is fully handled in the script
     meta.Multipliers = { "Zone" }
 
     meta.FieldInfos = {
+        rst_sent = {
+            DisplayName = "Tx RST",
+            Description = "RST Sent",
+            FieldType = "tx",
+            AdifName = "RST_SENT",
+            ValueRegex = "^[1-5][1-9][1-9]$",
+        },
+        rst_rcvd = {
+            DisplayName = "Rx RST",
+            Description = "RST Received",
+            FieldType = "rx",
+            AdifName = "RST_RCVD",
+            ValueRegex = "^[1-5][1-9][1-9]$",
+        },
         zone_sent = {
             DisplayName = "TxZone",
             Description = "CQ Zone Sent",
@@ -46,7 +60,7 @@ function LoadMetadata(meta)
         },
         zone_rcvd = {
             DisplayName = "RxZone",
-            Description = "CQ Zone Rcvd",
+            Description = "CQ Zone Received",
             FieldType = "rx",
             AdifName = "CQZ",
             ValueRegex = "^\\d{1,2}$",
@@ -60,6 +74,13 @@ function LoadMetadata(meta)
             ValidValues = { "N/A", "AF", "AN", "AS", "EU", "NA", "OC", "SA" },
         }
     }
+end
+
+function DraftQSO(qso)
+    qso.ExchangeSent["rst_sent"] = "599"
+    qso.ExchangeRcvd["rst_rcvd"] = "599"
+    qso.Expect = "zone_rcvd"
+    return true
 end
 
 -- Create a new state of the contest

@@ -17,6 +17,7 @@ enum CallbackKind { kOnQsoUpdate, kOnQsoFieldSetUpdate }
 class GuiState {
   final RadioState _radioState;
   GuiClient? _guiClient;
+  RealtimeGuiClient? _realtimeGui;
   final bool _guiServerConnected = false;
 
   ActiveContest? activeContest;
@@ -72,11 +73,14 @@ class GuiState {
     );
 
     _guiClient = GuiClient(channel);
+    _realtimeGui = RealtimeGuiClient(channel);
   }
 
   GuiClient? getGuiClient() {
     return _guiClient;
   }
+
+  RealtimeGuiClient get realtimeGui => _realtimeGui!;
 
   Future<void> updateExchangeFields() async {
     var fields = await _guiClient!.getQSOFields(Empty());

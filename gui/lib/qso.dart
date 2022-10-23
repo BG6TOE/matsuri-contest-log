@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mcl_gui/proto/proto/mclgui.pbgrpc.dart';
 
 import 'gui_state.dart';
 import 'last_qso_table.dart';
@@ -48,23 +49,29 @@ class QSOExchTextField extends TextField {
 
 class _QSOInputState extends State<QSOInput> {
   final dxCallsignController = TextEditingController();
-  var exchangeSentControllers = <TextEditingController>[];
-  var exchangeRcvdControllers = <TextEditingController>[];
+  var exchangeControllers = <String, TextEditingController>{};
   var focuser = <FocusNode>[];
+  var focuserMap = <String, FocusNode>{};
 
   var _qsoFieldSetUpdateCallbackId = 0;
 
+  var workingQso = DraftQSOMessage();
+
   void _onQsoFieldSetUpdate() {
-    exchangeSentControllers = <TextEditingController>[];
+    exchangeControllers = <String, TextEditingController>{};
     focuser = <FocusNode>[];
     focuser.add(FocusNode());
-    for (int i = 0; i < state.displayExchangeSentFields.length; i++) {
-      exchangeSentControllers.add(TextEditingController());
-      focuser.add(FocusNode());
+    for (var exch in state.displayExchangeSentFields) {
+      exchangeControllers[exch.value] = TextEditingController();
+      var focusNode = FocusNode();
+      focuser.add(focusNode);
+      focuserMap[exch.value] = focusNode;
     }
-    for (int i = 0; i < state.displayExchangeRcvdFields.length; i++) {
-      exchangeRcvdControllers.add(TextEditingController());
-      focuser.add(FocusNode());
+    for (var exch in state.displayExchangeRcvdFields) {
+      exchangeControllers[exch.value] = TextEditingController();
+      var focusNode = FocusNode();
+      focuser.add(focusNode);
+      focuserMap[exch.value] = focusNode;
     }
 
     setState(() {});
@@ -87,70 +94,93 @@ class _QSOInputState extends State<QSOInput> {
 
     // Clean up the controller when the widget is disposed.
     dxCallsignController.dispose();
-    for (var element in exchangeSentControllers) {
+    for (var element in exchangeControllers.values) {
       element.dispose();
     }
-    for (var element in exchangeRcvdControllers) {
-      element.dispose();
-    }
-    exchangeSentControllers.clear();
-    exchangeRcvdControllers.clear();
+    exchangeControllers.clear();
     super.dispose();
   }
 
-  void onFieldSubmitted(String fieldType, int fieldSeq, String fieldValue) {
-    var seq = 0;
-    switch (fieldType) {
-      case "dx_callsign":
-        seq = fieldSeq;
-        break;
-      case "exch_sent":
-        seq = 1 + fieldSeq;
-        break;
-      case "exch_rcvd":
-        seq = 1 + exchangeSentControllers.length + fieldSeq;
-        break;
+  void loadFromWorkingQSO(DraftQSOMessage qso) {
+    for (var val in workingQso.exchangeSent.entries) {
+      if (exchangeControllers[val.key]?.text == "") {
+        exchangeControllers[val.key]?.text = val.value;
+      }
     }
-    seq++;
+    for (var val in workingQso.exchangeRcvd.entries) {
+      if (exchangeControllers[val.key]?.text == "") {
+        exchangeControllers[val.key]?.text = val.value;
+      }
+    }
+  }
+
+  void onFieldSubmitted(
+      String fieldType, int fieldSeq, String fieldValue) async {
+    var seq = fieldSeq + 1;
+    if (fieldType == "dx_callsign") {
+      workingQso.dxCallsign = fieldValue;
+      workingQso = await state.realtimeGui.draftQSO(workingQso);
+      var focusNode = focuserMap[workingQso.expect];
+      if (workingQso.uid == "") {
+        stageOrSubmitQso(true);
+      }
+      if (focusNode != null) {
+        focusNode.requestFocus();
+        return;
+      }
+    }
     if (seq == focuser.length) {
-      submitQso();
+      stageOrSubmitQso(false);
       seq = 0;
     }
     focuser[seq].requestFocus();
   }
 
-  void submitQso() {
+  void stageOrSubmitQso(bool staging) async {
     var dxCallsign = dxCallsignController.text;
-    var exchangeSent = <String, String>{};
-    var exchangeRcvd = <String, String>{};
 
-    for (var i = 0; i < state.displayExchangeSentFields.length; i++) {
-      exchangeSent[state.displayExchangeSentFields[i].value]=exchangeSentControllers[i].text;
+    for (var field in state.displayExchangeSentFields) {
+      workingQso.exchangeSent[field.value] =
+          exchangeControllers[field.value]!.text;
     }
-    for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
-      exchangeRcvd[state.displayExchangeRcvdFields[i].value] = exchangeRcvdControllers[i].text;
+    for (var field in state.displayExchangeRcvdFields) {
+      workingQso.exchangeRcvd[field.value] =
+          exchangeControllers[field.value]!.text;
     }
 
-    // TODO: Check response
-    unawaited(() async {
-      await state.getGuiClient()!.logQSO(QSO(
-            dxCallsign: dxCallsign,
-            exchangeSent: exchangeSent,
-            exchangeRcvd: exchangeRcvd,
-            time: $fixnum.Int64(
-                DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000),
-            freq: $fixnum.Int64(14000000),
-            mode: "LSB",
-          ));
-      state.refreshQsos();
-    }());
+    var qso = QSO(
+      uid: workingQso.uid,
+      dxCallsign: dxCallsign,
+      exchangeSent: workingQso.exchangeSent,
+      exchangeRcvd: workingQso.exchangeRcvd,
+      time:
+          $fixnum.Int64(DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000),
+      freq: $fixnum.Int64(14000000),
+      mode: "LSB",
+    );
 
-    dxCallsignController.text = "";
-    for (var element in exchangeSentControllers) {
-      element.text = "";
+    if (staging) {
+      qso = await state.getGuiClient()!.stagingQSO(qso);
+      workingQso.exchangeSent.addAll(qso.exchangeSent);
+      workingQso.exchangeRcvd.addAll(qso.exchangeRcvd);
+      workingQso.uid = qso.uid;
+      loadFromWorkingQSO(
+          workingQso = await state.realtimeGui.draftQSO(workingQso));
+    } else {
+      await state.getGuiClient()!.logQSO(qso);
     }
-    for (var element in exchangeRcvdControllers) {
-      element.text = "";
+    state.refreshQsos();
+
+    if (staging) {
+    } else {
+      workingQso = DraftQSOMessage();
+      dxCallsignController.text = "";
+      for (var element in exchangeControllers.values) {
+        element.text = "";
+      }
+      for (var element in exchangeControllers.values) {
+        element.text = "";
+      }
     }
   }
 
@@ -169,6 +199,15 @@ class _QSOInputState extends State<QSOInput> {
           LengthLimitingTextInputFormatter(10),
           UpperCaseTextFormatter(),
         ],
+        onChanged: (value) async {
+          if (RegExp(r'^[0-9\.]+$').stringMatch(value) != null) {
+            return;
+          }
+          workingQso.dxCallsign = value;
+          workingQso.expect = "";
+          loadFromWorkingQSO(
+              workingQso = await state.realtimeGui.draftQSO(workingQso));
+        },
         onSubmitted: (value) => onFieldSubmitted("dx_callsign", 0, value),
         focusNode: focuser[0],
         controller: dxCallsignController,
@@ -179,9 +218,10 @@ class _QSOInputState extends State<QSOInput> {
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
         state.displayExchangeSentFields[i].title,
-        onSubmitted: (value) => onFieldSubmitted("exch_sent", i, value),
+        onSubmitted: (value) => onFieldSubmitted("exch_sent", i + 1, value),
         focusNode: focuser[1 + i],
-        controller: exchangeSentControllers[i],
+        controller:
+            exchangeControllers[state.displayExchangeSentFields[i].value]!,
       )));
     }
     for (var i = 0; i < state.displayExchangeRcvdFields.length; i++) {
@@ -189,9 +229,11 @@ class _QSOInputState extends State<QSOInput> {
       qsoInputFields.add(Expanded(
           child: QSOExchTextField(
         state.displayExchangeRcvdFields[i].title,
-        onSubmitted: (value) => onFieldSubmitted("exch_rcvd", i, value),
+        onSubmitted: (value) => onFieldSubmitted(
+            "exch_rcvd", i + state.displayExchangeSentFields.length + 1, value),
         focusNode: focuser[1 + state.displayExchangeSentFields.length + i],
-        controller: exchangeRcvdControllers[i],
+        controller:
+            exchangeControllers[state.displayExchangeRcvdFields[i].value]!,
       )));
     }
 

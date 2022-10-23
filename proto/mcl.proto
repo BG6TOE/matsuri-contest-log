@@ -28,6 +28,7 @@ message ActiveContest {
 enum QSOType {
   qso = 0;
   xqso = 1;
+  draft = 2;
 }
 
 message QSO {

@@ -75,53 +75,6 @@ class QSOField extends $pb.GeneratedMessage {
   void clearValue() => clearField(2);
 }
 
-class DraftQSOMessage extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'DraftQSOMessage', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxCallsign')
-    ..hasRequiredFields = false
-  ;
-
-  DraftQSOMessage._() : super();
-  factory DraftQSOMessage({
-    $core.String? dxCallsign,
-  }) {
-    final _result = create();
-    if (dxCallsign != null) {
-      _result.dxCallsign = dxCallsign;
-    }
-    return _result;
-  }
-  factory DraftQSOMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory DraftQSOMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  DraftQSOMessage clone() => DraftQSOMessage()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  DraftQSOMessage copyWith(void Function(DraftQSOMessage) updates) => super.copyWith((message) => updates(message as DraftQSOMessage)) as DraftQSOMessage; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static DraftQSOMessage create() => DraftQSOMessage._();
-  DraftQSOMessage createEmptyInstance() => create();
-  static $pb.PbList<DraftQSOMessage> createRepeated() => $pb.PbList<DraftQSOMessage>();
-  @$core.pragma('dart2js:noInline')
-  static DraftQSOMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<DraftQSOMessage>(create);
-  static DraftQSOMessage? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get dxCallsign => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set dxCallsign($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasDxCallsign() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearDxCallsign() => clearField(1);
-}
-
 class ScoreResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ScoreResponse', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..m<$core.String, $fixnum.Int64>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'categoryScore', entryClassName: 'ScoreResponse.CategoryScoreEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.O6, packageName: const $pb.PackageName('mcl'))
@@ -491,6 +444,111 @@ class CallsignLookupResult extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.Map<$core.String, BandStatus> get bandStatus => $_getMap(1);
+}
+
+class DraftQSOMessage extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'DraftQSOMessage', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uid')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dxCallsign')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode')
+    ..m<$core.String, $core.String>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeSent', entryClassName: 'DraftQSOMessage.ExchangeSentEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..m<$core.String, $core.String>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'exchangeRcvd', entryClassName: 'DraftQSOMessage.ExchangeRcvdEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('mcl'))
+    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'expect')
+    ..hasRequiredFields = false
+  ;
+
+  DraftQSOMessage._() : super();
+  factory DraftQSOMessage({
+    $core.String? uid,
+    $core.String? dxCallsign,
+    $core.String? mode,
+    $core.Map<$core.String, $core.String>? exchangeSent,
+    $core.Map<$core.String, $core.String>? exchangeRcvd,
+    $core.String? expect,
+  }) {
+    final _result = create();
+    if (uid != null) {
+      _result.uid = uid;
+    }
+    if (dxCallsign != null) {
+      _result.dxCallsign = dxCallsign;
+    }
+    if (mode != null) {
+      _result.mode = mode;
+    }
+    if (exchangeSent != null) {
+      _result.exchangeSent.addAll(exchangeSent);
+    }
+    if (exchangeRcvd != null) {
+      _result.exchangeRcvd.addAll(exchangeRcvd);
+    }
+    if (expect != null) {
+      _result.expect = expect;
+    }
+    return _result;
+  }
+  factory DraftQSOMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory DraftQSOMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  DraftQSOMessage clone() => DraftQSOMessage()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  DraftQSOMessage copyWith(void Function(DraftQSOMessage) updates) => super.copyWith((message) => updates(message as DraftQSOMessage)) as DraftQSOMessage; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static DraftQSOMessage create() => DraftQSOMessage._();
+  DraftQSOMessage createEmptyInstance() => create();
+  static $pb.PbList<DraftQSOMessage> createRepeated() => $pb.PbList<DraftQSOMessage>();
+  @$core.pragma('dart2js:noInline')
+  static DraftQSOMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<DraftQSOMessage>(create);
+  static DraftQSOMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get uid => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set uid($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasUid() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUid() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get dxCallsign => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set dxCallsign($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasDxCallsign() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearDxCallsign() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get mode => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set mode($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasMode() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearMode() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.Map<$core.String, $core.String> get exchangeSent => $_getMap(3);
+
+  @$pb.TagNumber(5)
+  $core.Map<$core.String, $core.String> get exchangeRcvd => $_getMap(4);
+
+  @$pb.TagNumber(6)
+  $core.String get expect => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set expect($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasExpect() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearExpect() => clearField(6);
 }
 
 class RadioStatus extends $pb.GeneratedMessage {

@@ -82,7 +82,7 @@ class _LastQsoTableState extends State<LastQsoTable> {
           .map((e) => DataColumn(label: Expanded(child: Text(e, style: FontConfigs.monospaceFont,))))
           .toList(),
       rows: qsos
-          .map((e) => DataRow(cells: e.map((e) => DataCell(Text(e, style: FontConfigs.monospaceFont))).toList()))
+          .map((e) => DataRow(cells: e.map((c) => DataCell(Text(c, style: FontConfigs.monospaceFont))).toList()))
           .toList(),
     );
   }

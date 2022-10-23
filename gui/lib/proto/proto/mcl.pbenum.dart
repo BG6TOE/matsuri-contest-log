@@ -12,10 +12,12 @@ import 'package:protobuf/protobuf.dart' as $pb;
 class QSOType extends $pb.ProtobufEnum {
   static const QSOType qso = QSOType._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'qso');
   static const QSOType xqso = QSOType._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'xqso');
+  static const QSOType draft = QSOType._(2, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'draft');
 
   static const $core.List<QSOType> values = <QSOType> [
     qso,
     xqso,
+    draft,
   ];
 
   static final $core.Map<$core.int, QSOType> _byValue = $pb.ProtobufEnum.initByValue(values);

@@ -12,6 +12,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	lua "github.com/yuin/gopher-lua"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -22,6 +23,7 @@ import (
 
 type Server struct {
 	pb.UnimplementedGuiServer
+	pb.UnimplementedRealtimeGuiServer
 
 	activeContest *pb.ActiveContest
 
@@ -30,6 +32,10 @@ type Server struct {
 
 	binlog               pb.BinlogClient
 	binlogSequenceNumber uint64
+
+	currentDraft  map[string]interface{}
+	contestScript *lua.LState
+	funcMap       *LuaFunctionMap
 }
 
 type GuiServerConfig struct {
@@ -39,6 +45,7 @@ type GuiServerConfig struct {
 func NewServer(grpcServer *grpc.Server) *Server {
 	ret := &Server{}
 	pb.RegisterGuiServer(grpcServer, ret)
+	pb.RegisterRealtimeGuiServer(grpcServer, ret)
 	return ret
 }
 
@@ -66,7 +73,11 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 
 func (s *Server) LogQSO(ctx context.Context, msg *pb.QSO) (*pb.QSO, error) {
 	qso := &pb.QSO{}
-	qso.Uid = uuid.NewString()
+	if msg.Uid == "" {
+		qso.Uid = uuid.NewString()
+	} else {
+		qso.Uid = msg.Uid
+	}
 	qso.Time = msg.GetTime()
 	qso.Freq = msg.GetFreq()
 
@@ -201,6 +212,15 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 			Value: v,
 		})
 	}
+
+	if s.contestScript != nil {
+		s.contestScript.Close()
+	}
+
+	s.contestScript = lua.NewState()
+	s.contestScript.DoString(s.activeContest.ContestScript)
+	s.funcMap = s.InitLuaMap()
+	s.currentDraft = map[string]interface{}{}
 
 	return &pb.StandardResponse{
 		ResultCode: pb.ResultCode_success,
