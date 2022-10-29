@@ -77,17 +77,22 @@ class RadioVFOConfig extends $pb.GeneratedMessage {
 
 class RadioStatus extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioStatus', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOM<RadioVFOConfig>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'rx', subBuilder: RadioVFOConfig.create)
-    ..aOM<RadioVFOConfig>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tx', subBuilder: RadioVFOConfig.create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uri')
+    ..aOM<RadioVFOConfig>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'rx', subBuilder: RadioVFOConfig.create)
+    ..aOM<RadioVFOConfig>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tx', subBuilder: RadioVFOConfig.create)
     ..hasRequiredFields = false
   ;
 
   RadioStatus._() : super();
   factory RadioStatus({
+    $core.String? uri,
     RadioVFOConfig? rx,
     RadioVFOConfig? tx,
   }) {
     final _result = create();
+    if (uri != null) {
+      _result.uri = uri;
+    }
     if (rx != null) {
       _result.rx = rx;
     }
@@ -118,26 +123,35 @@ class RadioStatus extends $pb.GeneratedMessage {
   static RadioStatus? _defaultInstance;
 
   @$pb.TagNumber(1)
-  RadioVFOConfig get rx => $_getN(0);
+  $core.String get uri => $_getSZ(0);
   @$pb.TagNumber(1)
-  set rx(RadioVFOConfig v) { setField(1, v); }
+  set uri($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasRx() => $_has(0);
+  $core.bool hasUri() => $_has(0);
   @$pb.TagNumber(1)
-  void clearRx() => clearField(1);
-  @$pb.TagNumber(1)
-  RadioVFOConfig ensureRx() => $_ensure(0);
+  void clearUri() => clearField(1);
 
   @$pb.TagNumber(2)
-  RadioVFOConfig get tx => $_getN(1);
+  RadioVFOConfig get rx => $_getN(1);
   @$pb.TagNumber(2)
-  set tx(RadioVFOConfig v) { setField(2, v); }
+  set rx(RadioVFOConfig v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasTx() => $_has(1);
+  $core.bool hasRx() => $_has(1);
   @$pb.TagNumber(2)
-  void clearTx() => clearField(2);
+  void clearRx() => clearField(2);
   @$pb.TagNumber(2)
-  RadioVFOConfig ensureTx() => $_ensure(1);
+  RadioVFOConfig ensureRx() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  RadioVFOConfig get tx => $_getN(2);
+  @$pb.TagNumber(3)
+  set tx(RadioVFOConfig v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasTx() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTx() => clearField(3);
+  @$pb.TagNumber(3)
+  RadioVFOConfig ensureTx() => $_ensure(2);
 }
 
 enum RadioCommand_Op {
@@ -158,7 +172,7 @@ class RadioCommand extends $pb.GeneratedMessage {
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioCommand', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..oo(0, [2, 3, 4, 5])
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel', $pb.PbFieldType.O3)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sendCwMessage')
     ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'setCwSpeed', $pb.PbFieldType.O3)
     ..aOM<RadioStatus>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'setRadioBandMode', subBuilder: RadioStatus.create)
@@ -168,7 +182,7 @@ class RadioCommand extends $pb.GeneratedMessage {
 
   RadioCommand._() : super();
   factory RadioCommand({
-    $core.int? channel,
+    $core.String? channel,
     $core.String? sendCwMessage,
     $core.int? setCwSpeed,
     RadioStatus? setRadioBandMode,
@@ -217,9 +231,9 @@ class RadioCommand extends $pb.GeneratedMessage {
   void clearOp() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
-  $core.int get channel => $_getIZ(0);
+  $core.String get channel => $_getSZ(0);
   @$pb.TagNumber(1)
-  set channel($core.int v) { $_setSignedInt32(0, v); }
+  set channel($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
   $core.bool hasChannel() => $_has(0);
   @$pb.TagNumber(1)
@@ -266,13 +280,13 @@ class RadioCommand extends $pb.GeneratedMessage {
 
 class RadioSelector extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioSelector', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel', $pb.PbFieldType.O3)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel')
     ..hasRequiredFields = false
   ;
 
   RadioSelector._() : super();
   factory RadioSelector({
-    $core.int? channel,
+    $core.String? channel,
   }) {
     final _result = create();
     if (channel != null) {
@@ -302,9 +316,9 @@ class RadioSelector extends $pb.GeneratedMessage {
   static RadioSelector? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.int get channel => $_getIZ(0);
+  $core.String get channel => $_getSZ(0);
   @$pb.TagNumber(1)
-  set channel($core.int v) { $_setSignedInt32(0, v); }
+  set channel($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
   $core.bool hasChannel() => $_has(0);
   @$pb.TagNumber(1)
@@ -388,7 +402,7 @@ class AudioDevice extends $pb.GeneratedMessage {
 
 class RadioConfig extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioConfig', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel', $pb.PbFieldType.O3)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'model')
     ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'uri')
     ..aOM<AudioDevice>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'audioInput', subBuilder: AudioDevice.create)
@@ -398,7 +412,7 @@ class RadioConfig extends $pb.GeneratedMessage {
 
   RadioConfig._() : super();
   factory RadioConfig({
-    $core.int? channel,
+    $core.String? channel,
     $core.String? model,
     $core.String? uri,
     AudioDevice? audioInput,
@@ -444,9 +458,9 @@ class RadioConfig extends $pb.GeneratedMessage {
   static RadioConfig? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.int get channel => $_getIZ(0);
+  $core.String get channel => $_getSZ(0);
   @$pb.TagNumber(1)
-  set channel($core.int v) { $_setSignedInt32(0, v); }
+  set channel($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
   $core.bool hasChannel() => $_has(0);
   @$pb.TagNumber(1)
@@ -544,22 +558,17 @@ class AudioDeviceList extends $pb.GeneratedMessage {
 
 class SupportedRadioList extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SupportedRadioList', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'model')
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'displayName')
+    ..pc<RadioConfig>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'radioConfig', $pb.PbFieldType.PM, subBuilder: RadioConfig.create)
     ..hasRequiredFields = false
   ;
 
   SupportedRadioList._() : super();
   factory SupportedRadioList({
-    $core.String? model,
-    $core.String? displayName,
+    $core.Iterable<RadioConfig>? radioConfig,
   }) {
     final _result = create();
-    if (model != null) {
-      _result.model = model;
-    }
-    if (displayName != null) {
-      _result.displayName = displayName;
+    if (radioConfig != null) {
+      _result.radioConfig.addAll(radioConfig);
     }
     return _result;
   }
@@ -585,21 +594,47 @@ class SupportedRadioList extends $pb.GeneratedMessage {
   static SupportedRadioList? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get model => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set model($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasModel() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearModel() => clearField(1);
+  $core.List<RadioConfig> get radioConfig => $_getList(0);
+}
 
-  @$pb.TagNumber(2)
-  $core.String get displayName => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set displayName($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasDisplayName() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearDisplayName() => clearField(2);
+class ActiveRadioList extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ActiveRadioList', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+    ..m<$core.String, RadioStatus>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'radios', entryClassName: 'ActiveRadioList.RadiosEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: RadioStatus.create, packageName: const $pb.PackageName('mcl'))
+    ..hasRequiredFields = false
+  ;
+
+  ActiveRadioList._() : super();
+  factory ActiveRadioList({
+    $core.Map<$core.String, RadioStatus>? radios,
+  }) {
+    final _result = create();
+    if (radios != null) {
+      _result.radios.addAll(radios);
+    }
+    return _result;
+  }
+  factory ActiveRadioList.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ActiveRadioList.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ActiveRadioList clone() => ActiveRadioList()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ActiveRadioList copyWith(void Function(ActiveRadioList) updates) => super.copyWith((message) => updates(message as ActiveRadioList)) as ActiveRadioList; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ActiveRadioList create() => ActiveRadioList._();
+  ActiveRadioList createEmptyInstance() => create();
+  static $pb.PbList<ActiveRadioList> createRepeated() => $pb.PbList<ActiveRadioList>();
+  @$core.pragma('dart2js:noInline')
+  static ActiveRadioList getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ActiveRadioList>(create);
+  static ActiveRadioList? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.Map<$core.String, RadioStatus> get radios => $_getMap(0);
 }
 

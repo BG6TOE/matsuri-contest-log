@@ -7,16 +7,15 @@ import 'package:gui_lib/gui_lib.dart';
 import 'proto/google/protobuf/empty.pb.dart';
 import 'proto/proto/mcl.pbgrpc.dart';
 import 'proto/proto/mclgui.pbgrpc.dart';
+import 'proto/proto/radio.pbgrpc.dart';
 
 const platform = MethodChannel('mcl.matsu.dev/embed');
 
-class RadioState {}
-
-enum CallbackKind { kOnQsoUpdate, kOnQsoFieldSetUpdate }
+enum CallbackKind { kOnQsoUpdate, kOnQsoFieldSetUpdate, kRadioStatusUpdate }
 
 class GuiState {
-  final RadioState _radioState;
   GuiClient? _guiClient;
+  RadioClient? _radioClient;
   RealtimeGuiClient? _realtimeGui;
   final bool _guiServerConnected = false;
 
@@ -28,9 +27,11 @@ class GuiState {
   int callbackIdentifier = 0;
 
   Map<CallbackKind, Map<int, void Function()>> callbacks = {};
-  List<QSO> activeQsos = [];
 
-  GuiState() : _radioState = RadioState() {
+  List<QSO> activeQsos = [];
+  Map<String, RadioStatus> radios = {};
+
+  GuiState() {
     for (var val in CallbackKind.values) {
       callbacks[val] = <int, void Function()>{};
     }
@@ -74,6 +75,11 @@ class GuiState {
 
     _guiClient = GuiClient(channel);
     _realtimeGui = RealtimeGuiClient(channel);
+    _radioClient = RadioClient(channel);
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      refreshRadios();
+    });
   }
 
   GuiClient? getGuiClient() {
@@ -81,6 +87,7 @@ class GuiState {
   }
 
   RealtimeGuiClient get realtimeGui => _realtimeGui!;
+  RadioClient get radioClient => _radioClient!;
 
   Future<void> updateExchangeFields() async {
     var fields = await _guiClient!.getQSOFields(Empty());
@@ -92,6 +99,16 @@ class GuiState {
 
       invokeCallback(CallbackKind.kOnQsoFieldSetUpdate);
     }
+  }
+
+  Future<void> refreshRadios() async {
+    if (_radioClient == null) {
+      return;
+    }
+
+    radios = (await _radioClient!.listRadioStatus(Empty())).radios;
+
+    invokeCallback(CallbackKind.kRadioStatusUpdate);
   }
 
   Future<void> refreshQsos() async {

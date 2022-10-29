@@ -8,11 +8,15 @@ import (
 	"math"
 	"net/url"
 	"strconv"
+	"sync"
+	"time"
 	"unicode"
 
 	"github.com/gen2brain/malgo"
+	"github.com/sirupsen/logrus"
 	"matsu.dev/matsuri-contest-log/hamlib"
 	"matsu.dev/matsuri-contest-log/morsecode"
+	pb "matsu.dev/matsuri-contest-log/proto"
 )
 
 type RadioMode uint32
@@ -41,6 +45,80 @@ const (
 	RadioMode_FMN     RadioMode = 1 << 21
 )
 
+func (m RadioMode) ToProtoMode() pb.RadioMode {
+	switch m {
+	case RadioMode_AM:
+		return pb.RadioMode_AM
+	case RadioMode_CW:
+		return pb.RadioMode_CW
+	case RadioMode_USB:
+		return pb.RadioMode_CWR
+	case RadioMode_LSB:
+		return pb.RadioMode_LSB
+	case RadioMode_RTTY:
+		return pb.RadioMode_DATAU
+	case RadioMode_FM:
+		return pb.RadioMode_FM
+	case RadioMode_WFM:
+		return pb.RadioMode_FM
+	case RadioMode_CWR:
+		return pb.RadioMode_CWR
+	case RadioMode_RTTYR:
+		return pb.RadioMode_DATAL
+	case RadioMode_AMS:
+		return pb.RadioMode_AM
+	case RadioMode_PKTLSB:
+		return pb.RadioMode_DATAL
+	case RadioMode_PKTUSB:
+		return pb.RadioMode_DATAU
+	case RadioMode_PKTFM:
+		return pb.RadioMode_FM
+	case RadioMode_ECSSUSB:
+		return pb.RadioMode_DATAU
+	case RadioMode_ECSSLSB:
+		return pb.RadioMode_DATAL
+	case RadioMode_FAX:
+		return pb.RadioMode_DATAU
+	case RadioMode_SAM:
+		return pb.RadioMode_UNKNOWN
+	case RadioMode_SAL:
+		return pb.RadioMode_UNKNOWN
+	case RadioMode_SAH:
+		return pb.RadioMode_UNKNOWN
+	case RadioMode_DSB:
+		return pb.RadioMode_UNKNOWN
+	case RadioMode_FMN:
+		return pb.RadioMode_FM
+	default:
+		return pb.RadioMode_UNKNOWN
+	}
+}
+
+func ToRadioMode(m pb.RadioMode) RadioMode {
+	switch m {
+	case pb.RadioMode_UNKNOWN:
+		return 0
+	case pb.RadioMode_CW:
+		return RadioMode_CW
+	case pb.RadioMode_CWR:
+		return RadioMode_CWR
+	case pb.RadioMode_LSB:
+		return RadioMode_LSB
+	case pb.RadioMode_USB:
+		return RadioMode_USB
+	case pb.RadioMode_AM:
+		return RadioMode_AM
+	case pb.RadioMode_FM:
+		return RadioMode_FM
+	case pb.RadioMode_DATAL:
+		return RadioMode_PKTLSB
+	case pb.RadioMode_DATAU:
+		return RadioMode_PKTUSB
+	default:
+		return 0
+	}
+}
+
 type Radio struct {
 	rxFreq int64
 	rxMode RadioMode
@@ -52,6 +130,10 @@ type Radio struct {
 
 	txAudioBuffer bytes.Buffer
 	txSampleRate  uint32
+
+	lock        sync.Mutex
+	refreshChan chan struct{}
+	uri         string
 }
 
 func (r *Radio) InitAudioOutput(ctx malgo.Context, device string) error {
@@ -104,41 +186,51 @@ func (r *Radio) audioSampleCallbackfunc(pOutputSample, pInputSamples []byte, fra
 	}
 }
 
-func (r *Radio) Open(uristr string) error {
+func (r *Radio) Open(model string, uristr string) error {
 	path, err := url.Parse(uristr)
 	if err != nil {
 		return fmt.Errorf("failed to open radio: %v", err)
 	}
-	model := path.Query().Get("model")
 
-	if r.rig != nil {
-		r.rig.Close()
-		r.rig.Cleanup()
-		r.rig = nil
-	}
+	r.uri = uristr
+
+	logrus.Infof("Opening %s at %s", model, path.Path)
+
+	r.Close()
+
+	r.refreshChan = make(chan struct{})
+
+	var tmprig *hamlib.Rig
 
 	{
 		models := hamlib.ListModels()
 		for _, m := range models {
-			if model == fmt.Sprintf("%s %s", m.Manufacturer, m.Manufacturer) {
-				r.rig = &hamlib.Rig{}
-				err := r.rig.Init(m.ModelID)
+			if model == fmt.Sprintf("%s %s", m.Manufacturer, m.Model) {
+				tmprig = &hamlib.Rig{}
+				err := tmprig.Init(m.ModelID)
 				if err != nil {
-					return fmt.Errorf("failed to open radio: %v", err)
+					return fmt.Errorf("failed to init radio: %v", err)
 				}
 				break
 			}
 		}
 
-		if r.rig == nil {
-			return fmt.Errorf("failed to open radio: unsupported radio")
+		if tmprig == nil {
+			return fmt.Errorf("failed to init radio: unsupported radio %s", model)
 		}
 	}
+
+	defer func() {
+		if tmprig != nil {
+			tmprig.Cleanup()
+		}
+	}()
 
 	{
 		rigPort := hamlib.Port{}
 		switch path.Scheme {
 		case "serial":
+			rigPort.Portname = path.Path
 			rigPort.RigPortType = hamlib.RigPortSerial
 			if path.Query().Has("baudrate") {
 				rigPort.Baudrate, _ = strconv.Atoi(path.Query().Get("baudrate"))
@@ -167,26 +259,66 @@ func (r *Radio) Open(uristr string) error {
 					rigPort.Handshake = hamlib.HandshakeRTSCTS
 				}
 			}
+		case "tcp":
+			rigPort.Portname = path.Host
+			rigPort.RigPortType = hamlib.RigPortNetwork
 		default:
 			return fmt.Errorf("failed to open radio: unsupported port")
 		}
-		r.rig.SetPort(rigPort)
+		if err := tmprig.SetPort(rigPort); err != nil {
+			return fmt.Errorf("failed to set port: %v", err)
+		}
 	}
 
-	if err := r.rig.Open(); err != nil {
-		r.rig.Close()
-		r.rig.Cleanup()
-		r.rig = nil
+	if err := tmprig.Open(); err != nil {
 		return err
 	}
+
+	r.rig = tmprig
+	tmprig = nil
+
+	go func(closeChan chan struct{}) {
+		for {
+			select {
+			case <-time.After(time.Second):
+				r.lock.Lock()
+				freq, _ := r.rig.GetFreq(hamlib.VFOCurrent)
+				mode, _, _ := r.rig.GetMode(hamlib.VFOCurrent)
+				txfreq, _ := r.rig.GetSplitFreq(hamlib.VFOCurrent)
+				txmode, _, _ := r.rig.GetSplitMode(hamlib.VFOCurrent)
+
+				logrus.Infof("VFO %v %v SPLIT %v %v", freq, mode, txfreq, txmode)
+
+				r.rxFreq = int64(freq)
+				r.rxMode = RadioMode(mode)
+				r.txFreq = int64(txfreq)
+				r.txMode = RadioMode(txmode)
+				if (mode == hamlib.ModeCW || mode == hamlib.ModeCWR) && txmode == hamlib.ModeLSB {
+					r.txFreq += 1500
+					r.txMode = r.rxMode
+				}
+				r.lock.Unlock()
+			case <-closeChan:
+				return
+			}
+		}
+	}(r.refreshChan)
 
 	return nil
 }
 
 func (r *Radio) Close() error {
-	r.rig.Close()
-	r.rig.Cleanup()
-	r.rig = nil
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	if r.refreshChan != nil {
+		close(r.refreshChan)
+	}
+	if r.rig != nil {
+		r.rig.Close()
+		r.rig.Cleanup()
+		r.rig = nil
+	}
 	return nil
 }
 
@@ -194,10 +326,16 @@ func (r *Radio) UpdateFreqMode() error {
 	if r.rig == nil {
 		return nil
 	}
+
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	r.rig.SetVfo(hamlib.VFOA)
 	if r.rxFreq != 0 {
 		r.rig.SetMode(hamlib.VFOCurrent, hamlib.Mode(r.rxMode), -1)
 		r.rig.SetFreq(hamlib.VFOCurrent, float64(r.rxFreq))
 	}
+	r.rig.SetSplitVfo(hamlib.VFOA, 1, hamlib.VFOB)
 	if r.txFreq != 0 {
 		if r.txMode == RadioMode_CW {
 			r.rig.SetSplitMode(hamlib.VFOCurrent, hamlib.ModeLSB, -1)

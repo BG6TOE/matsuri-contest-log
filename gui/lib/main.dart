@@ -14,6 +14,7 @@ import 'proto/proto/mclgui.pbgrpc.dart';
 import 'qso.dart';
 import 'settings.dart';
 import 'title.dart';
+import 'radio.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,7 @@ class _GuiMainPageState extends State<GuiMainPage> {
   int _currentPage = 3;
   QsoTable _qsoTable = QsoTable();
   QsoPanel _qsoPanel = QsoPanel();
+  RadioStatusPanel _radioStatus = RadioStatusPanel();
 
   @override
   void initState() {
@@ -101,10 +103,12 @@ class _GuiMainPageState extends State<GuiMainPage> {
 
   Widget currentWidget() {
     switch (_currentPage) {
-      case 3:
+      case 4:
         return _qsoPanel;
-      case 2:
+      case 3:
         return _qsoTable;
+      case 2:
+        return _radioStatus;
       case 0:
         return Settings();
       default:
@@ -143,6 +147,11 @@ class _GuiMainPageState extends State<GuiMainPage> {
                 icon: Icon(Icons.lan),
                 selectedIcon: Icon(Icons.lan),
                 label: Text('Network'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.radio),
+                selectedIcon: Icon(Icons.radio),
+                label: Text('Radio'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.receipt_long),

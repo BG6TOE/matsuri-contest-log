@@ -26,6 +26,7 @@ type RadioClient interface {
 	GetRadioMode(ctx context.Context, in *RadioSelector, opts ...grpc.CallOption) (*RadioStatus, error)
 	PollRadioMode(ctx context.Context, in *RadioSelector, opts ...grpc.CallOption) (Radio_PollRadioModeClient, error)
 	RadioOp(ctx context.Context, in *RadioCommand, opts ...grpc.CallOption) (*StandardResponse, error)
+	ListRadioStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveRadioList, error)
 	ListAudioDevices(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AudioDeviceList, error)
 	ListSupportedRadios(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SupportedRadioList, error)
 	SetupRadio(ctx context.Context, in *RadioConfig, opts ...grpc.CallOption) (*StandardResponse, error)
@@ -90,6 +91,15 @@ func (c *radioClient) RadioOp(ctx context.Context, in *RadioCommand, opts ...grp
 	return out, nil
 }
 
+func (c *radioClient) ListRadioStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveRadioList, error) {
+	out := new(ActiveRadioList)
+	err := c.cc.Invoke(ctx, "/mcl.Radio/ListRadioStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *radioClient) ListAudioDevices(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AudioDeviceList, error) {
 	out := new(AudioDeviceList)
 	err := c.cc.Invoke(ctx, "/mcl.Radio/ListAudioDevices", in, out, opts...)
@@ -133,6 +143,7 @@ type RadioServer interface {
 	GetRadioMode(context.Context, *RadioSelector) (*RadioStatus, error)
 	PollRadioMode(*RadioSelector, Radio_PollRadioModeServer) error
 	RadioOp(context.Context, *RadioCommand) (*StandardResponse, error)
+	ListRadioStatus(context.Context, *emptypb.Empty) (*ActiveRadioList, error)
 	ListAudioDevices(context.Context, *emptypb.Empty) (*AudioDeviceList, error)
 	ListSupportedRadios(context.Context, *emptypb.Empty) (*SupportedRadioList, error)
 	SetupRadio(context.Context, *RadioConfig) (*StandardResponse, error)
@@ -152,6 +163,9 @@ func (UnimplementedRadioServer) PollRadioMode(*RadioSelector, Radio_PollRadioMod
 }
 func (UnimplementedRadioServer) RadioOp(context.Context, *RadioCommand) (*StandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RadioOp not implemented")
+}
+func (UnimplementedRadioServer) ListRadioStatus(context.Context, *emptypb.Empty) (*ActiveRadioList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRadioStatus not implemented")
 }
 func (UnimplementedRadioServer) ListAudioDevices(context.Context, *emptypb.Empty) (*AudioDeviceList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAudioDevices not implemented")
@@ -231,6 +245,24 @@ func _Radio_RadioOp_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RadioServer).RadioOp(ctx, req.(*RadioCommand))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Radio_ListRadioStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RadioServer).ListRadioStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mcl.Radio/ListRadioStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RadioServer).ListRadioStatus(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -321,6 +353,10 @@ var Radio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RadioOp",
 			Handler:    _Radio_RadioOp_Handler,
+		},
+		{
+			MethodName: "ListRadioStatus",
+			Handler:    _Radio_ListRadioStatus_Handler,
 		},
 		{
 			MethodName: "ListAudioDevices",
