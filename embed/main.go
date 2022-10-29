@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	binlog "matsu.dev/matsuri-contest-log/binlogserver"
 	gui "matsu.dev/matsuri-contest-log/guiserver"
+	"matsu.dev/matsuri-contest-log/radio"
 	"matsu.dev/matsuri-contest-log/version"
 )
 
@@ -33,6 +34,7 @@ func Run(conf *EmbedConfig) {
 	grpcServer := grpc.NewServer()
 
 	binlog.NewRpcServer(grpcServer)
+	radio.NewServer(grpcServer)
 	guiServer := gui.NewServer(grpcServer)
 
 	go func() {

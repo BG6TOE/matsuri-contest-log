@@ -14,81 +14,6 @@ import 'radio.pbenum.dart';
 
 export 'radio.pbenum.dart';
 
-class RadioStatus extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioStatus', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
-    ..aInt64(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'freq')
-    ..e<RadioMode>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: RadioMode.UNKNOWN, valueOf: RadioMode.valueOf, enumValues: RadioMode.values)
-    ..aOB(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tx')
-    ..hasRequiredFields = false
-  ;
-
-  RadioStatus._() : super();
-  factory RadioStatus({
-    $fixnum.Int64? freq,
-    RadioMode? mode,
-    $core.bool? tx,
-  }) {
-    final _result = create();
-    if (freq != null) {
-      _result.freq = freq;
-    }
-    if (mode != null) {
-      _result.mode = mode;
-    }
-    if (tx != null) {
-      _result.tx = tx;
-    }
-    return _result;
-  }
-  factory RadioStatus.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RadioStatus.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  RadioStatus clone() => RadioStatus()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  RadioStatus copyWith(void Function(RadioStatus) updates) => super.copyWith((message) => updates(message as RadioStatus)) as RadioStatus; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static RadioStatus create() => RadioStatus._();
-  RadioStatus createEmptyInstance() => create();
-  static $pb.PbList<RadioStatus> createRepeated() => $pb.PbList<RadioStatus>();
-  @$core.pragma('dart2js:noInline')
-  static RadioStatus getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RadioStatus>(create);
-  static RadioStatus? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $fixnum.Int64 get freq => $_getI64(0);
-  @$pb.TagNumber(1)
-  set freq($fixnum.Int64 v) { $_setInt64(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasFreq() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearFreq() => clearField(1);
-
-  @$pb.TagNumber(2)
-  RadioMode get mode => $_getN(1);
-  @$pb.TagNumber(2)
-  set mode(RadioMode v) { setField(2, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasMode() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearMode() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.bool get tx => $_getBF(2);
-  @$pb.TagNumber(3)
-  set tx($core.bool v) { $_setBool(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasTx() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearTx() => clearField(3);
-}
-
 class RadioVFOConfig extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioVFOConfig', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..e<RadioMode>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mode', $pb.PbFieldType.OE, defaultOrMaker: RadioMode.UNKNOWN, valueOf: RadioMode.valueOf, enumValues: RadioMode.values)
@@ -150,15 +75,15 @@ class RadioVFOConfig extends $pb.GeneratedMessage {
   void clearFrequency() => clearField(2);
 }
 
-class RadioModeConfig extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioModeConfig', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
+class RadioStatus extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RadioStatus', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..aOM<RadioVFOConfig>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'rx', subBuilder: RadioVFOConfig.create)
     ..aOM<RadioVFOConfig>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'tx', subBuilder: RadioVFOConfig.create)
     ..hasRequiredFields = false
   ;
 
-  RadioModeConfig._() : super();
-  factory RadioModeConfig({
+  RadioStatus._() : super();
+  factory RadioStatus({
     RadioVFOConfig? rx,
     RadioVFOConfig? tx,
   }) {
@@ -171,26 +96,26 @@ class RadioModeConfig extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory RadioModeConfig.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RadioModeConfig.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  factory RadioStatus.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RadioStatus.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  RadioModeConfig clone() => RadioModeConfig()..mergeFromMessage(this);
+  RadioStatus clone() => RadioStatus()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  RadioModeConfig copyWith(void Function(RadioModeConfig) updates) => super.copyWith((message) => updates(message as RadioModeConfig)) as RadioModeConfig; // ignore: deprecated_member_use
+  RadioStatus copyWith(void Function(RadioStatus) updates) => super.copyWith((message) => updates(message as RadioStatus)) as RadioStatus; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static RadioModeConfig create() => RadioModeConfig._();
-  RadioModeConfig createEmptyInstance() => create();
-  static $pb.PbList<RadioModeConfig> createRepeated() => $pb.PbList<RadioModeConfig>();
+  static RadioStatus create() => RadioStatus._();
+  RadioStatus createEmptyInstance() => create();
+  static $pb.PbList<RadioStatus> createRepeated() => $pb.PbList<RadioStatus>();
   @$core.pragma('dart2js:noInline')
-  static RadioModeConfig getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RadioModeConfig>(create);
-  static RadioModeConfig? _defaultInstance;
+  static RadioStatus getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RadioStatus>(create);
+  static RadioStatus? _defaultInstance;
 
   @$pb.TagNumber(1)
   RadioVFOConfig get rx => $_getN(0);
@@ -236,7 +161,7 @@ class RadioCommand extends $pb.GeneratedMessage {
     ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'channel', $pb.PbFieldType.O3)
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sendCwMessage')
     ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'setCwSpeed', $pb.PbFieldType.O3)
-    ..aOM<RadioModeConfig>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'setRadioBandMode', subBuilder: RadioModeConfig.create)
+    ..aOM<RadioStatus>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'setRadioBandMode', subBuilder: RadioStatus.create)
     ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'abortTx')
     ..hasRequiredFields = false
   ;
@@ -246,7 +171,7 @@ class RadioCommand extends $pb.GeneratedMessage {
     $core.int? channel,
     $core.String? sendCwMessage,
     $core.int? setCwSpeed,
-    RadioModeConfig? setRadioBandMode,
+    RadioStatus? setRadioBandMode,
     $core.bool? abortTx,
   }) {
     final _result = create();
@@ -319,15 +244,15 @@ class RadioCommand extends $pb.GeneratedMessage {
   void clearSetCwSpeed() => clearField(3);
 
   @$pb.TagNumber(4)
-  RadioModeConfig get setRadioBandMode => $_getN(3);
+  RadioStatus get setRadioBandMode => $_getN(3);
   @$pb.TagNumber(4)
-  set setRadioBandMode(RadioModeConfig v) { setField(4, v); }
+  set setRadioBandMode(RadioStatus v) { setField(4, v); }
   @$pb.TagNumber(4)
   $core.bool hasSetRadioBandMode() => $_has(3);
   @$pb.TagNumber(4)
   void clearSetRadioBandMode() => clearField(4);
   @$pb.TagNumber(4)
-  RadioModeConfig ensureSetRadioBandMode() => $_ensure(3);
+  RadioStatus ensureSetRadioBandMode() => $_ensure(3);
 
   @$pb.TagNumber(5)
   $core.bool get abortTx => $_getBF(4);
@@ -389,18 +314,23 @@ class RadioSelector extends $pb.GeneratedMessage {
 class AudioDevice extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'AudioDevice', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'mcl'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'deviceName')
-    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sampleRate')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'deviceId')
+    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sampleRate', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
   AudioDevice._() : super();
   factory AudioDevice({
     $core.String? deviceName,
-    $core.String? sampleRate,
+    $core.String? deviceId,
+    $core.int? sampleRate,
   }) {
     final _result = create();
     if (deviceName != null) {
       _result.deviceName = deviceName;
+    }
+    if (deviceId != null) {
+      _result.deviceId = deviceId;
     }
     if (sampleRate != null) {
       _result.sampleRate = sampleRate;
@@ -438,13 +368,22 @@ class AudioDevice extends $pb.GeneratedMessage {
   void clearDeviceName() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get sampleRate => $_getSZ(1);
+  $core.String get deviceId => $_getSZ(1);
   @$pb.TagNumber(2)
-  set sampleRate($core.String v) { $_setString(1, v); }
+  set deviceId($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasSampleRate() => $_has(1);
+  $core.bool hasDeviceId() => $_has(1);
   @$pb.TagNumber(2)
-  void clearSampleRate() => clearField(2);
+  void clearDeviceId() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get sampleRate => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set sampleRate($core.int v) { $_setSignedInt32(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasSampleRate() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearSampleRate() => clearField(3);
 }
 
 class RadioConfig extends $pb.GeneratedMessage {

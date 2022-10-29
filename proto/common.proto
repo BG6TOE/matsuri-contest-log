@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package mcl;
 
-import "google/protobuf/empty.proto";
-
 option go_package = "proto/.";
 
 message ContestFieldInfo {

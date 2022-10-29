@@ -4,7 +4,6 @@ package mcl;
 
 option go_package = "proto/.";
 
-import "proto/common.proto";
 import "proto/mcl.proto";
 import "google/protobuf/empty.proto";
 
@@ -20,18 +19,12 @@ enum RadioMode {
   DATAU = 8;
 }
 
-message RadioStatus {
-  int64 freq = 1;
-  RadioMode mode = 2;
-  bool tx = 3;
-}
-
 message RadioVFOConfig {
   RadioMode mode = 1;
   int64 frequency = 2;
 }
 
-message RadioModeConfig {
+message RadioStatus {
   RadioVFOConfig rx = 1;
   RadioVFOConfig tx = 2;
 }
@@ -41,7 +34,7 @@ message RadioCommand {
   oneof op {
     string send_cw_message = 2;
     int32 set_cw_speed = 3;
-    RadioModeConfig set_radio_band_mode = 4;
+    RadioStatus set_radio_band_mode = 4;
     bool abort_tx = 5;
   }
 }
@@ -50,7 +43,8 @@ message RadioSelector { int32 channel = 1; }
 
 message AudioDevice {
   string device_name = 1;
-  string sample_rate = 2;
+  string device_id = 2;
+  int32 sample_rate = 3;
 }
 
 message RadioConfig {
