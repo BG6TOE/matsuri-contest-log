@@ -85,36 +85,3 @@ service RealtimeGui {
   rpc RetrieveTelnet(google.protobuf.Empty) returns (stream Spot);
   rpc SendSpotToTelnet(Spot) returns (mcl.StandardResponse);
 }
-
-enum RadioMode {
-  UNKNOWN = 0;
-  CW = 1;
-  CWR = 2;
-  LSB = 3;
-  USB = 4;
-  AM = 5;
-  FM = 6;
-  DATAL = 7;
-  DATAU = 8;
-}
-
-message RadioStatus {
-  int64 freq = 1;
-  RadioMode mode = 2;
-  bool tx = 3;
-}
-
-message RadioCommands {
-  oneof op {
-    string send_cw_message = 1;
-    int32 set_cw_speed = 2;
-    RadioMode set_radio_band_mode = 3;
-    bool abort = 4;
-  }
-}
-
-service Radio {
-  rpc GetRadioMode(google.protobuf.Empty) returns (RadioStatus);
-  rpc PollRadioMode(google.protobuf.Empty) returns (stream RadioStatus);
-  rpc RadioOp(RadioCommands) returns (mcl.StandardResponse);
-}

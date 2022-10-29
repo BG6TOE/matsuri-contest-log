@@ -3,6 +3,7 @@ module matsu.dev/matsuri-contest-log
 go 1.16
 
 require (
+	github.com/gen2brain/malgo v0.10.35 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.15

@@ -8,24 +8,6 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
-@$core.Deprecated('Use radioModeDescriptor instead')
-const RadioMode$json = const {
-  '1': 'RadioMode',
-  '2': const [
-    const {'1': 'UNKNOWN', '2': 0},
-    const {'1': 'CW', '2': 1},
-    const {'1': 'CWR', '2': 2},
-    const {'1': 'LSB', '2': 3},
-    const {'1': 'USB', '2': 4},
-    const {'1': 'AM', '2': 5},
-    const {'1': 'FM', '2': 6},
-    const {'1': 'DATAL', '2': 7},
-    const {'1': 'DATAU', '2': 8},
-  ],
-};
-
-/// Descriptor for `RadioMode`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List radioModeDescriptor = $convert.base64Decode('CglSYWRpb01vZGUSCwoHVU5LTk9XThAAEgYKAkNXEAESBwoDQ1dSEAISBwoDTFNCEAMSBwoDVVNCEAQSBgoCQU0QBRIGCgJGTRAGEgkKBURBVEFMEAcSCQoFREFUQVUQCA==');
 @$core.Deprecated('Use qSOFieldDescriptor instead')
 const QSOField$json = const {
   '1': 'QSOField',
@@ -192,31 +174,3 @@ const DraftQSOMessage_ExchangeRcvdEntry$json = const {
 
 /// Descriptor for `DraftQSOMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List draftQSOMessageDescriptor = $convert.base64Decode('Cg9EcmFmdFFTT01lc3NhZ2USEAoDdWlkGAEgASgJUgN1aWQSHwoLZHhfY2FsbHNpZ24YAiABKAlSCmR4Q2FsbHNpZ24SEgoEbW9kZRgDIAEoCVIEbW9kZRJLCg1leGNoYW5nZV9zZW50GAQgAygLMiYubWNsLkRyYWZ0UVNPTWVzc2FnZS5FeGNoYW5nZVNlbnRFbnRyeVIMZXhjaGFuZ2VTZW50EksKDWV4Y2hhbmdlX3JjdmQYBSADKAsyJi5tY2wuRHJhZnRRU09NZXNzYWdlLkV4Y2hhbmdlUmN2ZEVudHJ5UgxleGNoYW5nZVJjdmQSFgoGZXhwZWN0GAYgASgJUgZleHBlY3QaPwoRRXhjaGFuZ2VTZW50RW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4ARo/ChFFeGNoYW5nZVJjdmRFbnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');
-@$core.Deprecated('Use radioStatusDescriptor instead')
-const RadioStatus$json = const {
-  '1': 'RadioStatus',
-  '2': const [
-    const {'1': 'freq', '3': 1, '4': 1, '5': 3, '10': 'freq'},
-    const {'1': 'mode', '3': 2, '4': 1, '5': 14, '6': '.mcl.RadioMode', '10': 'mode'},
-    const {'1': 'tx', '3': 3, '4': 1, '5': 8, '10': 'tx'},
-  ],
-};
-
-/// Descriptor for `RadioStatus`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List radioStatusDescriptor = $convert.base64Decode('CgtSYWRpb1N0YXR1cxISCgRmcmVxGAEgASgDUgRmcmVxEiIKBG1vZGUYAiABKA4yDi5tY2wuUmFkaW9Nb2RlUgRtb2RlEg4KAnR4GAMgASgIUgJ0eA==');
-@$core.Deprecated('Use radioCommandsDescriptor instead')
-const RadioCommands$json = const {
-  '1': 'RadioCommands',
-  '2': const [
-    const {'1': 'send_cw_message', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'sendCwMessage'},
-    const {'1': 'set_cw_speed', '3': 2, '4': 1, '5': 5, '9': 0, '10': 'setCwSpeed'},
-    const {'1': 'set_radio_band_mode', '3': 3, '4': 1, '5': 14, '6': '.mcl.RadioMode', '9': 0, '10': 'setRadioBandMode'},
-    const {'1': 'abort', '3': 4, '4': 1, '5': 8, '9': 0, '10': 'abort'},
-  ],
-  '8': const [
-    const {'1': 'op'},
-  ],
-};
-
-/// Descriptor for `RadioCommands`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List radioCommandsDescriptor = $convert.base64Decode('Cg1SYWRpb0NvbW1hbmRzEigKD3NlbmRfY3dfbWVzc2FnZRgBIAEoCUgAUg1zZW5kQ3dNZXNzYWdlEiIKDHNldF9jd19zcGVlZBgCIAEoBUgAUgpzZXRDd1NwZWVkEj8KE3NldF9yYWRpb19iYW5kX21vZGUYAyABKA4yDi5tY2wuUmFkaW9Nb2RlSABSEHNldFJhZGlvQmFuZE1vZGUSFgoFYWJvcnQYBCABKAhIAFIFYWJvcnRCBAoCb3A=');

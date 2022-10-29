@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package mcl;
+
+option go_package = "proto/.";
+
+import "proto/common.proto";
+import "proto/mcl.proto";
+import "google/protobuf/empty.proto";
+
+enum RadioMode {
+  UNKNOWN = 0;
+  CW = 1;
+  CWR = 2;
+  LSB = 3;
+  USB = 4;
+  AM = 5;
+  FM = 6;
+  DATAL = 7;
+  DATAU = 8;
+}
+
+message RadioStatus {
+  int64 freq = 1;
+  RadioMode mode = 2;
+  bool tx = 3;
+}
+
+message RadioVFOConfig {
+  RadioMode mode = 1;
+  int64 frequency = 2;
+}
+
+message RadioModeConfig {
+  RadioVFOConfig rx = 1;
+  RadioVFOConfig tx = 2;
+}
+
+message RadioCommand {
+  int32 channel = 1;
+  oneof op {
+    string send_cw_message = 2;
+    int32 set_cw_speed = 3;
+    RadioModeConfig set_radio_band_mode = 4;
+    bool abort_tx = 5;
+  }
+}
+
+message RadioSelector { int32 channel = 1; }
+
+message AudioDevice {
+  string device_name = 1;
+  string sample_rate = 2;
+}
+
+message RadioConfig {
+  int32 channel = 1;
+  string model = 2;
+  string uri = 3;
+  /*
+  Format of connect string:
+  uart:///dev/ttyACM0?baudrate=115200&rts=cw&dtr=cw&databits=8&parity=none&stopbits=1
+  uart://COM0?baudrate=4800&rts=off&dtr=off&databits=8&parity=none&stopbits=1
+  udp://127.0.0.1:50001
+  */
+  AudioDevice audio_input = 4;
+  AudioDevice audio_output = 5;
+}
+
+message AudioDeviceList {
+  repeated AudioDevice input_devices = 1;
+  repeated AudioDevice output_devices = 2;
+}
+
+message SupportedRadioList {
+  string model = 1;
+  string display_name = 2;
+}
+
+service Radio {
+  rpc GetRadioMode(RadioSelector) returns (RadioStatus);
+  rpc PollRadioMode(RadioSelector) returns (stream RadioStatus);
+  rpc RadioOp(RadioCommand) returns (mcl.StandardResponse);
+
+  rpc ListAudioDevices(google.protobuf.Empty) returns (AudioDeviceList);
+  rpc ListSupportedRadios(google.protobuf.Empty) returns (SupportedRadioList);
+
+  rpc SetupRadio(RadioConfig) returns (mcl.StandardResponse);
+  rpc ShutdownRadio(RadioConfig) returns (mcl.StandardResponse);
+}
