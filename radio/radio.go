@@ -120,10 +120,12 @@ func ToRadioMode(m pb.RadioMode) RadioMode {
 }
 
 type Radio struct {
-	rxFreq int64
-	rxMode RadioMode
-	txFreq int64
-	txMode RadioMode
+	rxFreq    int64
+	rxMode    RadioMode
+	txFreq    int64
+	txMode    RadioMode
+	isTx      bool
+	isLocalTx bool
 
 	rig     *hamlib.Rig
 	audioTx *malgo.Device
@@ -144,7 +146,7 @@ func (r *Radio) InitAudioOutput(ctx malgo.Context, device string) error {
 
 	for _, dev := range devices {
 		if dev.ID.String() == device {
-			r.txSampleRate = dev.MaxSampleRate
+			r.txSampleRate = 48000
 			r.audioTx, err = malgo.InitDevice(ctx, malgo.DeviceConfig{
 				DeviceType:         malgo.Playback,
 				SampleRate:         dev.MaxSampleRate,
@@ -172,6 +174,10 @@ func (r *Radio) InitAudioOutput(ctx malgo.Context, device string) error {
 		}
 	}
 
+	if r.audioTx == nil {
+		return fmt.Errorf("failed to open device for sending audio: device not found")
+	}
+
 	return nil
 }
 
@@ -182,7 +188,19 @@ func (r *Radio) audioSampleCallbackfunc(pOutputSample, pInputSamples []byte, fra
 		for i := n; i < buflen; i++ {
 			pOutputSample[i] = 0
 		}
-		go r.audioTx.Stop()
+		go func() {
+			logrus.Infof("CW TX finished")
+			r.lock.Lock()
+			r.audioTx.Stop()
+			r.rig.SetPtt(hamlib.VFOCurrent, 0)
+			if r.txMode == RadioMode_CW {
+				logrus.Infof("CW TX finished -- Reset Freq")
+				r.rig.SetMode(hamlib.VFOCurrent, hamlib.ModeCW, -1)
+				r.rig.SetFreq(hamlib.VFOCurrent, float64(r.txFreq))
+			}
+			r.isLocalTx = false
+			r.lock.Unlock()
+		}()
 	}
 }
 
@@ -234,12 +252,18 @@ func (r *Radio) Open(model string, uristr string) error {
 			rigPort.RigPortType = hamlib.RigPortSerial
 			if path.Query().Has("baudrate") {
 				rigPort.Baudrate, _ = strconv.Atoi(path.Query().Get("baudrate"))
+			} else {
+				rigPort.Baudrate = 19200
 			}
 			if path.Query().Has("databits") {
 				rigPort.Databits, _ = strconv.Atoi(path.Query().Get("databits"))
+			} else {
+				rigPort.Databits = tmprig.Caps.SerialDataBits
 			}
 			if path.Query().Has("stopbits") {
 				rigPort.Stopbits, _ = strconv.Atoi(path.Query().Get("stopbits"))
+			} else {
+				rigPort.Stopbits = tmprig.Caps.SerialStopBits
 			}
 			if path.Query().Has("parity") {
 				switch path.Query().Get("parity") {
@@ -250,6 +274,8 @@ func (r *Radio) Open(model string, uristr string) error {
 				case "odd":
 					rigPort.Parity = hamlib.ParityOdd
 				}
+			} else {
+				rigPort.Parity = hamlib.Parity(tmprig.Caps.SerialParity)
 			}
 			if path.Query().Has("handshake") {
 				switch path.Query().Get("handshake") {
@@ -258,6 +284,8 @@ func (r *Radio) Open(model string, uristr string) error {
 				case "rtscts":
 					rigPort.Handshake = hamlib.HandshakeRTSCTS
 				}
+			} else {
+				rigPort.Handshake = hamlib.Handshake(tmprig.Caps.SerialHandshake)
 			}
 		case "tcp":
 			rigPort.Portname = path.Host
@@ -280,24 +308,25 @@ func (r *Radio) Open(model string, uristr string) error {
 	go func(closeChan chan struct{}) {
 		for {
 			select {
-			case <-time.After(time.Second):
-				r.lock.Lock()
-				freq, _ := r.rig.GetFreq(hamlib.VFOCurrent)
-				mode, _, _ := r.rig.GetMode(hamlib.VFOCurrent)
-				txfreq, _ := r.rig.GetSplitFreq(hamlib.VFOCurrent)
-				txmode, _, _ := r.rig.GetSplitMode(hamlib.VFOCurrent)
+			case <-time.After(3 * time.Second):
+				func() {
+					r.lock.Lock()
+					defer r.lock.Unlock()
+					if r.isLocalTx {
+						r.isTx = r.isLocalTx
+						return
+					}
 
-				logrus.Infof("VFO %v %v SPLIT %v %v", freq, mode, txfreq, txmode)
+					isTx, _ := r.rig.GetPtt(hamlib.VFOCurrent)
+					freq, _ := r.rig.GetFreq(hamlib.VFOCurrent)
+					mode, _, _ := r.rig.GetMode(hamlib.VFOCurrent)
 
-				r.rxFreq = int64(freq)
-				r.rxMode = RadioMode(mode)
-				r.txFreq = int64(txfreq)
-				r.txMode = RadioMode(txmode)
-				if (mode == hamlib.ModeCW || mode == hamlib.ModeCWR) && txmode == hamlib.ModeLSB {
-					r.txFreq += 1500
-					r.txMode = r.rxMode
-				}
-				r.lock.Unlock()
+					logrus.Infof("VFO %v %v", int64(freq), hamlib.ModeName[mode])
+
+					r.isTx = isTx != 0
+					r.rxFreq = int64(freq)
+					r.rxMode = RadioMode(mode)
+				}()
 			case <-closeChan:
 				return
 			}
@@ -335,39 +364,31 @@ func (r *Radio) UpdateFreqMode() error {
 		r.rig.SetMode(hamlib.VFOCurrent, hamlib.Mode(r.rxMode), -1)
 		r.rig.SetFreq(hamlib.VFOCurrent, float64(r.rxFreq))
 	}
-	r.rig.SetSplitVfo(hamlib.VFOA, 1, hamlib.VFOB)
-	if r.txFreq != 0 {
-		if r.txMode == RadioMode_CW {
-			r.rig.SetSplitMode(hamlib.VFOCurrent, hamlib.ModeLSB, -1)
-			r.rig.SetSplitFreq(hamlib.VFOCurrent, float64(r.rxFreq+1500))
-		} else {
-			r.rig.SetSplitMode(hamlib.VFOCurrent, hamlib.Mode(r.rxMode), -1)
-			r.rig.SetSplitFreq(hamlib.VFOCurrent, float64(r.rxFreq))
-		}
-	}
 	return nil
 }
 
-func writeSilence(wr io.ByteWriter, frame uint32) {
+func writeSilence(wr io.Writer, frame uint32) {
 	for i := uint32(0); i < frame*2; i++ {
-		wr.WriteByte(0)
+		wr.Write([]byte{0})
 	}
 }
 
 func writeWave(wr io.Writer, maxVal uint32, sr uint32, length uint32, rising uint32) {
 	for i := uint32(0); i < length; i++ {
 		ti := float64(i) / float64(sr)
+		wave := math.Cos(math.Pi * ti * 3000.)
 		if i < rising {
-			val := int16((1 - (math.Cos(math.Pi*float64(i)/float64(rising))+1)*0.5) * math.Cos(math.Pi*ti/1500.) * float64(maxVal))
+			val := int16((1 - (math.Cos(math.Pi*float64(i)/float64(rising))+1)*0.5) * wave * float64(maxVal))
 			binary.Write(wr, binary.LittleEndian, val)
 		} else {
-			val := int16(math.Cos(math.Pi*ti/1500.) * float64(maxVal))
+			val := int16(wave * float64(maxVal))
 			binary.Write(wr, binary.LittleEndian, val)
 		}
 	}
 	for i := uint32(0); i < rising; i++ {
 		ti := float64(i+length) / float64(sr)
-		val := int16(((math.Cos(math.Pi*float64(i)/float64(rising)) + 1) * 0.5) * math.Cos(math.Pi*ti/1500.) * float64(maxVal))
+		wave := math.Cos(math.Pi * ti * 3000.)
+		val := int16(((math.Cos(math.Pi*float64(i)/float64(rising)) + 1) * 0.5) * wave * float64(maxVal))
 		binary.Write(wr, binary.LittleEndian, val)
 	}
 }
@@ -376,11 +397,12 @@ func (r *Radio) SendCW(chars []byte, basewpn uint32) {
 	r.txAudioBuffer.Reset()
 
 	wpm := basewpn
+	writeSilence(&r.txAudioBuffer, uint32(float64(r.txSampleRate*3)*1.2/float64(wpm)))
 	for _, ch := range chars {
-		if ch == 0xfe {
+		if ch == '{' {
 			wpm += 2
 			continue
-		} else if ch == 0xff {
+		} else if ch == '}' {
 			wpm -= 2
 			continue
 		}
@@ -389,9 +411,9 @@ func (r *Radio) SendCW(chars []byte, basewpn uint32) {
 			for _, c := range code {
 				if c > 0 {
 					writeWave(&r.txAudioBuffer, 32000, r.txSampleRate, uint32(float64(r.txSampleRate*uint32(c))*1.2/float64(wpm)), r.txSampleRate/100)
-					writeSilence(&r.txAudioBuffer, r.txSampleRate/100-uint32(float64(r.txSampleRate)*1.2/float64(wpm)))
+					writeSilence(&r.txAudioBuffer, uint32(float64(r.txSampleRate)*1.2/float64(wpm))-r.txSampleRate/100)
 				} else {
-					writeSilence(&r.txAudioBuffer, uint32(float64(r.txSampleRate*uint32(-c))*1.2/float64(wpm)))
+					writeSilence(&r.txAudioBuffer, uint32(float64(r.txSampleRate)*float64(-c)*1.2/float64(wpm)))
 				}
 			}
 			writeSilence(&r.txAudioBuffer, uint32(float64(r.txSampleRate*3)*1.2/float64(wpm)))
@@ -399,6 +421,17 @@ func (r *Radio) SendCW(chars []byte, basewpn uint32) {
 	}
 
 	if r.audioTx != nil && !r.audioTx.IsStarted() {
+		r.lock.Lock()
+		r.isLocalTx = true
+		if r.txMode == RadioMode_CW || r.txMode == RadioMode_CWR {
+			logrus.Infof("CW TX finished -- Override Freq")
+			r.rig.SetMode(hamlib.VFOCurrent, hamlib.ModeLSB, -1)
+			r.rig.SetFreq(hamlib.VFOCurrent, float64(r.txFreq+1500))
+		}
+		r.rig.SetPtt(hamlib.VFOCurrent, 1)
 		r.audioTx.Start()
+		r.lock.Unlock()
+	} else {
+		logrus.Errorf("no audio device for TX")
 	}
 }

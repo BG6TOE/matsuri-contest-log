@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"github.com/gen2brain/malgo"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -38,21 +39,26 @@ func (r *RadioServer) PollRadioMode(*pb.RadioSelector, pb.Radio_PollRadioModeSer
 }
 
 func (r *RadioServer) RadioOp(ctx context.Context, req *pb.RadioCommand) (*pb.StandardResponse, error) {
+	r.lock.RLock()
+	defer r.lock.RUnlock()
+
+	radio, ok := r.radios[req.Channel]
+	if !ok {
+		return &pb.StandardResponse{
+			ErrorMessage: fmt.Sprintf("no such radio: %v", req.Channel),
+		}, nil
+	}
+
 	if op := req.GetSetRadioBandMode(); op != nil {
-		r.lock.RLock()
-		defer r.lock.RUnlock()
-
-		radio, ok := r.radios[req.Channel]
-		if !ok {
-			return &pb.StandardResponse{}, nil
-		}
-
 		radio.txMode = ToRadioMode(op.Tx.Mode)
 		radio.txFreq = op.Tx.Frequency
 		radio.rxMode = ToRadioMode(op.Rx.Mode)
 		radio.rxFreq = op.Rx.Frequency
 		radio.UpdateFreqMode()
 
+		return &pb.StandardResponse{}, nil
+	} else if op := req.GetSendCwMessage(); op != "" {
+		radio.SendCW([]byte(op), 20)
 		return &pb.StandardResponse{}, nil
 	}
 	return nil, status.Errorf(codes.Unimplemented, "method RadioOp not implemented")
@@ -78,7 +84,7 @@ func (r *RadioServer) ListAudioDevices(context.Context, *emptypb.Empty) (*pb.Aud
 	devices, err = r.audioContext.Devices(malgo.Playback)
 	if err == nil {
 		for _, dev := range devices {
-			ret.OutputDevices = append(ret.InputDevices,
+			ret.OutputDevices = append(ret.OutputDevices,
 				&pb.AudioDevice{
 					DeviceName: strings.TrimFunc(dev.Name(), func(r rune) bool {
 						return unicode.IsControl(r) || unicode.IsSpace(r)
@@ -149,7 +155,9 @@ func (r *RadioServer) SetupRadio(ctx context.Context, conf *pb.RadioConfig) (*pb
 	}
 
 	if conf.AudioOutput != nil && conf.AudioOutput.DeviceId != "" {
-		radio.InitAudioOutput(r.audioContext.Context, conf.AudioOutput.DeviceId)
+		if err := radio.InitAudioOutput(r.audioContext.Context, conf.AudioOutput.DeviceId); err != nil {
+			logrus.Errorf("cannot set up audio: %v", err)
+		}
 	}
 
 	r.radios[conf.Channel] = radio
