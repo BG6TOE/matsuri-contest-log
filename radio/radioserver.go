@@ -2,7 +2,11 @@ package radio
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/fs"
+	"os"
+	"path"
 	"strings"
 	"sync"
 	"unicode"
@@ -28,6 +32,52 @@ type RadioServer struct {
 	radios       map[string]*Radio
 	audioContext *malgo.AllocatedContext
 	lock         sync.RWMutex
+}
+
+func (r *RadioServer) loadRadios() {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return
+	}
+	fp, err := os.Open(path.Join(configDir, "MatsuriContestLog", "radio.json"))
+	if err != nil {
+		return
+	}
+	defer fp.Close()
+
+	res := make(map[string]RadioSetting)
+	json.NewDecoder(fp).Decode(&res)
+
+	for k, v := range res {
+		r.radios[k] = NewRadio(RadioSetting{
+			Backend: v.Backend,
+			Model:   v.Model,
+			Uri:     v.Uri,
+		})
+
+		r.radios[k].Open()
+	}
+}
+
+func (r *RadioServer) saveRadios() {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return
+	}
+	os.MkdirAll(path.Join(configDir, "MatsuriContestLog"), fs.ModePerm)
+	fp, err := os.Open(path.Join(configDir, "MatsuriContestLog", "radio.json"))
+	if err != nil {
+		return
+	}
+	defer fp.Close()
+
+	res := make(map[string]RadioSetting)
+
+	for k, v := range r.radios {
+		res[k] = v.RadioSetting
+	}
+
+	json.NewEncoder(fp).Encode(res)
 }
 
 func (r *RadioServer) GetRadioMode(context.Context, *pb.RadioSelector) (*pb.RadioStatus, error) {
@@ -109,12 +159,17 @@ func (r *RadioServer) ListRadioStatus(context.Context, *emptypb.Empty) (*pb.Acti
 
 	for k, v := range r.radios {
 		ret.Radios[k] = &pb.RadioStatus{
-			Uri: v.uri,
-			Rx: &pb.RadioVFOConfig{
+			Setting: &pb.RadioSetting{
+				Backend: v.Backend,
+				Model:   v.Model,
+				Uri:     v.Uri,
+			},
+			Enabled: v.rig != nil,
+			Rx: &pb.RadioVFO{
 				Mode:      v.rxMode.ToProtoMode(),
 				Frequency: v.rxFreq,
 			},
-			Tx: &pb.RadioVFOConfig{
+			Tx: &pb.RadioVFO{
 				Mode:      v.txMode.ToProtoMode(),
 				Frequency: v.txFreq,
 			},
@@ -139,18 +194,29 @@ func (r *RadioServer) ListSupportedRadios(context.Context, *emptypb.Empty) (*pb.
 }
 
 func (r *RadioServer) SetupRadio(ctx context.Context, conf *pb.RadioConfig) (*pb.StandardResponse, error) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
 	radio, ok := r.radios[conf.Channel]
 	if ok {
 		radio.Close()
 	}
 
-	radio = &Radio{}
+	radio = NewRadio(RadioSetting{
+		Backend: "hamlib",
+		Model:   conf.Model,
+		Uri:     conf.Uri,
+	})
 
-	err := radio.Open(conf.Model, conf.Uri)
+	r.radios[conf.Channel] = radio
+
+	r.saveRadios()
+
+	err := radio.Open()
 	if err != nil {
 		return &pb.StandardResponse{
-			ResultCode:   pb.ResultCode_internal,
-			ErrorMessage: fmt.Sprintf("failed to open radio: %v", err),
+			ResultCode:   pb.ResultCode_success,
+			ErrorMessage: "",
 		}, nil
 	}
 
@@ -159,8 +225,6 @@ func (r *RadioServer) SetupRadio(ctx context.Context, conf *pb.RadioConfig) (*pb
 			logrus.Errorf("cannot set up audio: %v", err)
 		}
 	}
-
-	r.radios[conf.Channel] = radio
 
 	return &pb.StandardResponse{
 		ResultCode:   pb.ResultCode_success,
@@ -176,6 +240,8 @@ func NewServer(grpcServer *grpc.Server) *RadioServer {
 	ret := &RadioServer{
 		radios: make(map[string]*Radio),
 	}
+	ret.loadRadios()
+
 	ret.audioContext, _ = malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {})
 	pb.RegisterRadioServer(grpcServer, ret)
 

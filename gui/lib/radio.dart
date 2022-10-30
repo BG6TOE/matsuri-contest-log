@@ -81,7 +81,7 @@ class _RadioStatusPanelState extends State<RadioStatusPanel> {
           .map((e) => ListTile(
                 title: Text(
                     "Rx: ${e.item2.rx.mode.toString()} ${e.item2.rx.frequency} / Tx: ${e.item2.tx.mode.toString()} ${e.item2.tx.frequency}"),
-                subtitle: Text("${e.item1} ${e.item2.uri}"),
+                subtitle: Text("${e.item1} ${e.item2.setting.model} ${e.item2.setting.uri}"),
               ))
           .toList(),
     );

@@ -119,7 +119,15 @@ func ToRadioMode(m pb.RadioMode) RadioMode {
 	}
 }
 
+type RadioSetting struct {
+	Backend string `json:"backend"`
+	Model   string `json:"model"`
+	Uri     string `json:"uri"`
+}
+
 type Radio struct {
+	RadioSetting
+
 	rxFreq    int64
 	rxMode    RadioMode
 	txFreq    int64
@@ -135,7 +143,12 @@ type Radio struct {
 
 	lock        sync.Mutex
 	refreshChan chan struct{}
-	uri         string
+}
+
+func NewRadio(s RadioSetting) *Radio {
+	return &Radio{
+		RadioSetting: s,
+	}
 }
 
 func (r *Radio) InitAudioOutput(ctx malgo.Context, device string) error {
@@ -181,6 +194,18 @@ func (r *Radio) InitAudioOutput(ctx malgo.Context, device string) error {
 	return nil
 }
 
+func (r *Radio) stopTx() {
+	r.lock.Lock()
+	r.audioTx.Stop()
+	r.rig.SetPtt(hamlib.VFOCurrent, 0)
+	if r.txMode == RadioMode_CW {
+		r.rig.SetMode(hamlib.VFOCurrent, hamlib.ModeCW, -1)
+		r.rig.SetFreq(hamlib.VFOCurrent, float64(r.txFreq))
+	}
+	r.isLocalTx = false
+	r.lock.Unlock()
+}
+
 func (r *Radio) audioSampleCallbackfunc(pOutputSample, pInputSamples []byte, framecount uint32) {
 	buflen := len(pOutputSample)
 	n, _ := r.txAudioBuffer.Read(pOutputSample)
@@ -188,31 +213,17 @@ func (r *Radio) audioSampleCallbackfunc(pOutputSample, pInputSamples []byte, fra
 		for i := n; i < buflen; i++ {
 			pOutputSample[i] = 0
 		}
-		go func() {
-			logrus.Infof("CW TX finished")
-			r.lock.Lock()
-			r.audioTx.Stop()
-			r.rig.SetPtt(hamlib.VFOCurrent, 0)
-			if r.txMode == RadioMode_CW {
-				logrus.Infof("CW TX finished -- Reset Freq")
-				r.rig.SetMode(hamlib.VFOCurrent, hamlib.ModeCW, -1)
-				r.rig.SetFreq(hamlib.VFOCurrent, float64(r.txFreq))
-			}
-			r.isLocalTx = false
-			r.lock.Unlock()
-		}()
+		go r.stopTx()
 	}
 }
 
-func (r *Radio) Open(model string, uristr string) error {
-	path, err := url.Parse(uristr)
+func (r *Radio) Open() error {
+	path, err := url.Parse(r.Uri)
 	if err != nil {
 		return fmt.Errorf("failed to open radio: %v", err)
 	}
 
-	r.uri = uristr
-
-	logrus.Infof("Opening %s at %s", model, path.Path)
+	logrus.Infof("Opening %s at %s", r.Model, path.Path)
 
 	r.Close()
 
@@ -223,7 +234,7 @@ func (r *Radio) Open(model string, uristr string) error {
 	{
 		models := hamlib.ListModels()
 		for _, m := range models {
-			if model == fmt.Sprintf("%s %s", m.Manufacturer, m.Model) {
+			if r.Model == fmt.Sprintf("%s %s", m.Manufacturer, m.Model) {
 				tmprig = &hamlib.Rig{}
 				err := tmprig.Init(m.ModelID)
 				if err != nil {
@@ -234,7 +245,7 @@ func (r *Radio) Open(model string, uristr string) error {
 		}
 
 		if tmprig == nil {
-			return fmt.Errorf("failed to init radio: unsupported radio %s", model)
+			return fmt.Errorf("failed to init radio: unsupported radio %s", r.Model)
 		}
 	}
 

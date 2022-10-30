@@ -26,29 +26,42 @@ const RadioMode$json = const {
 
 /// Descriptor for `RadioMode`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List radioModeDescriptor = $convert.base64Decode('CglSYWRpb01vZGUSCwoHVU5LTk9XThAAEgYKAkNXEAESBwoDQ1dSEAISBwoDTFNCEAMSBwoDVVNCEAQSBgoCQU0QBRIGCgJGTRAGEgkKBURBVEFMEAcSCQoFREFUQVUQCA==');
-@$core.Deprecated('Use radioVFOConfigDescriptor instead')
-const RadioVFOConfig$json = const {
-  '1': 'RadioVFOConfig',
+@$core.Deprecated('Use radioVFODescriptor instead')
+const RadioVFO$json = const {
+  '1': 'RadioVFO',
   '2': const [
     const {'1': 'mode', '3': 1, '4': 1, '5': 14, '6': '.mcl.RadioMode', '10': 'mode'},
     const {'1': 'frequency', '3': 2, '4': 1, '5': 3, '10': 'frequency'},
   ],
 };
 
-/// Descriptor for `RadioVFOConfig`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List radioVFOConfigDescriptor = $convert.base64Decode('Cg5SYWRpb1ZGT0NvbmZpZxIiCgRtb2RlGAEgASgOMg4ubWNsLlJhZGlvTW9kZVIEbW9kZRIcCglmcmVxdWVuY3kYAiABKANSCWZyZXF1ZW5jeQ==');
+/// Descriptor for `RadioVFO`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List radioVFODescriptor = $convert.base64Decode('CghSYWRpb1ZGTxIiCgRtb2RlGAEgASgOMg4ubWNsLlJhZGlvTW9kZVIEbW9kZRIcCglmcmVxdWVuY3kYAiABKANSCWZyZXF1ZW5jeQ==');
+@$core.Deprecated('Use radioSettingDescriptor instead')
+const RadioSetting$json = const {
+  '1': 'RadioSetting',
+  '2': const [
+    const {'1': 'backend', '3': 1, '4': 1, '5': 9, '10': 'backend'},
+    const {'1': 'model', '3': 2, '4': 1, '5': 9, '10': 'model'},
+    const {'1': 'uri', '3': 3, '4': 1, '5': 9, '10': 'uri'},
+  ],
+};
+
+/// Descriptor for `RadioSetting`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List radioSettingDescriptor = $convert.base64Decode('CgxSYWRpb1NldHRpbmcSGAoHYmFja2VuZBgBIAEoCVIHYmFja2VuZBIUCgVtb2RlbBgCIAEoCVIFbW9kZWwSEAoDdXJpGAMgASgJUgN1cmk=');
 @$core.Deprecated('Use radioStatusDescriptor instead')
 const RadioStatus$json = const {
   '1': 'RadioStatus',
   '2': const [
-    const {'1': 'uri', '3': 1, '4': 1, '5': 9, '10': 'uri'},
-    const {'1': 'rx', '3': 2, '4': 1, '5': 11, '6': '.mcl.RadioVFOConfig', '10': 'rx'},
-    const {'1': 'tx', '3': 3, '4': 1, '5': 11, '6': '.mcl.RadioVFOConfig', '10': 'tx'},
+    const {'1': 'setting', '3': 1, '4': 1, '5': 11, '6': '.mcl.RadioSetting', '10': 'setting'},
+    const {'1': 'enabled', '3': 2, '4': 1, '5': 8, '10': 'enabled'},
+    const {'1': 'rx', '3': 3, '4': 1, '5': 11, '6': '.mcl.RadioVFO', '10': 'rx'},
+    const {'1': 'tx', '3': 4, '4': 1, '5': 11, '6': '.mcl.RadioVFO', '10': 'tx'},
   ],
 };
 
 /// Descriptor for `RadioStatus`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List radioStatusDescriptor = $convert.base64Decode('CgtSYWRpb1N0YXR1cxIQCgN1cmkYASABKAlSA3VyaRIjCgJyeBgCIAEoCzITLm1jbC5SYWRpb1ZGT0NvbmZpZ1ICcngSIwoCdHgYAyABKAsyEy5tY2wuUmFkaW9WRk9Db25maWdSAnR4');
+final $typed_data.Uint8List radioStatusDescriptor = $convert.base64Decode('CgtSYWRpb1N0YXR1cxIrCgdzZXR0aW5nGAEgASgLMhEubWNsLlJhZGlvU2V0dGluZ1IHc2V0dGluZxIYCgdlbmFibGVkGAIgASgIUgdlbmFibGVkEh0KAnJ4GAMgASgLMg0ubWNsLlJhZGlvVkZPUgJyeBIdCgJ0eBgEIAEoCzINLm1jbC5SYWRpb1ZGT1ICdHg=');
 @$core.Deprecated('Use radioCommandDescriptor instead')
 const RadioCommand$json = const {
   '1': 'RadioCommand',
@@ -58,6 +71,8 @@ const RadioCommand$json = const {
     const {'1': 'set_cw_speed', '3': 3, '4': 1, '5': 5, '9': 0, '10': 'setCwSpeed'},
     const {'1': 'set_radio_band_mode', '3': 4, '4': 1, '5': 11, '6': '.mcl.RadioStatus', '9': 0, '10': 'setRadioBandMode'},
     const {'1': 'abort_tx', '3': 5, '4': 1, '5': 8, '9': 0, '10': 'abortTx'},
+    const {'1': 'enable', '3': 6, '4': 1, '5': 8, '9': 0, '10': 'enable'},
+    const {'1': 'disable', '3': 7, '4': 1, '5': 8, '9': 0, '10': 'disable'},
   ],
   '8': const [
     const {'1': 'op'},
@@ -65,7 +80,7 @@ const RadioCommand$json = const {
 };
 
 /// Descriptor for `RadioCommand`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List radioCommandDescriptor = $convert.base64Decode('CgxSYWRpb0NvbW1hbmQSGAoHY2hhbm5lbBgBIAEoCVIHY2hhbm5lbBIoCg9zZW5kX2N3X21lc3NhZ2UYAiABKAlIAFINc2VuZEN3TWVzc2FnZRIiCgxzZXRfY3dfc3BlZWQYAyABKAVIAFIKc2V0Q3dTcGVlZBJBChNzZXRfcmFkaW9fYmFuZF9tb2RlGAQgASgLMhAubWNsLlJhZGlvU3RhdHVzSABSEHNldFJhZGlvQmFuZE1vZGUSGwoIYWJvcnRfdHgYBSABKAhIAFIHYWJvcnRUeEIECgJvcA==');
+final $typed_data.Uint8List radioCommandDescriptor = $convert.base64Decode('CgxSYWRpb0NvbW1hbmQSGAoHY2hhbm5lbBgBIAEoCVIHY2hhbm5lbBIoCg9zZW5kX2N3X21lc3NhZ2UYAiABKAlIAFINc2VuZEN3TWVzc2FnZRIiCgxzZXRfY3dfc3BlZWQYAyABKAVIAFIKc2V0Q3dTcGVlZBJBChNzZXRfcmFkaW9fYmFuZF9tb2RlGAQgASgLMhAubWNsLlJhZGlvU3RhdHVzSABSEHNldFJhZGlvQmFuZE1vZGUSGwoIYWJvcnRfdHgYBSABKAhIAFIHYWJvcnRUeBIYCgZlbmFibGUYBiABKAhIAFIGZW5hYmxlEhoKB2Rpc2FibGUYByABKAhIAFIHZGlzYWJsZUIECgJvcA==');
 @$core.Deprecated('Use radioSelectorDescriptor instead')
 const RadioSelector$json = const {
   '1': 'RadioSelector',
