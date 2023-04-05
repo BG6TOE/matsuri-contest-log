@@ -26,6 +26,9 @@ func Run(conf *EmbedConfig) {
 	if err != nil {
 		panic(fmt.Errorf("failed to start server: %v", err))
 	}
+	if url.Scheme == "unix" {
+		url.Host = url.Path
+	}
 	lis, err := net.Listen(url.Scheme, url.Host)
 	if err != nil {
 		panic(fmt.Errorf("failed to create server: %v", err))
