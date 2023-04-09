@@ -3,6 +3,7 @@ module matsu.dev/matsuri-contest-log
 go 1.16
 
 require (
+	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/gen2brain/malgo v0.10.35
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0

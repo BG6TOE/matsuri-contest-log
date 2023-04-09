@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
-	"path"
 	"strings"
 	"sync"
 	"unicode"
@@ -17,6 +15,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"matsu.dev/matsuri-contest-log/config"
 	"matsu.dev/matsuri-contest-log/hamlib"
 	pb "matsu.dev/matsuri-contest-log/proto"
 )
@@ -35,11 +34,7 @@ type RadioServer struct {
 }
 
 func (r *RadioServer) loadRadios() {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return
-	}
-	fp, err := os.Open(path.Join(configDir, "MatsuriContestLog", "radio.json"))
+	fp, err := os.Open(config.GetConfigFilePath("radio.json"))
 	if err != nil {
 		return
 	}
@@ -60,12 +55,7 @@ func (r *RadioServer) loadRadios() {
 }
 
 func (r *RadioServer) saveRadios() {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return
-	}
-	os.MkdirAll(path.Join(configDir, "MatsuriContestLog"), fs.ModePerm)
-	fp, err := os.Open(path.Join(configDir, "MatsuriContestLog", "radio.json"))
+	fp, err := os.OpenFile(config.GetConfigFilePath("radio.json"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return
 	}
