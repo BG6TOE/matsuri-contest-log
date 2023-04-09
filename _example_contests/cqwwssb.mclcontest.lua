@@ -19,6 +19,9 @@ function LoadMetadata(meta)
     -- version: the version of the contest, for identifying other hosts on the network and display.
     meta.Version = "2022.01"
 
+    -- identifier: the string used to identify support files
+    meta.Identifier = "cqww_ssb"
+
     -- the name of the contest, for identifying other hosts on the network and display.
     meta.ContestName = "CQWW SSB"
 

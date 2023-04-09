@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"matsu.dev/matsuri-contest-log/adif"
+	"matsu.dev/matsuri-contest-log/config"
 	pb "matsu.dev/matsuri-contest-log/proto"
 )
 
@@ -36,6 +37,12 @@ type Server struct {
 	currentDraft  map[string]interface{}
 	contestScript *lua.LState
 	funcMap       *LuaFunctionMap
+
+	scpChecker []*PartialChecker
+
+	logChecker     *PartialChecker
+	telnetChecker  *PartialChecker
+	contestChecker *PartialChecker
 }
 
 type GuiServerConfig struct {
@@ -50,12 +57,16 @@ func NewServer(grpcServer *grpc.Server) *Server {
 }
 
 func (s *Server) Init(conf *GuiServerConfig) error {
-	conn, err := grpc.Dial(conf.BinlogServerAddr, grpc.WithDialer(func(s string, d time.Duration) (net.Conn, error) {
+	conn, err := grpc.Dial(conf.BinlogServerAddr, grpc.WithContextDialer(func(ctx context.Context, s string) (net.Conn, error) {
+		var d net.Dialer
 		url, err := url.Parse(s)
+		if url.Scheme == "unix" {
+			url.Host = url.Path
+		}
 		if err != nil {
 			panic(fmt.Errorf("failed to start server: %v", err))
 		}
-		return net.Dial(url.Scheme, url.Host)
+		return d.DialContext(ctx, url.Scheme, url.Host)
 	}), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
@@ -68,6 +79,21 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 	s.binlog = binlogClient
 
 	logrus.Infof("connected to binlog server: %s", conf.BinlogServerAddr)
+
+	// Load SCP file
+	s.scpChecker = make([]*PartialChecker, 0)
+
+	dataFilePath := config.GetConfigFilePath("master.scp")
+
+	s.logChecker = newPartialChecker("Log")
+	s.telnetChecker = newPartialChecker("Spot")
+	s.contestChecker = newPartialChecker("Contest")
+
+	s.scpChecker = append(s.scpChecker, s.logChecker)
+	s.scpChecker = append(s.scpChecker, scpChecker(dataFilePath))
+	s.scpChecker = append(s.scpChecker, s.telnetChecker)
+	s.scpChecker = append(s.scpChecker, s.contestChecker)
+
 	return nil
 }
 
@@ -120,6 +146,8 @@ func (s *Server) LogQSO(ctx context.Context, msg *pb.QSO) (*pb.QSO, error) {
 					},
 				}},
 		}
+
+	s.logChecker.insert(qso.DxCallsign)
 
 	response, err := s.binlog.Push(context.Background(), binlog)
 	if err != nil {
@@ -187,6 +215,10 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 	}
 	s.binlogSequenceNumber = snapshot.GetSerial()
 	logrus.Infof("get snapshot #%d from binlog server", s.binlogSequenceNumber)
+
+	for _, qso := range snapshot.Qso {
+		s.logChecker.insert(qso.DxCallsign)
+	}
 
 	s.activeContest, _ = s.binlog.GetActiveContest(ctx, &empty.Empty{})
 
@@ -299,4 +331,24 @@ func (s *Server) ExportToAdif(ctx context.Context, req *pb.OpenFileRequest) (*pb
 	}
 
 	return &pb.StandardResponse{ResultCode: pb.ResultCode_success}, nil
+}
+
+func (s *Server) CheckPartial(ctx context.Context, req *pb.CheckPartialRequest) (*pb.CheckPartialResponse, error) {
+	res := &pb.CheckPartialResponse{}
+
+	if len(req.Callsign) > 1 {
+		for _, checker := range s.scpChecker {
+			match := checker.match(req.Callsign)
+			item := &pb.CheckPartialResult{
+				Title:    checker.name,
+				Callsign: make([]string, len(match)),
+			}
+			for i, r := range match {
+				item.Callsign[i] = r.callsign
+			}
+			res.Results = append(res.Results, item)
+		}
+	}
+
+	return res, nil
 }

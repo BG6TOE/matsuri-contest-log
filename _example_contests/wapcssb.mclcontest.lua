@@ -19,6 +19,9 @@ function LoadMetadata(meta)
     -- version: the version of the contest, for identifying other hosts on the network and display.
     meta.Version = "2023.04"
 
+    -- identifier: the string used to identify support files
+    meta.Identifier = "wapc_ssb"
+
     -- the name of the contest, for identifying other hosts on the network and display.
     meta.ContestName = "WAPC SSB"
 
@@ -69,8 +72,13 @@ function LoadMetadata(meta)
 end
 
 function DraftQSO(qso)
-    qso.ExchangeSent["rst_sent"] = "599"
-    qso.ExchangeRcvd["rst_rcvd"] = "599"
+    if qso.Mode == "SSB" {
+        qso.ExchangeSent["rst_sent"] = "59"
+        qso.ExchangeRcvd["rst_rcvd"] = "59"
+    } else {
+        qso.ExchangeSent["rst_sent"] = "599"
+        qso.ExchangeRcvd["rst_rcvd"] = "599"
+    }
     qso.Expect = "exch_rcvd"
     return true
 end

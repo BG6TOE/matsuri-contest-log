@@ -23,6 +23,8 @@ function metadata()
         -- the name of the contest, for display only
         display_name = "DX - General logging",
 
+        identifier = "dx",
+
         -- the modes of the contest
         available_modes = {"SSB"},
 

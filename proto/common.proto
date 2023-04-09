@@ -23,6 +23,7 @@ message ContestMetadata {
   repeated string ExchangeRcvd = 7;
   repeated string Multipliers = 8;
   map<string, ContestFieldInfo> FieldInfos = 10;
+  string Identifier = 11;
 }
 
 enum Continent {

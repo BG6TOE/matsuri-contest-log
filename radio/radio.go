@@ -52,7 +52,7 @@ func (m RadioMode) ToProtoMode() pb.RadioMode {
 	case RadioMode_CW:
 		return pb.RadioMode_CW
 	case RadioMode_USB:
-		return pb.RadioMode_CWR
+		return pb.RadioMode_USB
 	case RadioMode_LSB:
 		return pb.RadioMode_LSB
 	case RadioMode_RTTY:
@@ -143,6 +143,12 @@ type Radio struct {
 
 	lock        sync.Mutex
 	refreshChan chan struct{}
+}
+
+func init() {
+	hamlib.SetDebugCallback(func(level hamlib.DebugLevel, msg string) {
+		logrus.Infof("Hamlib: %d: %s", level, msg)
+	})
 }
 
 func NewRadio(s RadioSetting) *Radio {
@@ -319,7 +325,7 @@ func (r *Radio) Open() error {
 	go func(closeChan chan struct{}) {
 		for {
 			select {
-			case <-time.After(3 * time.Second):
+			case <-time.After(1 * time.Second):
 				func() {
 					r.lock.Lock()
 					defer r.lock.Unlock()

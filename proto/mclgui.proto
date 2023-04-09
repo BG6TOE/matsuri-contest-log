@@ -70,6 +70,19 @@ message DraftQSOMessage {
   string expect = 6;
 }
 
+message CheckPartialRequest {
+  string callsign = 1;
+}
+
+message CheckPartialResult {
+  string title = 1;
+  repeated string callsign = 2;
+}
+
+message CheckPartialResponse {
+  repeated CheckPartialResult results = 1;
+}
+
 service RealtimeGui {
   // Defines a series of extended functions for server
 
@@ -77,6 +90,8 @@ service RealtimeGui {
   // station. e.g. The server will generate exchange message to be sent (like
   // serial number) and expected message from the DX station (like zone)
   rpc DraftQSO(DraftQSOMessage) returns (DraftQSOMessage);
+
+  rpc CheckPartial(CheckPartialRequest) returns (CheckPartialResponse);
 
   // Retrieves raw binlog messages from the backend.
   rpc RetrieveQSOUpdates(google.protobuf.Empty) returns (stream BinlogMessage);
