@@ -11,8 +11,9 @@ import (
 )
 
 type match struct {
-	callsign string
-	score    int
+	callsign       string
+	formatCallsign string
+	score          int
 }
 
 type trieNode struct {
@@ -20,11 +21,17 @@ type trieNode struct {
 	next     map[byte]*trieNode
 }
 
-type PartialChecker struct {
-	name  string
-	count int
-	trie  *trieNode
-	mut   sync.RWMutex
+type PartialChecker interface {
+	insert(call string)
+	match(call string) []match
+	name() string
+}
+
+type PartialCheckerBase struct {
+	checkerName string
+	count       int
+	trie        *trieNode
+	mut         sync.RWMutex
 }
 
 type matchList []match
@@ -61,7 +68,7 @@ func (n *trieNode) insert(index int, call string) {
 func (n *trieNode) match(maxError int, index int, call string, score int, matchCall string, res *[]match) {
 	if index == 0 {
 		if len(n.callsign) != 0 {
-			*res = append(*res, match{callsign: matchCall, score: score})
+			*res = append(*res, match{callsign: n.callsign, formatCallsign: matchCall, score: score})
 		}
 	}
 	var char byte
@@ -95,7 +102,7 @@ func (n *trieNode) match(maxError int, index int, call string, score int, matchC
 	}
 }
 
-func (c *PartialChecker) insert(call string) {
+func (c *PartialCheckerBase) insert(call string) {
 	c.mut.Lock()
 	defer c.mut.Unlock()
 
@@ -103,7 +110,7 @@ func (c *PartialChecker) insert(call string) {
 	c.count++
 }
 
-func (c *PartialChecker) match(call string) []match {
+func (c *PartialCheckerBase) match(call string) []match {
 	c.mut.RLock()
 	defer c.mut.RUnlock()
 
@@ -124,16 +131,20 @@ func (c *PartialChecker) match(call string) []match {
 	return result
 }
 
-func newPartialChecker(name string) *PartialChecker {
-	return &PartialChecker{
-		name: name,
+func (c *PartialCheckerBase) name() string {
+	return c.checkerName
+}
+
+func newPartialChecker(name string) *PartialCheckerBase {
+	return &PartialCheckerBase{
+		checkerName: name,
 		trie: &trieNode{
 			next: make(map[byte]*trieNode),
 		},
 	}
 }
 
-func scpChecker(file string) *PartialChecker {
+func scpChecker(file string) *PartialCheckerBase {
 	ret := newPartialChecker("Database")
 
 	fp, err := os.Open(file)
