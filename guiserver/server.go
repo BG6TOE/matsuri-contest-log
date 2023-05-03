@@ -38,11 +38,11 @@ type Server struct {
 	contestScript *lua.LState
 	funcMap       *LuaFunctionMap
 
-	scpChecker []*PartialChecker
+	scpChecker []PartialChecker
 
-	logChecker     *PartialChecker
-	telnetChecker  *PartialChecker
-	contestChecker *PartialChecker
+	logChecker     PartialChecker
+	telnetChecker  PartialChecker
+	contestChecker PartialChecker
 }
 
 type GuiServerConfig struct {
@@ -81,18 +81,16 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 	logrus.Infof("connected to binlog server: %s", conf.BinlogServerAddr)
 
 	// Load SCP file
-	s.scpChecker = make([]*PartialChecker, 0)
+	s.scpChecker = make([]PartialChecker, 0)
 
 	dataFilePath := config.GetConfigFilePath("master.scp")
 
 	s.logChecker = newPartialChecker("Log")
 	s.telnetChecker = newPartialChecker("Spot")
-	s.contestChecker = newPartialChecker("Contest")
 
 	s.scpChecker = append(s.scpChecker, s.logChecker)
 	s.scpChecker = append(s.scpChecker, scpChecker(dataFilePath))
 	s.scpChecker = append(s.scpChecker, s.telnetChecker)
-	s.scpChecker = append(s.scpChecker, s.contestChecker)
 
 	return nil
 }
@@ -254,6 +252,9 @@ func (s *Server) LoadContest(ctx context.Context, msg *pb.LoadContestRequest) (*
 	s.funcMap = s.InitLuaMap()
 	s.currentDraft = map[string]interface{}{}
 
+	s.contestChecker = newContestSupport(s.activeContest.Contest.Identifier)
+	s.scpChecker = append(s.scpChecker, s.contestChecker)
+
 	return &pb.StandardResponse{
 		ResultCode: pb.ResultCode_success,
 	}, nil
@@ -340,11 +341,11 @@ func (s *Server) CheckPartial(ctx context.Context, req *pb.CheckPartialRequest) 
 		for _, checker := range s.scpChecker {
 			match := checker.match(req.Callsign)
 			item := &pb.CheckPartialResult{
-				Title:    checker.name,
+				Title:    checker.name(),
 				Callsign: make([]string, len(match)),
 			}
 			for i, r := range match {
-				item.Callsign[i] = r.callsign
+				item.Callsign[i] = r.formatCallsign
 			}
 			res.Results = append(res.Results, item)
 		}
