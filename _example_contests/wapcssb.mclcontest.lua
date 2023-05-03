@@ -72,13 +72,13 @@ function LoadMetadata(meta)
 end
 
 function DraftQSO(qso)
-    if qso.Mode == "SSB" {
+    if (qso.Mode == "SSB") then
         qso.ExchangeSent["rst_sent"] = "59"
         qso.ExchangeRcvd["rst_rcvd"] = "59"
-    } else {
+    else
         qso.ExchangeSent["rst_sent"] = "599"
         qso.ExchangeRcvd["rst_rcvd"] = "599"
-    }
+    end
     qso.Expect = "exch_rcvd"
     return true
 end

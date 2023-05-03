@@ -83,6 +83,13 @@ message CheckPartialResponse {
   repeated CheckPartialResult results = 1;
 }
 
+message AddSpotDataRequest {
+  string callsign = 1;
+  string spotter = 2;
+  string note = 3;
+  int64 timeout = 4;
+}
+
 service RealtimeGui {
   // Defines a series of extended functions for server
 
@@ -95,8 +102,4 @@ service RealtimeGui {
 
   // Retrieves raw binlog messages from the backend.
   rpc RetrieveQSOUpdates(google.protobuf.Empty) returns (stream BinlogMessage);
-
-  // Connects to and waiting for cooked spots.
-  rpc RetrieveTelnet(google.protobuf.Empty) returns (stream Spot);
-  rpc SendSpotToTelnet(Spot) returns (mcl.StandardResponse);
 }

@@ -60,11 +60,11 @@ func (s *Server) Init(conf *GuiServerConfig) error {
 	conn, err := grpc.Dial(conf.BinlogServerAddr, grpc.WithContextDialer(func(ctx context.Context, s string) (net.Conn, error) {
 		var d net.Dialer
 		url, err := url.Parse(s)
-		if url.Scheme == "unix" {
-			url.Host = url.Path
-		}
 		if err != nil {
 			panic(fmt.Errorf("failed to start server: %v", err))
+		}
+		if url.Scheme == "unix" {
+			url.Host = url.Path
 		}
 		return d.DialContext(ctx, url.Scheme, url.Host)
 	}), grpc.WithTransportCredentials(insecure.NewCredentials()))

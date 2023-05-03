@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Matsuri Contest Log</title>
+    <link rel="stylesheet" href="/web/res/default.css">
+    <script src="/web/res/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">{{ message }}</div>
+</body>
+
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                message: 'Hello Vue!'
+            }
+        }
+    }).mount('#app')
+</script>
+
+</html>

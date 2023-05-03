@@ -53,11 +53,11 @@ type BinlogServer struct {
 	evaluator      *snapshotEvaluator
 }
 
-func (s *BinlogServer) rlock() {
+func (s *BinlogServer) rLock() {
 	s.mutex.RLock()
 }
 
-func (s *BinlogServer) runlock() {
+func (s *BinlogServer) rUnlock() {
 	s.mutex.RUnlock()
 }
 

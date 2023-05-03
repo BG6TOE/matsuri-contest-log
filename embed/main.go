@@ -17,6 +17,37 @@ type EmbedConfig struct {
 	RPCHost string
 }
 
+func RunWithLocalSocket(useUnix bool) string {
+	logrus.Infof("MCL Version %s", version.Version)
+	logrus.Infof("Build time: %s", version.BuildTime)
+	logrus.Infof("Commit: %s", version.GitCommit)
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		panic(fmt.Errorf("failed to create server: %v", err))
+	}
+	address := "tcp://" + lis.Addr().String()
+	logrus.Infof("listening at %s", lis.Addr().String())
+	grpcServer := grpc.NewServer()
+
+	binlog.NewRpcServer(grpcServer)
+	radio.NewServer(grpcServer)
+	guiServer := gui.NewServer(grpcServer)
+
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			logrus.Panicf("failed to serve: %v", err)
+		}
+	}()
+
+	err = guiServer.Init(&gui.GuiServerConfig{BinlogServerAddr: address})
+	if err != nil {
+		logrus.Panicf("failed to init gui server: %v", err)
+	}
+
+	return address
+}
+
 func Run(conf *EmbedConfig) {
 	logrus.Infof("MCL Version %s", version.Version)
 	logrus.Infof("Build time: %s", version.BuildTime)
